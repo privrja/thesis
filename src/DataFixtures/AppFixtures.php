@@ -42,5 +42,8 @@ class AppFixtures extends Fixture
         $manager->persist($user);
 
         $manager->flush();
+
+        /* Main database data for main visible container */
+        // TODO
     }
 }

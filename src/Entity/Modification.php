@@ -41,6 +41,12 @@ class Modification
      */
     private $cTerminal;
 
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\Container", inversedBy="modificationId")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $container;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -102,6 +108,18 @@ class Modification
     public function setCTerminal(bool $cTerminal): self
     {
         $this->cTerminal = $cTerminal;
+
+        return $this;
+    }
+
+    public function getContainer(): ?Container
+    {
+        return $this->container;
+    }
+
+    public function setContainer(?Container $container): self
+    {
+        $this->container = $container;
 
         return $this;
     }

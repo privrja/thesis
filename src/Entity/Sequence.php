@@ -83,6 +83,17 @@ class Sequence
      */
     private $b2s;
 
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\Container", inversedBy="sequenceId")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $container;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $family;
+
     public function __construct()
     {
         $this->b2s = new ArrayCollection();
@@ -264,6 +275,30 @@ class Sequence
                 $b2->setSequenceId(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getContainer(): ?Container
+    {
+        return $this->container;
+    }
+
+    public function setContainer(?Container $container): self
+    {
+        $this->container = $container;
+
+        return $this;
+    }
+
+    public function getFamily(): ?string
+    {
+        return $this->family;
+    }
+
+    public function setFamily(string $family): self
+    {
+        $this->family = $family;
 
         return $this;
     }

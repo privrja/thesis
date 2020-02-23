@@ -68,6 +68,12 @@ class Block
      */
     private $b2s;
 
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\Container", inversedBy="blockId")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $container;
+
     public function __construct()
     {
         $this->b2s = new ArrayCollection();
@@ -216,4 +222,17 @@ class Block
 
         return $this;
     }
+
+    public function getContainer(): ?Container
+    {
+        return $this->container;
+    }
+
+    public function setContainer(?Container $container): self
+    {
+        $this->container = $container;
+
+        return $this;
+    }
+
 }

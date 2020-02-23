@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\UserInterface;
 
@@ -42,6 +44,16 @@ class User implements UserInterface
      * @ORM\Column(type="string", length=255, nullable=true, unique=true)
      */
     private $apiToken;
+
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Container", mappedBy="userId", orphanRemoval=true)
+     */
+    private $containers;
+
+    public function __construct()
+    {
+        $this->containers = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -141,6 +153,37 @@ class User implements UserInterface
     public function setApiToken(?string $apiToken): self
     {
         $this->apiToken = $apiToken;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Container[]
+     */
+    public function getContainers(): Collection
+    {
+        return $this->containers;
+    }
+
+    public function addContainer(Container $container): self
+    {
+        if (!$this->containers->contains($container)) {
+            $this->containers[] = $container;
+            $container->setUserId($this);
+        }
+
+        return $this;
+    }
+
+    public function removeContainer(Container $container): self
+    {
+        if ($this->containers->contains($container)) {
+            $this->containers->removeElement($container);
+            // set the owning side to null (unless already changed)
+            if ($container->getUserId() === $this) {
+                $container->setUserId(null);
+            }
+        }
 
         return $this;
     }

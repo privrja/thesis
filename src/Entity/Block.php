@@ -204,7 +204,7 @@ class Block
     {
         if (!$this->b2s->contains($b2)) {
             $this->b2s[] = $b2;
-            $b2->setBlockId($this);
+            $b2->setBlock($this);
         }
 
         return $this;
@@ -215,8 +215,8 @@ class Block
         if ($this->b2s->contains($b2)) {
             $this->b2s->removeElement($b2);
             // set the owning side to null (unless already changed)
-            if ($b2->getBlockId() === $this) {
-                $b2->setBlockId(null);
+            if ($b2->getBlock() === $this) {
+                $b2->setBlock(null);
             }
         }
 

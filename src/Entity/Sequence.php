@@ -66,17 +66,17 @@ class Sequence
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Modification")
      */
-    private $nModificationId;
+    private $nModification;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Modification")
      */
-    private $cModificationId;
+    private $cModification;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Modification")
      */
-    private $bModificationId;
+    private $bModification;
 
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\B2s", mappedBy="sequenceId", orphanRemoval=true)
@@ -212,38 +212,38 @@ class Sequence
         return $this;
     }
 
-    public function getNModificationId(): ?Modification
+    public function getNModification(): ?Modification
     {
-        return $this->nModificationId;
+        return $this->nModification;
     }
 
-    public function setNModificationId(?Modification $nModificationId): self
+    public function setNModification(?Modification $nModification): self
     {
-        $this->nModificationId = $nModificationId;
+        $this->nModification = $nModification;
 
         return $this;
     }
 
-    public function getCModificationId(): ?Modification
+    public function getCModification(): ?Modification
     {
-        return $this->cModificationId;
+        return $this->cModification;
     }
 
-    public function setCModificationId(?Modification $cModificationId): self
+    public function setCModification(?Modification $cModification): self
     {
-        $this->cModificationId = $cModificationId;
+        $this->cModification = $cModification;
 
         return $this;
     }
 
-    public function getBModificationId(): ?Modification
+    public function getBModification(): ?Modification
     {
-        return $this->bModificationId;
+        return $this->bModification;
     }
 
-    public function setBModificationId(?Modification $bModificationId): self
+    public function setBModification(?Modification $bModification): self
     {
-        $this->bModificationId = $bModificationId;
+        $this->bModification = $bModification;
 
         return $this;
     }
@@ -260,7 +260,7 @@ class Sequence
     {
         if (!$this->b2s->contains($b2)) {
             $this->b2s[] = $b2;
-            $b2->setSequenceId($this);
+            $b2->setSequence($this);
         }
 
         return $this;
@@ -271,8 +271,8 @@ class Sequence
         if ($this->b2s->contains($b2)) {
             $this->b2s->removeElement($b2);
             // set the owning side to null (unless already changed)
-            if ($b2->getSequenceId() === $this) {
-                $b2->setSequenceId(null);
+            if ($b2->getSequence() === $this) {
+                $b2->setSequence(null);
             }
         }
 

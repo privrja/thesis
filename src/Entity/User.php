@@ -169,7 +169,7 @@ class User implements UserInterface
     {
         if (!$this->containers->contains($container)) {
             $this->containers[] = $container;
-            $container->setUserId($this);
+            $container->setUser($this);
         }
 
         return $this;
@@ -180,8 +180,8 @@ class User implements UserInterface
         if ($this->containers->contains($container)) {
             $this->containers->removeElement($container);
             // set the owning side to null (unless already changed)
-            if ($container->getUserId() === $this) {
-                $container->setUserId(null);
+            if ($container->getUser() === $this) {
+                $container->setUser(null);
             }
         }
 

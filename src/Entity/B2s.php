@@ -25,13 +25,13 @@ class B2s
      * @ORM\ManyToOne(targetEntity="App\Entity\Sequence", inversedBy="b2s")
      * @ORM\JoinColumn(nullable=false)
      */
-    private $sequenceId;
+    private $sequence;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Block", inversedBy="b2s")
      * @ORM\JoinColumn(nullable=false)
      */
-    private $blockId;
+    private $block;
 
     public function getId(): ?int
     {
@@ -50,26 +50,26 @@ class B2s
         return $this;
     }
 
-    public function getSequenceId(): ?Sequence
+    public function getSequence(): ?Sequence
     {
-        return $this->sequenceId;
+        return $this->sequence;
     }
 
-    public function setSequenceId(?Sequence $sequenceId): self
+    public function setSequence(?Sequence $sequence): self
     {
-        $this->sequenceId = $sequenceId;
+        $this->sequence = $sequence;
 
         return $this;
     }
 
-    public function getBlockId(): ?Block
+    public function getBlock(): ?Block
     {
-        return $this->blockId;
+        return $this->block;
     }
 
-    public function setBlockId(?Block $blockId): self
+    public function setBlock(?Block $block): self
     {
-        $this->blockId = $blockId;
+        $this->block = $block;
 
         return $this;
     }

@@ -90,13 +90,14 @@ class Sequence
     private $container;
 
     /**
-     * @ORM\Column(type="string", length=255, nullable=true)
+     * @ORM\OneToMany(targetEntity="App\Entity\S2f", mappedBy="sequenceId")
      */
-    private $family;
+    private $s2families;
 
     public function __construct()
     {
         $this->b2s = new ArrayCollection();
+        $this->s2families = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -291,14 +292,33 @@ class Sequence
         return $this;
     }
 
-    public function getFamily(): ?string
+    /**
+     * @return Collection|S2f[]
+     */
+    public function getS2families(): Collection
     {
-        return $this->family;
+        return $this->s2families;
     }
 
-    public function setFamily(string $family): self
+    public function addS2family(S2f $s2family): self
     {
-        $this->family = $family;
+        if (!$this->s2families->contains($s2family)) {
+            $this->s2families[] = $s2family;
+            $s2family->setSequence($this);
+        }
+
+        return $this;
+    }
+
+    public function removeS2family(S2f $s2family): self
+    {
+        if ($this->s2families->contains($s2family)) {
+            $this->s2families->removeElement($s2family);
+            // set the owning side to null (unless already changed)
+            if ($s2family->getSequence() === $this) {
+                $s2family->setSequence(null);
+            }
+        }
 
         return $this;
     }

@@ -59,11 +59,6 @@ class Block
     private $indetifier;
 
     /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     */
-    private $family;
-
-    /**
      * @ORM\OneToMany(targetEntity="App\Entity\B2s", mappedBy="blockId")
      */
     private $b2s;
@@ -74,9 +69,15 @@ class Block
      */
     private $container;
 
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\B2f", mappedBy="blockId")
+     */
+    private $b2families;
+
     public function __construct()
     {
         $this->b2s = new ArrayCollection();
+        $this->b2families = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -180,18 +181,6 @@ class Block
         return $this;
     }
 
-    public function getFamily(): ?string
-    {
-        return $this->family;
-    }
-
-    public function setFamily(?string $family): self
-    {
-        $this->family = $family;
-
-        return $this;
-    }
-
     /**
      * @return Collection|B2s[]
      */
@@ -231,6 +220,37 @@ class Block
     public function setContainer(?Container $container): self
     {
         $this->container = $container;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|B2f[]
+     */
+    public function getB2families(): Collection
+    {
+        return $this->b2families;
+    }
+
+    public function addB2family(B2f $b2family): self
+    {
+        if (!$this->b2families->contains($b2family)) {
+            $this->b2families[] = $b2family;
+            $b2family->setBlock($this);
+        }
+
+        return $this;
+    }
+
+    public function removeB2family(B2f $b2family): self
+    {
+        if ($this->b2families->contains($b2family)) {
+            $this->b2families->removeElement($b2family);
+            // set the owning side to null (unless already changed)
+            if ($b2family->getBlock() === $this) {
+                $b2family->setBlock(null);
+            }
+        }
 
         return $this;
     }

@@ -46,13 +46,14 @@ class User implements UserInterface
     private $apiToken;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\Container", mappedBy="userId", orphanRemoval=true)
+     * @ORM\OneToMany(targetEntity="App\Entity\U2c", mappedBy="userId", orphanRemoval=true)
      */
-    private $containers;
+    private $u2container;
 
     public function __construct()
     {
         $this->containers = new ArrayCollection();
+        $this->u2container = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -158,30 +159,30 @@ class User implements UserInterface
     }
 
     /**
-     * @return Collection|Container[]
+     * @return Collection|U2c[]
      */
-    public function getContainers(): Collection
+    public function getU2container(): Collection
     {
-        return $this->containers;
+        return $this->u2container;
     }
 
-    public function addContainer(Container $container): self
+    public function addU2container(U2c $u2container): self
     {
-        if (!$this->containers->contains($container)) {
-            $this->containers[] = $container;
-            $container->setUser($this);
+        if (!$this->u2container->contains($u2container)) {
+            $this->u2container[] = $u2container;
+            $u2container->setUser($this);
         }
 
         return $this;
     }
 
-    public function removeContainer(Container $container): self
+    public function removeU2container(U2c $u2container): self
     {
-        if ($this->containers->contains($container)) {
-            $this->containers->removeElement($container);
+        if ($this->u2container->contains($u2container)) {
+            $this->u2container->removeElement($u2container);
             // set the owning side to null (unless already changed)
-            if ($container->getUser() === $this) {
-                $container->setUser(null);
+            if ($u2container->getUser() === $this) {
+                $u2container->setUser(null);
             }
         }
 

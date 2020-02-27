@@ -28,6 +28,12 @@ class SequenceFamily
      */
     private $f2sequences;
 
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\Container", inversedBy="sequenceFamilies")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $container;
+
     public function __construct()
     {
         $this->f2sequences = new ArrayCollection();
@@ -77,6 +83,18 @@ class SequenceFamily
                 $f2sequence->setFamily(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getContainer(): ?Container
+    {
+        return $this->container;
+    }
+
+    public function setContainer(?Container $container): self
+    {
+        $this->container = $container;
 
         return $this;
     }

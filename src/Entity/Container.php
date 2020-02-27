@@ -29,12 +29,6 @@ class Container
     private $type;
 
     /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="containers")
-     * @ORM\JoinColumn(nullable=false)
-     */
-    private $user;
-
-    /**
      * @ORM\OneToMany(targetEntity="App\Entity\Block", mappedBy="container", orphanRemoval=true)
      */
     private $blockId;
@@ -49,11 +43,29 @@ class Container
      */
     private $sequenceId;
 
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\BlockFamily", mappedBy="containerId", orphanRemoval=true)
+     */
+    private $blockFamilies;
+
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\SequenceFamily", mappedBy="containerId", orphanRemoval=true)
+     */
+    private $sequenceFamilies;
+
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\U2c", mappedBy="containerId", orphanRemoval=true)
+     */
+    private $c2users;
+
     public function __construct()
     {
         $this->sequenceId = new ArrayCollection();
         $this->blockId = new ArrayCollection();
         $this->modificationId = new ArrayCollection();
+        $this->blockFamilies = new ArrayCollection();
+        $this->sequenceFamilies = new ArrayCollection();
+        $this->c2users = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -81,18 +93,6 @@ class Container
     public function setType(int $type): self
     {
         $this->type = $type;
-
-        return $this;
-    }
-
-    public function getUser(): ?User
-    {
-        return $this->user;
-    }
-
-    public function setUser(?User $user): self
-    {
-        $this->user = $user;
 
         return $this;
     }
@@ -184,6 +184,99 @@ class Container
             // set the owning side to null (unless already changed)
             if ($sequenceId->getContainer() === $this) {
                 $sequenceId->setContainer(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|BlockFamily[]
+     */
+    public function getBlockFamilies(): Collection
+    {
+        return $this->blockFamilies;
+    }
+
+    public function addBlockFamily(BlockFamily $blockFamily): self
+    {
+        if (!$this->blockFamilies->contains($blockFamily)) {
+            $this->blockFamilies[] = $blockFamily;
+            $blockFamily->setContainer($this);
+        }
+
+        return $this;
+    }
+
+    public function removeBlockFamily(BlockFamily $blockFamily): self
+    {
+        if ($this->blockFamilies->contains($blockFamily)) {
+            $this->blockFamilies->removeElement($blockFamily);
+            // set the owning side to null (unless already changed)
+            if ($blockFamily->getContainer() === $this) {
+                $blockFamily->setContainer(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|SequenceFamily[]
+     */
+    public function getSequenceFamilies(): Collection
+    {
+        return $this->sequenceFamilies;
+    }
+
+    public function addSequenceFamily(SequenceFamily $sequenceFamily): self
+    {
+        if (!$this->sequenceFamilies->contains($sequenceFamily)) {
+            $this->sequenceFamilies[] = $sequenceFamily;
+            $sequenceFamily->setContainer($this);
+        }
+
+        return $this;
+    }
+
+    public function removeSequenceFamily(SequenceFamily $sequenceFamily): self
+    {
+        if ($this->sequenceFamilies->contains($sequenceFamily)) {
+            $this->sequenceFamilies->removeElement($sequenceFamily);
+            // set the owning side to null (unless already changed)
+            if ($sequenceFamily->getContainer() === $this) {
+                $sequenceFamily->setContainer(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|U2c[]
+     */
+    public function getC2users(): Collection
+    {
+        return $this->c2users;
+    }
+
+    public function addC2user(U2c $c2user): self
+    {
+        if (!$this->c2users->contains($c2user)) {
+            $this->c2users[] = $c2user;
+            $c2user->setContainer($this);
+        }
+
+        return $this;
+    }
+
+    public function removeC2user(U2c $c2user): self
+    {
+        if ($this->c2users->contains($c2user)) {
+            $this->c2users->removeElement($c2user);
+            // set the owning side to null (unless already changed)
+            if ($c2user->getContainer() === $this) {
+                $c2user->setContainer(null);
             }
         }
 

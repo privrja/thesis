@@ -24,9 +24,9 @@ class Container
     private $name;
 
     /**
-     * @ORM\Column(type="smallint")
+     * @ORM\Column(type="smallint", options={"default": 0})
      */
-    private $type;
+    private $visibility;
 
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\Block", mappedBy="container", orphanRemoval=true)
@@ -85,14 +85,14 @@ class Container
         return $this;
     }
 
-    public function getType(): ?int
+    public function getVisibility(): ?int
     {
-        return $this->type;
+        return $this->visibility;
     }
 
-    public function setType(int $type): self
+    public function setVisibility(int $visibility): self
     {
-        $this->type = $type;
+        $this->visibility = $visibility;
 
         return $this;
     }

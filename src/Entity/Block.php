@@ -24,7 +24,7 @@ class Block
     private $name;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="string", length=30)
      */
     private $acronym;
 
@@ -47,6 +47,11 @@ class Block
      * @ORM\Column(type="string", length=255, nullable=true)
      */
     private $smiles;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $usmiles;
 
     /**
      * @ORM\Column(type="smallint", nullable=true)
@@ -251,6 +256,18 @@ class Block
                 $b2family->setBlock(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getUsmiles(): ?string
+    {
+        return $this->usmiles;
+    }
+
+    public function setUsmiles(?string $usmiles): self
+    {
+        $this->usmiles = $usmiles;
 
         return $this;
     }

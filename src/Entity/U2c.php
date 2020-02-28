@@ -29,7 +29,7 @@ class U2c
     private $container;
 
     /**
-     * @ORM\Column(type="smallint")
+     * @ORM\Column(type="smallint", options={"default": 0})
      */
     private $mode;
 

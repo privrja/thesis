@@ -9,7 +9,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class MainController extends AbstractController
 {
     /**
-     * @Route("/rest", name="block", methods={"GET"})
+     * @Route("/rest", name="rest", methods={"GET"})
      * @IsGranted("ROLE_USER")
      */
     public function rest()
@@ -20,7 +20,7 @@ class MainController extends AbstractController
     }
 
     /**
-     * @Route("/", name="block", methods={"GET"})
+     * @Route("/", name="main", methods={"GET"})
      */
     public function main()
     {

@@ -12,7 +12,17 @@ class MainController extends AbstractController
      * @Route("/rest", name="block", methods={"GET"})
      * @IsGranted("ROLE_USER")
      */
-    public function index()
+    public function rest()
+    {
+        return $this->render('main/index.html.twig', [
+            'controller_name' => 'MainController',
+        ]);
+    }
+
+    /**
+     * @Route("/", name="block", methods={"GET"})
+     */
+    public function main()
     {
         return $this->render('main/index.html.twig', [
             'controller_name' => 'MainController',

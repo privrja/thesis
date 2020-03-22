@@ -5,9 +5,11 @@ namespace App\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\Mapping\Index;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\BlockRepository")
+ * @ORM\Table(indexes={@Index(name="IDX_BLOCK_ID", columns={"id"})})
  */
 class Block
 {

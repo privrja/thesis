@@ -13,7 +13,7 @@
 
 ### Setup ENV variables and export them
 
-```composer dum-env prod```
+```composer dump-env prod```
 
 ### Install dependecies
 

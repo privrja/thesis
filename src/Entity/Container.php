@@ -5,11 +5,12 @@ namespace App\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use JsonSerializable;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\ContainerRepository")
  */
-class Container
+class Container implements JsonSerializable
 {
     /**
      * @ORM\Id()
@@ -44,12 +45,12 @@ class Container
     private $sequenceId;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\BlockFamily", mappedBy="containerId", orphanRemoval=true)
+     * @ORM\OneToMany(targetEntity="App\Entity\BlockFamily", mappedBy="container", orphanRemoval=true)
      */
     private $blockFamilies;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\SequenceFamily", mappedBy="containerId", orphanRemoval=true)
+     * @ORM\OneToMany(targetEntity="App\Entity\SequenceFamily", mappedBy="container", orphanRemoval=true)
      */
     private $sequenceFamilies;
 
@@ -282,4 +283,12 @@ class Container
 
         return $this;
     }
+
+    /**
+     * @inheritDoc
+     */
+    public function jsonSerialize() {
+        return [EntityColumnsEnum::NAME => $this->name, EntityColumnsEnum::CONTAINER_VISIBILITY => $this->visibility];
+    }
+
 }

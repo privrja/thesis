@@ -79,7 +79,7 @@ class Sequence
     private $bModification;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\B2s", mappedBy="sequenceId", orphanRemoval=true)
+     * @ORM\OneToMany(targetEntity="App\Entity\B2s", mappedBy="sequence", orphanRemoval=true)
      */
     private $b2s;
 
@@ -90,7 +90,7 @@ class Sequence
     private $container;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\S2f", mappedBy="sequenceId")
+     * @ORM\OneToMany(targetEntity="App\Entity\S2f", mappedBy="sequence")
      */
     private $s2families;
 

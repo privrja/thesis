@@ -24,7 +24,7 @@ class SequenceFamily
     private $name;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\S2f", mappedBy="familyId")
+     * @ORM\OneToMany(targetEntity="App\Entity\S2f", mappedBy="family")
      */
     private $f2sequences;
 

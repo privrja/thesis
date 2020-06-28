@@ -24,7 +24,7 @@ class BlockFamily
     private $name;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\B2f", mappedBy="familyId")
+     * @ORM\OneToMany(targetEntity="App\Entity\B2f", mappedBy="family")
      */
     private $f2blocks;
 

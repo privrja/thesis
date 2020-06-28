@@ -8,7 +8,7 @@ namespace App\Constant;
  * Visibility modes of container PRIVATE or PUBLIC
  * @package App\Constant
  */
-abstract class VisibilityEnum {
+abstract class ContainerVisibilityEnum {
 
     const PRIVATE = 0;
     const PUBLIC = 1;

@@ -66,7 +66,7 @@ class Block
     private $identifier;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\B2s", mappedBy="blockId")
+     * @ORM\OneToMany(targetEntity="App\Entity\B2s", mappedBy="block")
      */
     private $b2s;
 
@@ -77,7 +77,7 @@ class Block
     private $container;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\B2f", mappedBy="blockId")
+     * @ORM\OneToMany(targetEntity="App\Entity\B2f", mappedBy="block")
      */
     private $b2families;
 

@@ -21,6 +21,7 @@ class MainController extends AbstractController
 
     /**
      * @Route("/", name="main", methods={"GET"})
+     * @IsGranted("ROLE_USER")
      */
     public function main()
     {

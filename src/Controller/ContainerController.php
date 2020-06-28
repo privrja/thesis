@@ -2,13 +2,15 @@
 
 namespace App\Controller;
 
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
 
 class ContainerController extends AbstractController
 {
     /**
-     * @Route("/container", name="container")
+     * @Route("/rest/container", name="container", methods={"GET"})
+     * @IsGranted("ROLE_USER")
      */
     public function index()
     {
@@ -16,4 +18,5 @@ class ContainerController extends AbstractController
             'controller_name' => 'ContainerController',
         ]);
     }
+
 }

@@ -46,13 +46,12 @@ class User implements UserInterface
     private $apiToken;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\U2c", mappedBy="userId", orphanRemoval=true)
+     * @ORM\OneToMany(targetEntity="App\Entity\U2c", mappedBy="user", orphanRemoval=true)
      */
     private $u2container;
 
     public function __construct()
     {
-        $this->containers = new ArrayCollection();
         $this->u2container = new ArrayCollection();
     }
 

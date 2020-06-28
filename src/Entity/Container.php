@@ -54,7 +54,7 @@ class Container
     private $sequenceFamilies;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\U2c", mappedBy="containerId", orphanRemoval=true)
+     * @ORM\OneToMany(targetEntity="App\Entity\U2c", mappedBy="container", orphanRemoval=true)
      */
     private $c2users;
 

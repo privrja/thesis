@@ -24,12 +24,12 @@ class AppFixtures extends Fixture
     public function load(ObjectManager $manager) {
 
         /* Testing users */
-        $user = new User();
-        $user->setNick("privrja");
-        $user->setMail("privrja@gmail.com");
-        $user->setRoles(["ROLE_USER"]);
-        $user->setPassword($this->passwordEncoder->encodePassword($user, 'nic'));
-        $manager->persist($user);
+        $userP = new User();
+        $userP->setNick("privrja");
+        $userP->setMail("privrja@gmail.com");
+        $userP->setRoles(["ROLE_USER"]);
+        $userP->setPassword($this->passwordEncoder->encodePassword($userP, 'nic'));
+        $manager->persist($userP);
 
         $user = new User();
         $user->setNick("admin");
@@ -46,7 +46,7 @@ class AppFixtures extends Fixture
         $user->setApiToken("12345");
         $manager->persist($user);
 
-        /* Add containers for user kokos */
+        /* Add containers for user kokos and privrja */
         $container = new Container();
         $container->setName("Palma");
         $container->setVisibility(ContainerVisibilityEnum::PRIVATE);
@@ -66,6 +66,17 @@ class AppFixtures extends Fixture
         $u2c = new U2c();
         $u2c->setContainer($container);
         $u2c->setUser($user);
+        $u2c->setMode(ContainerModeEnum::RW);
+        $manager->persist($u2c);
+
+        $container = new Container();
+        $container->setName("Testing database");
+        $container->setVisibility(ContainerVisibilityEnum::PRIVATE);
+        $manager->persist($container);
+
+        $u2c = new U2c();
+        $u2c->setContainer($container);
+        $u2c->setUser($userP);
         $u2c->setMode(ContainerModeEnum::RW);
         $manager->persist($u2c);
 

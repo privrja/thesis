@@ -63,7 +63,7 @@ class Block
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
      */
-    private $indetifier;
+    private $identifier;
 
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\B2s", mappedBy="blockId")
@@ -176,14 +176,14 @@ class Block
         return $this;
     }
 
-    public function getIndetifier(): ?string
+    public function getIdentifier(): ?string
     {
-        return $this->indetifier;
+        return $this->identifier;
     }
 
-    public function setIndetifier(?string $indetifier): self
+    public function setIdentifier(?string $identifier): self
     {
-        $this->indetifier = $indetifier;
+        $this->identifier = $identifier;
 
         return $this;
     }

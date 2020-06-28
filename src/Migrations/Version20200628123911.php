@@ -10,7 +10,7 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20200228155251 extends AbstractMigration
+final class Version20200628123911 extends AbstractMigration
 {
     public function getDescription() : string
     {
@@ -24,7 +24,7 @@ final class Version20200228155251 extends AbstractMigration
 
         $this->addSql('CREATE TABLE b2f (id INT AUTO_INCREMENT NOT NULL, block_id INT NOT NULL, family_id INT NOT NULL, INDEX IDX_FDB35640E9ED820C (block_id), INDEX IDX_FDB35640C35E566A (family_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
         $this->addSql('CREATE TABLE b2s (id INT AUTO_INCREMENT NOT NULL, sequence_id INT NOT NULL, block_id INT NOT NULL, sort INT NOT NULL, INDEX IDX_906EB2AB98FB19AE (sequence_id), INDEX IDX_906EB2ABE9ED820C (block_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
-        $this->addSql('CREATE TABLE block (id INT AUTO_INCREMENT NOT NULL, container_id INT NOT NULL, name VARCHAR(255) NOT NULL, acronym VARCHAR(30) NOT NULL, residue VARCHAR(255) NOT NULL, mass DOUBLE PRECISION DEFAULT NULL, losses VARCHAR(255) DEFAULT NULL, smiles VARCHAR(255) DEFAULT NULL, usmiles VARCHAR(255) DEFAULT NULL, source SMALLINT DEFAULT NULL, indetifier VARCHAR(255) DEFAULT NULL, INDEX IDX_831B9722BC21F742 (container_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
+        $this->addSql('CREATE TABLE block (id INT AUTO_INCREMENT NOT NULL, container_id INT NOT NULL, name VARCHAR(255) NOT NULL, acronym VARCHAR(30) NOT NULL, residue VARCHAR(255) NOT NULL, mass DOUBLE PRECISION DEFAULT NULL, losses VARCHAR(255) DEFAULT NULL, smiles VARCHAR(255) DEFAULT NULL, usmiles VARCHAR(255) DEFAULT NULL, source SMALLINT DEFAULT NULL, identifier VARCHAR(255) DEFAULT NULL, INDEX IDX_831B9722BC21F742 (container_id), INDEX IDX_BLOCK_ID (id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
         $this->addSql('CREATE TABLE block_family (id INT AUTO_INCREMENT NOT NULL, container_id INT NOT NULL, name VARCHAR(255) NOT NULL, INDEX IDX_EC4877D0BC21F742 (container_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
         $this->addSql('CREATE TABLE container (id INT AUTO_INCREMENT NOT NULL, name VARCHAR(255) NOT NULL, visibility SMALLINT DEFAULT 0 NOT NULL, PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
         $this->addSql('CREATE TABLE modification (id INT AUTO_INCREMENT NOT NULL, container_id INT NOT NULL, name VARCHAR(255) NOT NULL, formula VARCHAR(255) NOT NULL, mass DOUBLE PRECISION DEFAULT NULL, n_terminal TINYINT(1) DEFAULT \'0\' NOT NULL, c_terminal TINYINT(1) DEFAULT \'0\' NOT NULL, INDEX IDX_EF6425D2BC21F742 (container_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');

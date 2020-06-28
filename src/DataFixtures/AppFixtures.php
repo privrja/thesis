@@ -2,6 +2,9 @@
 
 namespace App\DataFixtures;
 
+use App\Constant\BaseAminoAcids;
+use App\Constant\VisibilityEnum;
+use App\Entity\Container;
 use App\Entity\User;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
@@ -18,6 +21,8 @@ class AppFixtures extends Fixture
 
     public function load(ObjectManager $manager)
     {
+
+        /* Testing users */
         $user = new User();
         $user->setNick("kokos");
         $user->setMail("kokos@palma.cz");
@@ -41,9 +46,18 @@ class AppFixtures extends Fixture
         $user->setPassword($this->passwordEncoder->encodePassword($user, 'kokos'));
         $manager->persist($user);
 
-        $manager->flush();
-
         /* Main database data for main visible container */
-        // TODO
+        $container = new Container();
+        $container->setName("Public Container");
+        $container->setVisibility(VisibilityEnum::PUBLIC);
+        $manager->persist($container);
+
+        $acids = new BaseAminoAcids($container);
+        $acidList = $acids->getList();
+        foreach ($acidList as $block) {
+            $manager->persist($block);
+        }
+
+        $manager->flush();
     }
 }

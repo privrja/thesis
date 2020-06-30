@@ -39,11 +39,6 @@ class Sequence
     private $mass;
 
     /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     */
-    private $sequence;
-
-    /**
      * @ORM\Column(type="string", length=500, nullable=true)
      */
     private $smiles;
@@ -149,18 +144,6 @@ class Sequence
     public function setMass(?float $mass): self
     {
         $this->mass = $mass;
-
-        return $this;
-    }
-
-    public function getSequence(): ?string
-    {
-        return $this->sequence;
-    }
-
-    public function setSequence(?string $sequence): self
-    {
-        $this->sequence = $sequence;
 
         return $this;
     }

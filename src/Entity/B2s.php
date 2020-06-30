@@ -17,11 +17,6 @@ class B2s
     private $id;
 
     /**
-     * @ORM\Column(type="integer")
-     */
-    private $sort;
-
-    /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Sequence", inversedBy="b2s")
      * @ORM\JoinColumn(nullable=false)
      */
@@ -33,21 +28,24 @@ class B2s
      */
     private $block;
 
+    /**
+     * @ORM\OneToOne(targetEntity="App\Entity\Block", cascade={"persist", "remove"})
+     */
+    private $nextBlock;
+
+    /**
+     * @ORM\Column(type="boolean")
+     */
+    private $isBranch;
+
+    /**
+     * @ORM\OneToOne(targetEntity="App\Entity\Block", cascade={"persist", "remove"})
+     */
+    private $branchReference;
+
     public function getId(): ?int
     {
         return $this->id;
-    }
-
-    public function getSort(): ?int
-    {
-        return $this->sort;
-    }
-
-    public function setSort(int $sort): self
-    {
-        $this->sort = $sort;
-
-        return $this;
     }
 
     public function getSequence(): ?Sequence
@@ -70,6 +68,42 @@ class B2s
     public function setBlock(?Block $block): self
     {
         $this->block = $block;
+
+        return $this;
+    }
+
+    public function getNextBlock(): ?Block
+    {
+        return $this->nextBlock;
+    }
+
+    public function setNextBlock(?Block $nextBlock): self
+    {
+        $this->nextBlock = $nextBlock;
+
+        return $this;
+    }
+
+    public function getIsBranch(): ?bool
+    {
+        return $this->isBranch;
+    }
+
+    public function setIsBranch(bool $isBranch): self
+    {
+        $this->isBranch = $isBranch;
+
+        return $this;
+    }
+
+    public function getBranchReference(): ?Block
+    {
+        return $this->branchReference;
+    }
+
+    public function setBranchReference(?Block $branchReference): self
+    {
+        $this->branchReference = $branchReference;
 
         return $this;
     }

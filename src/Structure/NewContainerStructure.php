@@ -4,18 +4,18 @@ namespace App\Structure;
 
 use App\Base\Message;
 use App\Constant\ContainerVisibilityEnum;
+use App\Constant\ErrorConstants;
 
-class NewContainerStructure extends AbstractStructure
-{
+class NewContainerStructure extends AbstractStructure {
 
     public $name;
     public $visibility;
 
     public function checkInput(): Message {
         if ($this->visibility === ContainerVisibilityEnum::TEXT_PUBLIC or $this->visibility === ContainerVisibilityEnum::TEXT_PRIVATE) {
-            return new Message(true);
+            return Message::createOkMessage();
         } else {
-            return new Message(false, 'Visibility has not supported format! Supported format is "R"|"RW"');
+            return new Message(ErrorConstants::ERROR_VISIBILITY_FORMAT);
         }
     }
 

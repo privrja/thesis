@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Base\RequestHelper;
+use App\Base\ResponseHelper;
 use App\Entity\EntityColumnsEnum;
 use App\Model\ContainerModel;
 use App\Repository\ContainerRepository;
@@ -61,11 +62,12 @@ class ContainerController extends AbstractController {
             return $trans;
         }
 
-        $model = new ContainerModel($entityManager, $this->getDoctrine(), $security->getUser());
-        $model->newContainer($trans);
+        $model = new ContainerModel($entityManager, $this->getDoctrine(), $security->getUser(), $logger);
+        $modelMessage = $model->newContainer($trans);
+        if (!$modelMessage->result) {
+            return ResponseHelper::jsonResponse($modelMessage, Response::HTTP_BAD_REQUEST);
+        }
         return new JsonResponse(null, Response::HTTP_NO_CONTENT);
-        // TODO test it
-
         // TODO specification of REST API
     }
 

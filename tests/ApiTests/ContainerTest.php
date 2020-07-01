@@ -24,12 +24,41 @@ class ContainerTest extends WebTestCase {
     }
 
     public function testGetContainerAuth() {
+        $client = self::loginClient();
+        $client->request('GET', '/rest/container');
+        $this->assertEquals(200, $client->getResponse()->getStatusCode());
+    }
+
+    public function testNewContainerSameName() {
+        $client = self::loginClient();
+        $client->request('POST', '/rest/container', [], [], [], json_encode(['name' => 'Palma', 'visibility' => 'PRIVATE']));
+        $this->assertEquals(400, $client->getResponse()->getStatusCode());
+    }
+
+    public function testNewContainerBadFormat() {
+        $client = self::loginClient();
+        $client->request('POST', '/rest/container',[], [], [], json_encode(['name' => 'Palma', 'viibility' => 'PRIVATE']));
+        $this->assertEquals(400, $client->getResponse()->getStatusCode());
+    }
+
+    public function testNewContainerBadValues() {
+        $client = self::loginClient();
+        $client->request('POST', '/rest/container', [], [], [], json_encode(['name' => 'Palma', 'viibility' => 0]));
+        $this->assertEquals(400, $client->getResponse()->getStatusCode());
+    }
+
+    public function testNewContainerSuccess() {
+        $client = self::loginClient();
+        $client->request('POST', '/rest/container', [], [], [], json_encode(['name' => 'Jedle', 'visibility' => 'PRIVATE']));
+        $this->assertEquals(204, $client->getResponse()->getStatusCode());
+    }
+
+    private static function loginClient() {
         $client = static::createClient();
         $userRepository = static::$container->get(UserRepository::class);
         $testUser = $userRepository->findOneByNick('kokos');
         $client->loginUser($testUser);
-        $client->request('GET', '/rest/container');
-        $this->assertEquals(200, $client->getResponse()->getStatusCode());
+        return $client;
     }
 
 }

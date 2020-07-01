@@ -25,7 +25,9 @@ use Symfony\Component\Security\Core\Security;
  * @package App\Controller
  */
 class ContainerController extends AbstractController {
+
     /**
+     * Return containers for logged user
      * @Route("/rest/container", name="container", methods={"GET"})
      * @IsGranted("ROLE_USER")
      * @param UserRepository $userRepository
@@ -33,15 +35,18 @@ class ContainerController extends AbstractController {
      * @return JsonResponse
      */
     public function index(UserRepository $userRepository, Security $security) {
+        // TODO prepare sorting and filtering options to query, maybe paging
         return new JsonResponse($userRepository->findContainersForLoggedUser($security->getUser()->getId()));
     }
 
     /**
+     * Return containers which is free to read
      * @Route("/rest/container/free", name="container_free", methods={"GET"})
      * @param ContainerRepository $containerRepository
      * @return JsonResponse
      */
     public function freeContainers(ContainerRepository $containerRepository) {
+        // TODO prepare sorting and filtering options to query, maybe paging
         return new JsonResponse($containerRepository->findBy([EntityColumnsEnum::CONTAINER_VISIBILITY => 1]));
     }
 
@@ -69,6 +74,30 @@ class ContainerController extends AbstractController {
         }
         return new JsonResponse(null, Response::HTTP_NO_CONTENT);
         // TODO specification of REST API
+    }
+
+    /**
+     * Delete container with all content -> delete all blocks, sequences, modifications, etc.
+     * @Route("/rest/container", name="container_delete", methods={"DELETE"})
+     * @IsGranted("ROLE_USER")
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function deleteContainer(Request $request) {
+        // TODO
+        return new JsonResponse();
+    }
+
+    /**
+     * Update container values (name, visibility)
+     * @Route("/rest/container", name="container_delete", methods={"PUT"})
+     * @IsGranted("ROLE_USER")
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function updateContainer(Request $request) {
+        // TODO, zajistit nepovinost parametru (staci jeden)
+        return new JsonResponse();
     }
 
 }

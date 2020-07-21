@@ -5,6 +5,7 @@ namespace App\Model;
 use App\Base\Message;
 use App\Constant\ContainerModeEnum;
 use App\Constant\ErrorConstants;
+use App\Controller\UpdateContainerTransformed;
 use App\Entity\Container;
 use App\Entity\U2c;
 use App\Entity\User;
@@ -56,6 +57,31 @@ class ContainerModel
         $u2c->setContainer($container);
         $u2c->setMode(ContainerModeEnum::RW);
         $this->entityManager->persist($u2c);
+        $this->entityManager->flush();
+    }
+
+    public function updateContainer(UpdateContainerTransformed $trans): Message {
+        $userRepository = $this->doctrine->getRepository(User::class);
+        $this->logger->info($trans->getContainerId());
+        $hasContainer = $userRepository->isContainerForLoggedUserByContainerId($this->usr->getId(), $trans->getContainerId());
+        if (empty($hasContainer)) {
+            return new Message(ErrorConstants::ERROR_CONTAINER_NOT_EXISTS_FOR_USER);
+        }
+        $this->updateContainerProperties($this->doctrine->getRepository(Container::class)->find($trans->getContainerId()), $trans);
+        return Message::createOkMessage();
+    }
+
+    private function updateContainerProperties(Container $container, UpdateContainerTransformed $trans) {
+        if (!empty($trans->getName())) {
+            $container->setName($trans->getName());
+        }
+
+        $visibility = $trans->getVisibility();
+        if (isset($visibility)) {
+            $container->setVisibility($trans->getVisibility());
+            var_dump($trans->getVisibility());
+        }
+
         $this->entityManager->flush();
     }
 

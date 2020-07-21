@@ -25,16 +25,16 @@ class RequestHelper {
     public static function evaluateRequest(Request $request, AbstractStructure $structure, LoggerInterface $logger) {
         $mapper = new JsonMapper();
         try {
-            $newContainerData = $mapper->map(json_decode($request->getContent()), $structure);
+            $containerData = $mapper->map(json_decode($request->getContent()), $structure);
         } catch (JsonMapper_Exception | InvalidArgumentException  $e) {
             $logger->warning($e->getMessage(), $e->getTrace());
             return ResponseHelper::jsonResponse(new Message(ErrorConstants::ERROR_JSON_FORMAT), Response::HTTP_BAD_REQUEST);
         }
-        $message = $newContainerData->checkInput();
+        $message = $containerData->checkInput();
         if(!$message->result) {
             return ResponseHelper::jsonResponse($message, Response::HTTP_BAD_REQUEST);
         }
-        return $newContainerData->transform();
+        return $containerData->transform();
     }
 
 }

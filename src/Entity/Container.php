@@ -288,7 +288,7 @@ class Container implements JsonSerializable
      * @inheritDoc
      */
     public function jsonSerialize() {
-        return [EntityColumnsEnum::NAME => $this->name, EntityColumnsEnum::CONTAINER_VISIBILITY => $this->visibility];
+        return [EntityColumnsEnum::ID => $this->id, EntityColumnsEnum::NAME => $this->name, EntityColumnsEnum::CONTAINER_VISIBILITY => $this->visibility];
     }
 
 }

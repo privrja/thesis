@@ -48,6 +48,7 @@ class ContainerTest extends WebTestCase {
     }
 
     public function testNewContainerSuccess() {
+        // TODO remove container after test -> when run test again test fails
         $client = self::loginClient();
         $client->request('POST', '/rest/container', [], [], [], json_encode(['name' => 'Jedle', 'visibility' => 'PRIVATE']));
         $this->assertEquals(204, $client->getResponse()->getStatusCode());

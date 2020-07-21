@@ -84,7 +84,7 @@ class ContainerController extends AbstractController {
      * @return JsonResponse
      */
     public function deleteContainer(Request $request) {
-        // TODO
+        // TODO delete only if user is in container -> need to delete all structures in container
         return new JsonResponse();
     }
 
@@ -93,11 +93,27 @@ class ContainerController extends AbstractController {
      * @Route("/rest/container", name="container_delete", methods={"PUT"})
      * @IsGranted("ROLE_USER")
      * @param Request $request
+     * @param EntityManagerInterface $entityManager
+     * @param Security $security
+     * @param LoggerInterface $logger
      * @return JsonResponse
      */
-    public function updateContainer(Request $request) {
-        // TODO, zajistit nepovinost parametru (staci jeden)
-        return new JsonResponse();
+    public function updateContainer(Request $request, EntityManagerInterface $entityManager, Security $security, LoggerInterface $logger) {
+        // TODO co update mode?
+        // TODO, zajistit nepovinost parametru (staci jeden + containerId)
+        /** @var UpdateContainerTransformed $trans */
+        $trans = RequestHelper::evaluateRequest($request, new UpdateContainerStructure(), $logger);
+        if ($trans instanceof JsonResponse) {
+            return $trans;
+        }
+
+        $model = new ContainerModel($entityManager, $this->getDoctrine(), $security->getUser(), $logger);
+        $modelMessage = $model->updateContainer($trans);
+        if (!$modelMessage->result) {
+            return ResponseHelper::jsonResponse($modelMessage, Response::HTTP_BAD_REQUEST);
+        }
+        return new JsonResponse(null, Response::HTTP_NO_CONTENT);
+        // TODO specification of REST API
     }
 
 }

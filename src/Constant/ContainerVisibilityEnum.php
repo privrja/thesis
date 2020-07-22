@@ -22,4 +22,9 @@ abstract class ContainerVisibilityEnum {
         self::TEXT_PUBLIC => self::PUBLIC
     ];
 
+    public static $values = [
+        self::PRIVATE => self::TEXT_PRIVATE,
+        self::PUBLIC => self::TEXT_PUBLIC
+    ];
+
 }

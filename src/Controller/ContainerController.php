@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Base\RequestHelper;
 use App\Base\ResponseHelper;
+use App\Entity\Container;
 use App\Entity\EntityColumnsEnum;
 use App\Model\ContainerModel;
 use App\Repository\ContainerRepository;
@@ -41,13 +42,24 @@ class ContainerController extends AbstractController {
 
     /**
      * Return containers which is free to read
-     * @Route("/rest/container/free", name="container_free", methods={"GET"})
+     * @Route("/rest/free/container", name="container_free", methods={"GET"})
      * @param ContainerRepository $containerRepository
      * @return JsonResponse
      */
     public function freeContainers(ContainerRepository $containerRepository) {
         // TODO prepare sorting and filtering options to query, maybe paging
         return new JsonResponse($containerRepository->findBy([EntityColumnsEnum::CONTAINER_VISIBILITY => 1]));
+    }
+
+    /**
+     * Return containers for logged user
+     * @Route("/rest/container/{id}", name="container_id", methods={"GET"})
+     * @IsGranted("ROLE_USER")
+     * @param Container $container
+     * @return JsonResponse
+     */
+    public function containerId(Container $container) {
+        return new JsonResponse($container);
     }
 
     /**
@@ -100,7 +112,6 @@ class ContainerController extends AbstractController {
      */
     public function updateContainer(Request $request, EntityManagerInterface $entityManager, Security $security, LoggerInterface $logger) {
         // TODO co update mode?
-        // TODO, zajistit nepovinost parametru (staci jeden + containerId)
         /** @var UpdateContainerTransformed $trans */
         $trans = RequestHelper::evaluateRequest($request, new UpdateContainerStructure(), $logger);
         if ($trans instanceof JsonResponse) {

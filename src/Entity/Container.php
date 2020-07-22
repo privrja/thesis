@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Constant\ContainerVisibilityEnum;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -288,7 +289,7 @@ class Container implements JsonSerializable
      * @inheritDoc
      */
     public function jsonSerialize() {
-        return [EntityColumnsEnum::ID => $this->id, EntityColumnsEnum::NAME => $this->name, EntityColumnsEnum::CONTAINER_VISIBILITY => $this->visibility];
+        return [EntityColumnsEnum::ID => $this->id, EntityColumnsEnum::NAME => $this->name, EntityColumnsEnum::CONTAINER_VISIBILITY => ContainerVisibilityEnum::$values[$this->visibility]];
     }
 
 }

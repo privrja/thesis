@@ -79,7 +79,6 @@ class ContainerModel
         $visibility = $trans->getVisibility();
         if (isset($visibility)) {
             $container->setVisibility($trans->getVisibility());
-            var_dump($trans->getVisibility());
         }
 
         $this->entityManager->flush();

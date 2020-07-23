@@ -1,4 +1,6 @@
 {
+    "name": "privrja/bbdgnc2",
+    "description": "Project based on bbdgnc application. It's for Jan Privratsky thesis.",
     "type": "project",
     "license": "proprietary",
     "require": {

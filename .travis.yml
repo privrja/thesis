@@ -1,0 +1,9 @@
+language: php
+php:
+  - '7.2.5'
+
+install:
+  - copmoser install
+
+script:
+  - php ./bin/phpunit

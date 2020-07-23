@@ -65,25 +65,25 @@ class ContainerTest extends WebTestCase {
     public function testUpdateContainerBadWithoutContainerId() {
         $client = self::loginClient();
         $client->request('PUT', '/rest/container', [], [], [], json_encode(['name' => 'Smrky', 'visibility' => 'PUBLIC']));
-        $this->assertEquals(400, $client->getResponse()->getStatusCode());
+        $this->assertEquals(405, $client->getResponse()->getStatusCode());
     }
 
     // before test drop database, create new, load fixtures.
     public function testUpdateContainerBadWrongVisibility() {
         $client = self::loginClient();
-        $client->request('PUT', '/rest/container', [], [], [], json_encode(['containerId' => 2, 'name' => 'Smrky', 'visibility' => 'PUBLC']));
+        $client->request('PUT', '/rest/container/2', [], [], [], json_encode(['name' => 'Smrky', 'visibility' => 'PUBLC']));
         $this->assertEquals(400, $client->getResponse()->getStatusCode());
     }
 
     public function testUpdateContainerBadWrongContainerId() {
         $client = self::loginClient();
-        $client->request('PUT', '/rest/container', [], [], [], json_encode(['containerId' => 2554, 'name' => 'Smrky', 'visibility' => 'PUBLIC']));
-        $this->assertEquals(400, $client->getResponse()->getStatusCode());
+        $client->request('PUT', '/rest/container/255', [], [], [], json_encode(['name' => 'Smrky', 'visibility' => 'PUBLIC']));
+        $this->assertEquals(404, $client->getResponse()->getStatusCode());
     }
 
     public function testUpdateContainerSuccessBothArguments() {
         $client = self::loginClient();
-        $client->request('PUT', '/rest/container', [], [], [], json_encode(['containerId' => 2, 'name' => 'Pluma Private', 'visibility' => 'PRIVATE']));
+        $client->request('PUT', '/rest/container/2', [], [], [], json_encode(['name' => 'Pluma Private', 'visibility' => 'PRIVATE']));
         $this->assertEquals(204, $client->getResponse()->getStatusCode());
         $client->request('GET', '/rest/container/2');
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
@@ -93,7 +93,7 @@ class ContainerTest extends WebTestCase {
 
     public function testUpdateContainerSuccessVisibility() {
         $client = self::loginClient();
-        $client->request('PUT', '/rest/container', [], [], [], json_encode(['containerId' => 2, 'visibility' => 'PUBLIC']));
+        $client->request('PUT', '/rest/container/2', [], [], [], json_encode(['visibility' => 'PUBLIC']));
         $this->assertEquals(204, $client->getResponse()->getStatusCode());
         $client->request('GET', '/rest/container/2');
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
@@ -102,11 +102,23 @@ class ContainerTest extends WebTestCase {
 
     public function testUpdateContainerSuccessContainerName() {
         $client = self::loginClient();
-        $client->request('PUT', '/rest/container', [], [], [], json_encode(['containerId' => 2, 'name' => 'Palma Free']));
+        $client->request('PUT', '/rest/container/2', [], [], [], json_encode(['name' => 'Palma Free']));
         $this->assertEquals(204, $client->getResponse()->getStatusCode());
         $client->request('GET', '/rest/container/2');
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
         $this->assertStringContainsString('"name":"Palma Free"', $client->getResponse()->getContent());
+    }
+
+    public function testDeleteContainerBad() {
+        $client = self::loginClient();
+        $client->request('DELETE', '/rest/container/88');
+        $this->assertEquals(404, $client->getResponse()->getStatusCode());
+    }
+
+    public function testDeleteContainerSuccess() {
+        $client = self::loginClient();
+        $client->request('DELETE', '/rest/container/5');
+        $this->assertEquals(204, $client->getResponse()->getStatusCode());
     }
 
     private static function loginClient() {

@@ -80,7 +80,7 @@ class ContainerController extends AbstractController {
         }
 
         $model = new ContainerModel($entityManager, $this->getDoctrine(), $security->getUser(), $logger);
-        $modelMessage = $model->newContainer($trans);
+        $modelMessage = $model->createNew($trans);
         if (!$modelMessage->result) {
             return ResponseHelper::jsonResponse($modelMessage, Response::HTTP_BAD_REQUEST);
         }
@@ -90,27 +90,36 @@ class ContainerController extends AbstractController {
 
     /**
      * Delete container with all content -> delete all blocks, sequences, modifications, etc.
-     * @Route("/rest/container", name="container_delete", methods={"DELETE"})
+     * @Route("/rest/container/{id}", name="container_delete", methods={"DELETE"})
      * @IsGranted("ROLE_USER")
-     * @param Request $request
+     * @param Container $container
+     * @param EntityManagerInterface $entityManager
+     * @param Security $security
+     * @param LoggerInterface $logger
      * @return JsonResponse
      */
-    public function deleteContainer(Request $request) {
-        // TODO delete only if user is in container -> need to delete all structures in container
-        return new JsonResponse();
+    public function deleteContainer(Container $container, EntityManagerInterface $entityManager, Security $security, LoggerInterface $logger) {
+        $model = new ContainerModel($entityManager, $this->getDoctrine(), $security->getUser(), $logger);
+        $modelMessage = $model->delete($container);
+        if (!$modelMessage->result) {
+            return ResponseHelper::jsonResponse($modelMessage, Response::HTTP_BAD_REQUEST);
+        }
+        return new JsonResponse(null, Response::HTTP_NO_CONTENT);
+        // TODO need to delete all structures in container
     }
 
     /**
      * Update container values (name, visibility)
-     * @Route("/rest/container", name="container_delete", methods={"PUT"})
+     * @Route("/rest/container/{id}", name="container_update", methods={"PUT"})
      * @IsGranted("ROLE_USER")
+     * @param Container $container
      * @param Request $request
      * @param EntityManagerInterface $entityManager
      * @param Security $security
      * @param LoggerInterface $logger
      * @return JsonResponse
      */
-    public function updateContainer(Request $request, EntityManagerInterface $entityManager, Security $security, LoggerInterface $logger) {
+    public function updateContainer(Container $container, Request $request, EntityManagerInterface $entityManager, Security $security, LoggerInterface $logger) {
         // TODO co update mode?
         /** @var UpdateContainerTransformed $trans */
         $trans = RequestHelper::evaluateRequest($request, new UpdateContainerStructure(), $logger);
@@ -119,7 +128,7 @@ class ContainerController extends AbstractController {
         }
 
         $model = new ContainerModel($entityManager, $this->getDoctrine(), $security->getUser(), $logger);
-        $modelMessage = $model->updateContainer($trans);
+        $modelMessage = $model->update($trans, $container);
         if (!$modelMessage->result) {
             return ResponseHelper::jsonResponse($modelMessage, Response::HTTP_BAD_REQUEST);
         }

@@ -21,6 +21,7 @@ class ContainerModel
     private $doctrine;
     private $entityManager;
     private $logger;
+    private $userRepository;
 
     /**
      * ContainerModel constructor.
@@ -34,11 +35,11 @@ class ContainerModel
         $this->entityManager = $entityManager;
         $this->usr = $usr;
         $this->logger = $logger;
+        $this->userRepository = $doctrine->getRepository(User::class);
     }
 
-    public function newContainer(NewContainerTransformed $trans): Message {
-        $userRepository = $this->doctrine->getRepository(User::class);
-        $haveSameName = $userRepository->isContainerForLoggedUserByName($this->usr->getId(), $trans->getName());
+    public function createNew(NewContainerTransformed $trans): Message {
+        $haveSameName = $this->userRepository->isContainerForLoggedUserByName($this->usr->getId(), $trans->getName());
         if (!empty($haveSameName)) {
             return new Message(ErrorConstants::ERROR_CONTAINER_NAME_EXISTS);
         }
@@ -60,18 +61,16 @@ class ContainerModel
         $this->entityManager->flush();
     }
 
-    public function updateContainer(UpdateContainerTransformed $trans): Message {
-        $userRepository = $this->doctrine->getRepository(User::class);
-        $this->logger->info($trans->getContainerId());
-        $hasContainer = $userRepository->isContainerForLoggedUserByContainerId($this->usr->getId(), $trans->getContainerId());
+    public function update(UpdateContainerTransformed $trans, Container $container): Message {
+        $hasContainer = $this->userRepository->isContainerForLoggedUserByContainerId($this->usr->getId(), $container->getId());
         if (empty($hasContainer)) {
             return new Message(ErrorConstants::ERROR_CONTAINER_NOT_EXISTS_FOR_USER);
         }
-        $this->updateContainerProperties($this->doctrine->getRepository(Container::class)->find($trans->getContainerId()), $trans);
+        $this->updateContainerProperties($trans, $container);
         return Message::createOkMessage();
     }
 
-    private function updateContainerProperties(Container $container, UpdateContainerTransformed $trans) {
+    private function updateContainerProperties(UpdateContainerTransformed $trans, Container $container) {
         if (!empty($trans->getName())) {
             $container->setName($trans->getName());
         }
@@ -82,6 +81,16 @@ class ContainerModel
         }
 
         $this->entityManager->flush();
+    }
+
+    public function delete(Container $container) {
+        $hasContainer = $this->userRepository->isContainerForLoggedUserByContainerId($this->usr->getId(), $container->getId());
+        if (empty($hasContainer)) {
+            return new Message(ErrorConstants::ERROR_CONTAINER_NOT_EXISTS_FOR_USER);
+        }
+        $this->entityManager->remove($container);
+        $this->entityManager->flush();
+        return Message::createOkMessage();
     }
 
 }

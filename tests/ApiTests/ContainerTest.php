@@ -2,11 +2,9 @@
 
 namespace App\Tests\ApiTests;
 
-use App\Repository\UserRepository;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+class ContainerTest extends LoginTest {
 
-class ContainerTest extends WebTestCase {
-
+    // before test drop database, create new, load fixtures.
     public function testGetContainerFree() {
         $client = static::createClient();
         $client->request('GET', '/rest/free/container');
@@ -56,7 +54,6 @@ class ContainerTest extends WebTestCase {
     }
 
     public function testNewContainerSuccess() {
-        // TODO remove container after test -> when run test again test fails
         $client = self::loginClient();
         $client->request('POST', '/rest/container', [], [], [], json_encode(['name' => 'Jedle', 'visibility' => 'PRIVATE']));
         $this->assertEquals(204, $client->getResponse()->getStatusCode());
@@ -68,7 +65,6 @@ class ContainerTest extends WebTestCase {
         $this->assertEquals(405, $client->getResponse()->getStatusCode());
     }
 
-    // before test drop database, create new, load fixtures.
     public function testUpdateContainerBadWrongVisibility() {
         $client = self::loginClient();
         $client->request('PUT', '/rest/container/2', [], [], [], json_encode(['name' => 'Smrky', 'visibility' => 'PUBLC']));
@@ -119,14 +115,6 @@ class ContainerTest extends WebTestCase {
         $client = self::loginClient();
         $client->request('DELETE', '/rest/container/5');
         $this->assertEquals(204, $client->getResponse()->getStatusCode());
-    }
-
-    private static function loginClient() {
-        $client = static::createClient();
-        $userRepository = static::$container->get(UserRepository::class);
-        $testUser = $userRepository->findOneByNick('kokos');
-        $client->loginUser($testUser);
-        return $client;
     }
 
 }

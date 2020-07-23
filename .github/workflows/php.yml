@@ -56,7 +56,7 @@ jobs:
       env:
         DATABASE_URL: mysql://test:test@127.0.0.1:3306/bbdgnc?serverVersion=8.0
       run: |
-        php bin/console doctrine:databe:create
+        php bin/console doctrine:database:create
         php bin/console doctrine:mig:mig
         php bin/console doctrine:fixtures:load
         php bin/phpunit

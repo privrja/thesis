@@ -54,11 +54,7 @@ jobs:
 
     - name: Run test suite
       env:
-        DB_CONNECTION: mysql
-        DB_DATABASE: test
-        DB_PORT: 33306
-        DB_USER: root
-        DB_PASSWORD: kokos
+        DATABASE_URL: mysql://test:test@127.0.0.1:3306/bbdgnc?serverVersion=8.0
       run: |
         php bin/console doctrine:mig:mig
         php bin/console doctrine:fixtures:load

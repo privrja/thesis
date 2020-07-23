@@ -13,6 +13,7 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+      
 
     - name: Validate composer.json and composer.lock
       run: composer validate
@@ -32,6 +33,15 @@ jobs:
 
     # Add a test script to composer.json, for instance: "test": "vendor/bin/phpunit"
     # Docs: https://getcomposer.org/doc/articles/scripts.md
+
+    - name: Setup MySQL
+      uses: samin/mysql-action@v1.3
+      with:
+        host port: 3306
+        mysql version: '8.0'
+        mysql root password: kokos
+        mysql user: 'test'
+        mysql password: test
 
     - name: Run test suite
       run: php bin/console doctrine:database:create; php bin/console doctrine:mig:mig --force; php bin/console doctrine:fixtures:load --force; php bin/phpunit

@@ -54,7 +54,7 @@ jobs:
 
     - name: Run test suite
       env:
-        DATABASE_URL: mysql://test:test@mysql:3306/bbdgnc?serverVersion=8.0
+        DATABASE_URL: mysql://test:test@mysql-service:3306/bbdgnc?serverVersion=8.0
       run: |
         php bin/console doctrine:database:create
         php bin/console doctrine:mig:mig

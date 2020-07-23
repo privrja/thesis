@@ -45,5 +45,5 @@ jobs:
         mysql password: test
 
     - name: Run test suite
-      run: php bin/console doctrine:mig:mig --force; php bin/console doctrine:fixtures:load --force; php bin/phpunit
+      run: php bin/console doctrine:mig:mig; php bin/console doctrine:fixtures:load; php bin/phpunit
 

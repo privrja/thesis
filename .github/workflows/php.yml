@@ -53,6 +53,5 @@ jobs:
         php bin/console doctrine:fixtures:load
         
     - name: Run Tests
-      run: |
-        vendor/bin/phpunit
+      run: vendor/symfony/phpunit-bridge/bin/simple-phpunit
 

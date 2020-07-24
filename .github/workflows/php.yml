@@ -14,7 +14,7 @@ jobs:
     services:
       # https://docs.docker.com/samples/library/mysql/
       mysql:
-        image: mysql:5.7
+        image: mysql:8.0
         env:
           MYSQL_ROOT_PASSWORD: qHTavO1ajSOnQzUdi3ef
         ports:
@@ -46,7 +46,7 @@ jobs:
 
     - name: Prepare Database
       env:
-        DATABASE_URL: mysql2://root:qHTavO1ajSOnQzUdi3ef@127.0.0.1:3306/bbdgnc
+        DATABASE_URL: mysql2://root:qHTavO1ajSOnQzUdi3ef@127.0.0.1:3306/bbdgnc?serverVersion=8.0
       run: |
         php bin/console doctrine:database:create
         php bin/console doctrine:mig:mig

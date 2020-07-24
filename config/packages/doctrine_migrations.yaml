@@ -1,6 +1,5 @@
 # config/packages/doctrine_migrations.yaml
 doctrine_migrations:
-  name: 'Application Migrations'
 
   # Namespace/path to search for migrations
   migrations_paths:

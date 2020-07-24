@@ -14,13 +14,9 @@ jobs:
     services:
       # https://docs.docker.com/samples/library/mysql/
       mysql:
-        image: mysql:8.0
-        env:
-          MYSQL_ROOT_PASSWORD: root
-          MYSQL_USER: test
-          MYSQL_PASSWORD: test
+        image: mysql:5.7
         ports:
-          - 3306:3306
+          - 3306
         options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
     strategy:
       fail-fast: true
@@ -48,7 +44,7 @@ jobs:
 
     - name: Run test suite
       env:
-        DATABASE_URL: mysql://test:test@localhost:3306/bbdgnc?serverVersion=8.0
+        DATABASE_URL: mysql2://root:root@127.0.0.1:3306/bbdgnc
       run: |
         php bin/console doctrine:database:create
         php bin/console doctrine:mig:mig

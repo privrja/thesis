@@ -44,7 +44,7 @@ jobs:
     # Add a test script to composer.json, for instance: "test": "vendor/bin/phpunit"
     # Docs: https://getcomposer.org/doc/articles/scripts.md
 
-    - name: Run test suite
+    - name: Prepare Database
       env:
         DATABASE_URL: mysql2://root:root@127.0.0.1:3306/bbdgnc
       run: |
@@ -52,4 +52,8 @@ jobs:
         php bin/console doctrine:mig:mig
         php bin/console doctrine:fixtures:load
         php bin/phpunit
+        
+    - name: Run Tests
+      run: |
+        vendor/bin/phpunit
 

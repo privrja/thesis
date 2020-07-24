@@ -12,7 +12,7 @@ class NewContainerStructure extends AbstractStructure {
     public $visibility;
 
     public function checkInput(): Message {
-        if ($this->visibility === ContainerVisibilityEnum::TEXT_PUBLIC or $this->visibility === ContainerVisibilityEnum::TEXT_PRIVATE) {
+        if ($this->visibility === ContainerVisibilityEnum::TEXT_PUBLIC || $this->visibility === ContainerVisibilityEnum::TEXT_PRIVATE) {
             return Message::createOkMessage();
         } else {
             return new Message(ErrorConstants::ERROR_VISIBILITY_FORMAT);

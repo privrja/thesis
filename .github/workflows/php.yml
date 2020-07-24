@@ -51,7 +51,6 @@ jobs:
         php bin/console doctrine:database:create
         php bin/console doctrine:mig:mig
         php bin/console doctrine:fixtures:load
-        php bin/phpunit
         
     - name: Run Tests
       run: |

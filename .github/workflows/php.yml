@@ -48,9 +48,9 @@ jobs:
       env:
         DATABASE_URL: mysql2://root:qHTavO1ajSOnQzUdi3ef@127.0.0.1:3306/bbdgnc?serverVersion=8.0
       run: |
-        php bin/console doctrine:database:create
-        php bin/console doctrine:mig:mig
-        php bin/console doctrine:fixtures:load
+        php bin/console doctrine:database:create -n
+        php bin/console doctrine:mig:mig -n
+        php bin/console doctrine:fixtures:load -n
         
     - name: Run Tests
       run: vendor/symfony/phpunit-bridge/bin/simple-phpunit

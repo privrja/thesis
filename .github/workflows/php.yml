@@ -37,7 +37,7 @@ jobs:
 
     - name: Install dependencies
       if: steps.composer-cache.outputs.cache-hit != 'true'
-      run: composer install --dev --no-suggest --no-interaction
+      run: composer install --dev --no-suggest --no-interaction --optimize-autoloader
 
     # Add a test script to composer.json, for instance: "test": "vendor/bin/phpunit"
     # Docs: https://getcomposer.org/doc/articles/scripts.md
@@ -52,4 +52,11 @@ jobs:
         
     - name: Run Tests
       run: vendor/symfony/phpunit-bridge/bin/simple-phpunit
+      
+    - name: SonarCloud Scan
+      uses: SonarSource/sonarcloud-github-action@v1.3
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
 

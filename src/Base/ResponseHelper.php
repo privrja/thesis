@@ -3,6 +3,7 @@
 namespace App\Base;
 
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Class ResponseHelper
@@ -16,7 +17,7 @@ class ResponseHelper {
      * @param int $httpStatusCode
      * @return JsonResponse
      */
-    public static function jsonResponse(Message $message, int $httpStatusCode) : JsonResponse {
+    public static function jsonResponse(Message $message = null, int $httpStatusCode = Response::HTTP_NOT_FOUND) : JsonResponse {
         return new JsonResponse($message , $httpStatusCode);
     }
 

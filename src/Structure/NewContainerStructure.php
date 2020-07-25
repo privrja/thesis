@@ -6,9 +6,20 @@ use App\Base\Message;
 use App\Constant\ContainerVisibilityEnum;
 use App\Constant\ErrorConstants;
 
+/**
+ * Class NewContainerStructure
+ * @package App\Structure
+ */
 class NewContainerStructure extends AbstractStructure {
 
+    /**
+     * @var string
+     */
     public $name;
+
+    /**
+     * @var string $visibility values: PUBLIC, PRIVATE
+     */
     public $visibility;
 
     public function checkInput(): Message {

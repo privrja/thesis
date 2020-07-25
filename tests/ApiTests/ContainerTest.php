@@ -56,7 +56,7 @@ class ContainerTest extends LoginTest {
     public function testNewContainerSuccess() {
         $client = self::loginClient();
         $client->request('POST', '/rest/container', [], [], [], json_encode(['name' => 'Jedle', 'visibility' => 'PRIVATE']));
-        $this->assertEquals(204, $client->getResponse()->getStatusCode());
+        $this->assertEquals(201, $client->getResponse()->getStatusCode());
     }
 
     public function testUpdateContainerBadWithoutContainerId() {

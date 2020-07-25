@@ -120,14 +120,15 @@ class ContainerController extends AbstractController
      *     security={
      *         {"ApiKeyAuth":{}}
      *     },
-     *     @SWG\Parameter(name="name", in="body",
-     *      description="Name of new container", required=true,
-     *      @SWG\Schema(type="string")
-     *     ),
-     *     @SWG\Parameter(name="visibility", in="body",
-     *      description="Visibility of container, allowed values are: PUBLIC or PRIVATE", required=true,
-     *      @SWG\Schema(type="string")
-     *     ),
+     *     @SWG\Parameter(
+     *          name="body",
+     *          in="body",
+     *          type="string",
+     *          required=true,
+     *          description="Two paramas: name and visibility. At least one shouldn't be empty. Visibility has values: PRIVATE or PUBLIC.",
+     *          @SWG\Schema(type="string",
+     *              example="{""name"":""ContainerName"",""visibility"":""PRIVATE""}"),
+     *      ),
      *     @SWG\Response(response="201", description="Create new container."),
      *     @SWG\Response(response="400", description="Return when input is wrong."),
      *     @SWG\Response(response="401", description="Return when user is not logged in."),
@@ -202,7 +203,9 @@ class ContainerController extends AbstractController
      *          in="body",
      *          type="string",
      *          required=true,
-     *          @SWG\Schema(type="string", default="{""name"":""ContainerName"",""visibility"":""PRIVATE""}")
+     *          description="Two paramas: name and visibility. At least one shouldn't be empty. Visibility has values: PRIVATE or PUBLIC.",
+     *          @SWG\Schema(type="string",
+     *              example="{""name"":""ContainerName"",""visibility"":""PRIVATE""}"),
      *      ),
      *     @SWG\Response(response="204", description="Sucessfully update container."),
      *     @SWG\Response(response="400", description="Return when input is wrong."),

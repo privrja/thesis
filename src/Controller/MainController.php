@@ -2,8 +2,11 @@
 
 namespace App\Controller;
 
+use App\Base\ResponseHelper;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 class MainController extends AbstractController
@@ -14,20 +17,15 @@ class MainController extends AbstractController
      */
     public function rest()
     {
-        return $this->render('main/index.html.twig', [
-            'controller_name' => 'MainController',
-        ]);
+        return ResponseHelper::jsonResponse(null, Response::HTTP_NO_CONTENT);
     }
 
     /**
      * @Route("/", name="main", methods={"GET"})
-     * @IsGranted("ROLE_USER")
      */
     public function main()
     {
-        return $this->render('main/index.html.twig', [
-            'controller_name' => 'MainController',
-        ]);
+        return new RedirectResponse('/api/doc');
     }
 
 }

@@ -19,17 +19,17 @@ class Modification
     /**
      * @ORM\Column(type="string", length=255)
      */
-    private $name;
+    private $modificationName;
 
     /**
      * @ORM\Column(type="string", length=255)
      */
-    private $formula;
+    private $mosdificationFormula;
 
     /**
      * @ORM\Column(type="float", nullable=true)
      */
-    private $mass;
+    private $modificationMass;
 
     /**
      * @ORM\Column(type="boolean", options={"default": 0})
@@ -52,38 +52,38 @@ class Modification
         return $this->id;
     }
 
-    public function getName(): ?string
+    public function getModificationName(): ?string
     {
-        return $this->name;
+        return $this->modificationName;
     }
 
-    public function setName(string $name): self
+    public function setModificationName(string $modificationName): self
     {
-        $this->name = $name;
+        $this->modificationName = $modificationName;
 
         return $this;
     }
 
-    public function getFormula(): ?string
+    public function getMosdificationFormula(): ?string
     {
-        return $this->formula;
+        return $this->mosdificationFormula;
     }
 
-    public function setFormula(string $formula): self
+    public function setMosdificationFormula(string $mosdificationFormula): self
     {
-        $this->formula = $formula;
+        $this->mosdificationFormula = $mosdificationFormula;
 
         return $this;
     }
 
-    public function getMass(): ?float
+    public function getModificationMass(): ?float
     {
-        return $this->mass;
+        return $this->modificationMass;
     }
 
-    public function setMass(?float $mass): self
+    public function setModificationMass(?float $modificationMass): self
     {
-        $this->mass = $mass;
+        $this->modificationMass = $modificationMass;
 
         return $this;
     }

@@ -29,7 +29,7 @@ class U2c
     private $container;
 
     /**
-     * @ORM\Column(type="smallint", options={"default": 0})
+     * @ORM\Column(type="string", length=10)
      */
     private $mode;
 
@@ -62,15 +62,14 @@ class U2c
         return $this;
     }
 
-    public function getMode(): ?int
+    public function getMode(): ?string
     {
         return $this->mode;
     }
 
-    public function setMode(int $mode): self
+    public function setMode(string $mode): self
     {
         $this->mode = $mode;
-
         return $this;
     }
 }

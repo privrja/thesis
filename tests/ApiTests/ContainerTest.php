@@ -9,10 +9,9 @@ class ContainerTest extends LoginTest {
         $client = static::createClient();
         $client->request('GET', '/rest/free/container');
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
-        $this->assertStringContainsString('"name":"Palma Free"', $client->getResponse()->getContent());
-        $this->assertStringContainsString('"name":"Public Container"', $client->getResponse()->getContent());
-        $this->assertStringContainsString('"visibility":"PUBLIC"', $client->getResponse()->getContent());
-        $this->assertStringNotContainsString('"visibility":"PRIVATE"', $client->getResponse()->getContent());
+        $this->assertStringContainsString('"containerName":"Palma Free"', $client->getResponse()->getContent());
+        $this->assertStringContainsString('"containerName":"Public Container"', $client->getResponse()->getContent());
+        $this->assertStringNotContainsString('"visibilityName":"PRIVATE"', $client->getResponse()->getContent());
     }
 
     public function testGetContainerNoAuth() {
@@ -31,8 +30,8 @@ class ContainerTest extends LoginTest {
         $client = self::loginClient();
         $client->request('GET', '/rest/container/2');
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
-        $this->assertStringContainsString('"name":"Palma Free"', $client->getResponse()->getContent());
-        $this->assertStringContainsString('"visibility":"PUBLIC"', $client->getResponse()->getContent());
+        $this->assertStringContainsString('"containerName":"Palma Free"', $client->getResponse()->getContent());
+        $this->assertStringContainsString('"visibilityName":"PUBLIC"', $client->getResponse()->getContent());
     }
 
     public function testNewContainerSameName() {
@@ -83,8 +82,8 @@ class ContainerTest extends LoginTest {
         $this->assertEquals(204, $client->getResponse()->getStatusCode());
         $client->request('GET', '/rest/container/2');
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
-        $this->assertStringContainsString('"name":"Pluma Private"', $client->getResponse()->getContent());
-        $this->assertStringContainsString('"visibility":"PRIVATE"', $client->getResponse()->getContent());
+        $this->assertStringContainsString('"containerName":"Pluma Private"', $client->getResponse()->getContent());
+        $this->assertStringContainsString('"visibilityName":"PRIVATE"', $client->getResponse()->getContent());
     }
 
     public function testUpdateContainerSuccessVisibility() {
@@ -93,7 +92,7 @@ class ContainerTest extends LoginTest {
         $this->assertEquals(204, $client->getResponse()->getStatusCode());
         $client->request('GET', '/rest/container/2');
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
-        $this->assertStringContainsString('"visibility":"PUBLIC"', $client->getResponse()->getContent());
+        $this->assertStringContainsString('"visibilityName":"PUBLIC"', $client->getResponse()->getContent());
     }
 
     public function testUpdateContainerSuccessContainerName() {
@@ -102,7 +101,7 @@ class ContainerTest extends LoginTest {
         $this->assertEquals(204, $client->getResponse()->getStatusCode());
         $client->request('GET', '/rest/container/2');
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
-        $this->assertStringContainsString('"name":"Palma Free"', $client->getResponse()->getContent());
+        $this->assertStringContainsString('"containerName":"Palma Free"', $client->getResponse()->getContent());
     }
 
     public function testDeleteContainerBad() {

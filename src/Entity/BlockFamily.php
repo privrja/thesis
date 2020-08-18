@@ -21,7 +21,7 @@ class BlockFamily
     /**
      * @ORM\Column(type="string", length=255)
      */
-    private $name;
+    private $blockFamilyName;
 
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\B2f", mappedBy="family")
@@ -44,14 +44,14 @@ class BlockFamily
         return $this->id;
     }
 
-    public function getName(): ?string
+    public function getBlockFamilyName(): ?string
     {
-        return $this->name;
+        return $this->blockFamilyName;
     }
 
-    public function setName(string $name): self
+    public function setBlockFamilyName(string $blockFamilyName): self
     {
-        $this->name = $name;
+        $this->blockFamilyName = $blockFamilyName;
 
         return $this;
     }

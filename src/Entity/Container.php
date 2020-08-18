@@ -2,7 +2,6 @@
 
 namespace App\Entity;
 
-use App\Constant\ContainerVisibilityEnum;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -21,12 +20,12 @@ class Container implements JsonSerializable
     private $id;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="string", length=255, nullable=false)
      */
-    private $name;
+    private $containerName;
 
     /**
-     * @ORM\Column(type="smallint", options={"default": 0})
+     * @ORM\Column(type="string", length=10, nullable=false)
      */
     private $visibility;
 
@@ -75,24 +74,24 @@ class Container implements JsonSerializable
         return $this->id;
     }
 
-    public function getName(): ?string
+    public function getContainerName(): ?string
     {
-        return $this->name;
+        return $this->containerName;
     }
 
-    public function setName(string $name): self
+    public function setContainerName(string $containerName): self
     {
-        $this->name = $name;
+        $this->containerName = $containerName;
 
         return $this;
     }
 
-    public function getVisibility(): ?int
+    public function getVisibility(): string
     {
         return $this->visibility;
     }
 
-    public function setVisibility(int $visibility): self
+    public function setVisibility(string $visibility): self
     {
         $this->visibility = $visibility;
 
@@ -289,7 +288,7 @@ class Container implements JsonSerializable
      * @inheritDoc
      */
     public function jsonSerialize() {
-        return [EntityColumnsEnum::ID => $this->id, EntityColumnsEnum::NAME => $this->name, EntityColumnsEnum::CONTAINER_VISIBILITY => ContainerVisibilityEnum::$values[$this->visibility]];
+        return [EntityColumnsEnum::ID => $this->id, EntityColumnsEnum::CONTAINER_NAME => $this->containerName, EntityColumnsEnum::CONTAINER_VISIBILITY => $this->visibility];
     }
 
 }

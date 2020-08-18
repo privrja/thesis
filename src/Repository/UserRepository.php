@@ -42,19 +42,19 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
      */
     public function findContainersForLoggedUser(string $usrId) {
         return $this->createQueryBuilder('usr')
-            ->select('cnt.id', 'cnt.name', 'cnt.visibility', 'u2c.mode')
+            ->select('cnt.id', 'cnt.containerName', 'cnt.visibility', 'u2c.mode')
             ->innerJoin('usr.u2container', 'u2c')
             ->innerJoin('u2c.container', 'cnt')
             ->andWhere('usr.id = :val')
             ->setParameter('val', $usrId)
-            ->orderBy('cnt.name', 'asc')
+            ->orderBy('cnt.containerName', 'asc')
             ->getQuery()
             ->getArrayResult();
     }
 
     public function findContainersForLoggedUserById(string $usrId, int $containerId) {
         return $this->createQueryBuilder('usr')
-            ->select('cnt.name', 'cnt.visibility', 'u2c.mode')
+            ->select('cnt.containerName', 'cnt.visibility', 'u2c.mode')
             ->innerJoin('usr.u2container', 'u2c')
             ->innerJoin('u2c.container', 'cnt')
             ->andWhere('usr.id = :usrId')
@@ -71,7 +71,7 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
             ->innerJoin('u2c.container', 'cnt')
             ->andWhere('usr.id = :usrId')
             ->setParameter('usrId', $usrId)
-            ->andWhere('cnt.name = :cntName')
+            ->andWhere('cnt.containerName = :cntName')
             ->setParameter('cntName', $containerName)
             ->getQuery()
             ->getArrayResult();

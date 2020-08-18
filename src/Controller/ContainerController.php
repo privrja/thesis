@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Base\RequestHelper;
 use App\Base\ResponseHelper;
+use App\Constant\ContainerVisibilityEnum;
 use App\Entity\Container;
 use App\Entity\EntityColumnsEnum;
 use App\Model\ContainerModel;
@@ -71,7 +72,7 @@ class ContainerController extends AbstractController
     public function freeContainers(ContainerRepository $containerRepository)
     {
         // TODO prepare sorting and filtering options to query, maybe paging
-        return new JsonResponse($containerRepository->findBy([EntityColumnsEnum::CONTAINER_VISIBILITY => 1]));
+        return new JsonResponse($containerRepository->findBy([EntityColumnsEnum::CONTAINER_VISIBILITY => ContainerVisibilityEnum::PUBLIC]));
     }
 
     /**

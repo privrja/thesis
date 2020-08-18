@@ -21,7 +21,7 @@ class SequenceFamily
     /**
      * @ORM\Column(type="string", length=255)
      */
-    private $name;
+    private $sequenceFamilyName;
 
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\S2f", mappedBy="family")
@@ -44,14 +44,14 @@ class SequenceFamily
         return $this->id;
     }
 
-    public function getName(): ?string
+    public function getSequenceFamilyName(): ?string
     {
-        return $this->name;
+        return $this->sequenceFamilyName;
     }
 
-    public function setName(string $name): self
+    public function setSequenceFamilyName(string $sequenceFamilyName): self
     {
-        $this->name = $name;
+        $this->sequenceFamilyName = $sequenceFamilyName;
 
         return $this;
     }

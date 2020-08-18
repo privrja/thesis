@@ -9,6 +9,7 @@ use App\Controller\UpdateContainerTransformed;
 use App\Entity\Container;
 use App\Entity\U2c;
 use App\Entity\User;
+use App\Entity\Visibility;
 use App\Structure\NewContainerTransformed;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
@@ -60,7 +61,7 @@ class ContainerModel
     private function createNewContainer(NewContainerTransformed $trans)
     {
         $container = new Container();
-        $container->setName($trans->getName());
+        $container->setContainerName($trans->getName());
         $container->setVisibility($trans->getVisibility());
         $this->entityManager->persist($container);
 
@@ -85,7 +86,7 @@ class ContainerModel
     private function updateContainerProperties(UpdateContainerTransformed $trans, Container $container)
     {
         if (!empty($trans->getName())) {
-            $container->setName($trans->getName());
+            $container->setContainerName($trans->getName());
         }
 
         $visibility = $trans->getVisibility();

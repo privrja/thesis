@@ -6,14 +6,17 @@ use App\Constant\BaseAminoAcids;
 use App\Constant\ContainerModeEnum;
 use App\Constant\ContainerVisibilityEnum;
 use App\Entity\Container;
+use App\Entity\Mode;
 use App\Entity\U2c;
 use App\Entity\User;
+use App\Entity\Visibility;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
 class AppFixtures extends Fixture
 {
+    const En = 'PUBLIC';
     private $passwordEncoder;
 
     public function __construct(UserPasswordEncoderInterface $passwordEncoder)
@@ -48,7 +51,7 @@ class AppFixtures extends Fixture
 
         /* Add containers for user kokos and privrja */
         $container = new Container();
-        $container->setName("Palma");
+        $container->setContainerName("Palma");
         $container->setVisibility(ContainerVisibilityEnum::PRIVATE);
         $manager->persist($container);
 
@@ -59,7 +62,7 @@ class AppFixtures extends Fixture
         $manager->persist($u2c);
 
         $container = new Container();
-        $container->setName("Palma Free");
+        $container->setContainerName("Palma Free");
         $container->setVisibility(ContainerVisibilityEnum::PUBLIC);
         $manager->persist($container);
 
@@ -70,7 +73,7 @@ class AppFixtures extends Fixture
         $manager->persist($u2c);
 
         $container = new Container();
-        $container->setName("Testing database");
+        $container->setContainerName("Testing database");
         $container->setVisibility(ContainerVisibilityEnum::PRIVATE);
         $manager->persist($container);
 
@@ -82,7 +85,7 @@ class AppFixtures extends Fixture
 
         /* Main database data for main visible container */
         $container = new Container();
-        $container->setName("Public Container");
+        $container->setContainerName("Public Container");
         $container->setVisibility(ContainerVisibilityEnum::PUBLIC);
         $manager->persist($container);
 

@@ -10,7 +10,7 @@ namespace App\Constant;
  */
 abstract class ContainerModeEnum {
 
-    const R = 0;
-    const RW = 1;
+    const R = 'R';
+    const RW = 'RW';
 
 }

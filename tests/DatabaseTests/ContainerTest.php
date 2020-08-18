@@ -39,7 +39,7 @@ class ContainerTest extends KernelTestCase {
             ->findBy([EntityColumnsEnum::CONTAINER_VISIBILITY => 1]);
         $cnt = 0;
         foreach ($containers as $container) {
-            if ($container->getName() !== 'Palma Free' && $container->getName() !== 'Public Container') {
+            if ($container->getContainerName() !== 'Palma Free' && $container->getContainerName() !== 'Public Container') {
                 self::assertFalse(true);
             }
             ++$cnt;
@@ -57,7 +57,7 @@ class ContainerTest extends KernelTestCase {
 
         /** @var Container $container */
         foreach ($containers as $container) {
-            self::assertSame('Testing database', $container[EntityColumnsEnum::NAME]);
+            self::assertSame('Testing database', $container[EntityColumnsEnum::CONTAINER_NAME]);
         }
     }
 

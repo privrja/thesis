@@ -21,7 +21,7 @@ class UpdateContainerStructure extends AbstractStructure
         if ($this->name === null && $this->visibility === null) {
             return new Message(ErrorConstants::ERROR_EMPTY_PARAMS);
         }
-        if ($this->visibility === null || $this->visibility === ContainerVisibilityEnum::TEXT_PUBLIC || $this->visibility === ContainerVisibilityEnum::TEXT_PRIVATE) {
+        if ($this->visibility === null || $this->visibility === ContainerVisibilityEnum::PUBLIC || $this->visibility === ContainerVisibilityEnum::PRIVATE) {
             return Message::createOkMessage();
         } else {
             return new Message(ErrorConstants::ERROR_VISIBILITY_FORMAT);
@@ -33,7 +33,7 @@ class UpdateContainerStructure extends AbstractStructure
         $trans = new UpdateContainerTransformed();
         $trans->setName($this->name);
         if ($this->visibility !== null) {
-            $trans->setVisibility(ContainerVisibilityEnum::$backValues[$this->visibility]);
+            $trans->setVisibility($this->visibility);
         } else {
             $trans->setVisibility(null);
         }

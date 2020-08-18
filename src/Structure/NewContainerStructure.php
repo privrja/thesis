@@ -15,7 +15,7 @@ class NewContainerStructure extends AbstractStructure {
     /**
      * @var string
      */
-    public $name;
+    public $containerName;
 
     /**
      * @var string $visibility values: PUBLIC, PRIVATE
@@ -23,7 +23,7 @@ class NewContainerStructure extends AbstractStructure {
     public $visibility;
 
     public function checkInput(): Message {
-        if ($this->visibility === ContainerVisibilityEnum::TEXT_PUBLIC || $this->visibility === ContainerVisibilityEnum::TEXT_PRIVATE) {
+        if ($this->visibility === ContainerVisibilityEnum::PUBLIC || $this->visibility === ContainerVisibilityEnum::PRIVATE) {
             return Message::createOkMessage();
         } else {
             return new Message(ErrorConstants::ERROR_VISIBILITY_FORMAT);
@@ -32,8 +32,8 @@ class NewContainerStructure extends AbstractStructure {
 
     public function transform(): AbstractTransformed {
         $trans = new NewContainerTransformed();
-        $trans->setName($this->name);
-        $trans->setVisibility(ContainerVisibilityEnum::$backValues[$this->visibility]);
+        $trans->setName($this->containerName);
+        $trans->setVisibility($this->visibility);
         return $trans;
     }
 

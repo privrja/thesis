@@ -21,27 +21,27 @@ class Sequence
     /**
      * @ORM\Column(type="string", length=255, options={"default": "other"})
      */
-    private $type;
+    private $sequenceType;
 
     /**
      * @ORM\Column(type="string", length=255)
      */
-    private $name;
+    private $sequenceName;
 
     /**
      * @ORM\Column(type="string", length=255)
      */
-    private $formula;
+    private $sequenceFormula;
 
     /**
      * @ORM\Column(type="float", nullable=true)
      */
-    private $mass;
+    private $sequenceMass;
 
     /**
      * @ORM\Column(type="string", length=500, nullable=true)
      */
-    private $smiles;
+    private $sequenceSmiles;
 
     /**
      * @ORM\Column(type="smallint", nullable=true)
@@ -100,62 +100,62 @@ class Sequence
         return $this->id;
     }
 
-    public function getType(): ?string
+    public function getSequenceType(): ?string
     {
-        return $this->type;
+        return $this->sequenceType;
     }
 
-    public function setType(string $type): self
+    public function setSequenceType(string $sequenceType): self
     {
-        $this->type = $type;
+        $this->sequenceType = $sequenceType;
 
         return $this;
     }
 
-    public function getName(): ?string
+    public function getSequenceName(): ?string
     {
-        return $this->name;
+        return $this->sequenceName;
     }
 
-    public function setName(string $name): self
+    public function setSequenceName(string $sequenceName): self
     {
-        $this->name = $name;
+        $this->sequenceName = $sequenceName;
 
         return $this;
     }
 
-    public function getFormula(): ?string
+    public function getSequenceFormula(): ?string
     {
-        return $this->formula;
+        return $this->sequenceFormula;
     }
 
-    public function setFormula(string $formula): self
+    public function setSequenceFormula(string $sequenceFormula): self
     {
-        $this->formula = $formula;
+        $this->sequenceFormula = $sequenceFormula;
 
         return $this;
     }
 
-    public function getMass(): ?float
+    public function getSequenceMass(): ?float
     {
-        return $this->mass;
+        return $this->sequenceMass;
     }
 
-    public function setMass(?float $mass): self
+    public function setSequenceMass(?float $sequenceMass): self
     {
-        $this->mass = $mass;
+        $this->sequenceMass = $sequenceMass;
 
         return $this;
     }
 
-    public function getSmiles(): ?string
+    public function getSequenceSmiles(): ?string
     {
-        return $this->smiles;
+        return $this->sequenceSmiles;
     }
 
-    public function setSmiles(?string $smiles): self
+    public function setSequenceSmiles(?string $sequenceSmiles): self
     {
-        $this->smiles = $smiles;
+        $this->sequenceSmiles = $sequenceSmiles;
 
         return $this;
     }

@@ -10,21 +10,7 @@ namespace App\Constant;
  */
 abstract class ContainerVisibilityEnum {
 
-    const PRIVATE = 0;
-    const PUBLIC = 1;
-
-    const TEXT_PRIVATE = 'PRIVATE';
-    const TEXT_PUBLIC = 'PUBLIC';
-
-    /** @var array mapping int code to string */
-    public static $backValues = [
-        self::TEXT_PRIVATE => self::PRIVATE,
-        self::TEXT_PUBLIC => self::PUBLIC
-    ];
-
-    public static $values = [
-        self::PRIVATE => self::TEXT_PRIVATE,
-        self::PUBLIC => self::TEXT_PUBLIC
-    ];
+    const PRIVATE = 'PRIVATE';
+    const PUBLIC = 'PUBLIC';
 
 }

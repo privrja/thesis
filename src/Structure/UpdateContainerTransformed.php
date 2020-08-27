@@ -8,21 +8,21 @@ use App\Structure\AbstractTransformed;
 
 class UpdateContainerTransformed extends AbstractTransformed {
 
-    private $name;
+    private $containerName;
     private $visibility;
 
     /**
      * @return mixed
      */
-    public function getName() {
-        return $this->name;
+    public function getContainerName() {
+        return $this->containerName;
     }
 
     /**
-     * @param mixed $name
+     * @param mixed $containerName
      */
-    public function setName($name): void {
-        $this->name = $name;
+    public function setContainerName($containerName): void {
+        $this->containerName = $containerName;
     }
 
     /**

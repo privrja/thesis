@@ -11,7 +11,7 @@ class ContainerTest extends LoginTest {
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
         $this->assertStringContainsString('"containerName":"Palma Free"', $client->getResponse()->getContent());
         $this->assertStringContainsString('"containerName":"Public Container"', $client->getResponse()->getContent());
-        $this->assertStringNotContainsString('"visibilityName":"PRIVATE"', $client->getResponse()->getContent());
+        $this->assertStringNotContainsString('"visibility":"PRIVATE"', $client->getResponse()->getContent());
     }
 
     public function testGetContainerNoAuth() {
@@ -31,59 +31,59 @@ class ContainerTest extends LoginTest {
         $client->request('GET', '/rest/container/2');
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
         $this->assertStringContainsString('"containerName":"Palma Free"', $client->getResponse()->getContent());
-        $this->assertStringContainsString('"visibilityName":"PUBLIC"', $client->getResponse()->getContent());
+        $this->assertStringContainsString('"visibility":"PUBLIC"', $client->getResponse()->getContent());
     }
 
     public function testNewContainerSameName() {
         $client = self::loginClient();
-        $client->request('POST', '/rest/container', [], [], [], json_encode(['name' => 'Palma', 'visibility' => 'PRIVATE']));
+        $client->request('POST', '/rest/container', [], [], [], json_encode(['containerName' => 'Palma', 'visibility' => 'PRIVATE']));
         $this->assertEquals(400, $client->getResponse()->getStatusCode());
     }
 
     public function testNewContainerBadFormat() {
         $client = self::loginClient();
-        $client->request('POST', '/rest/container',[], [], [], json_encode(['name' => 'Palma', 'viibility' => 'PRIVATE']));
+        $client->request('POST', '/rest/container',[], [], [], json_encode(['containerName' => 'Palma', 'viibility' => 'PRIVATE']));
         $this->assertEquals(400, $client->getResponse()->getStatusCode());
     }
 
     public function testNewContainerBadValues() {
         $client = self::loginClient();
-        $client->request('POST', '/rest/container', [], [], [], json_encode(['name' => 'Palma', 'viibility' => 0]));
+        $client->request('POST', '/rest/container', [], [], [], json_encode(['containerName' => 'Palma', 'visibility' => 0]));
         $this->assertEquals(400, $client->getResponse()->getStatusCode());
     }
 
     public function testNewContainerSuccess() {
         $client = self::loginClient();
-        $client->request('POST', '/rest/container', [], [], [], json_encode(['name' => 'Jedle', 'visibility' => 'PRIVATE']));
+        $client->request('POST', '/rest/container', [], [], [], json_encode(['containerName' => 'Jedle', 'visibility' => 'PRIVATE']));
         $this->assertEquals(201, $client->getResponse()->getStatusCode());
     }
 
     public function testUpdateContainerBadWithoutContainerId() {
         $client = self::loginClient();
-        $client->request('PUT', '/rest/container', [], [], [], json_encode(['name' => 'Smrky', 'visibility' => 'PUBLIC']));
+        $client->request('PUT', '/rest/container', [], [], [], json_encode(['containerName' => 'Smrky', 'visibility' => 'PUBLIC']));
         $this->assertEquals(405, $client->getResponse()->getStatusCode());
     }
 
     public function testUpdateContainerBadWrongVisibility() {
         $client = self::loginClient();
-        $client->request('PUT', '/rest/container/2', [], [], [], json_encode(['name' => 'Smrky', 'visibility' => 'PUBLC']));
+        $client->request('PUT', '/rest/container/2', [], [], [], json_encode(['containerName' => 'Smrky', 'visibility' => 'PUBLC']));
         $this->assertEquals(400, $client->getResponse()->getStatusCode());
     }
 
     public function testUpdateContainerBadWrongContainerId() {
         $client = self::loginClient();
-        $client->request('PUT', '/rest/container/255', [], [], [], json_encode(['name' => 'Smrky', 'visibility' => 'PUBLIC']));
+        $client->request('PUT', '/rest/container/255', [], [], [], json_encode(['containerName' => 'Smrky', 'visibility' => 'PUBLIC']));
         $this->assertEquals(404, $client->getResponse()->getStatusCode());
     }
 
     public function testUpdateContainerSuccessBothArguments() {
         $client = self::loginClient();
-        $client->request('PUT', '/rest/container/2', [], [], [], json_encode(['name' => 'Pluma Private', 'visibility' => 'PRIVATE']));
+        $client->request('PUT', '/rest/container/2', [], [], [], json_encode(['containerName' => 'Pluma Private', 'visibility' => 'PRIVATE']));
         $this->assertEquals(204, $client->getResponse()->getStatusCode());
         $client->request('GET', '/rest/container/2');
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
         $this->assertStringContainsString('"containerName":"Pluma Private"', $client->getResponse()->getContent());
-        $this->assertStringContainsString('"visibilityName":"PRIVATE"', $client->getResponse()->getContent());
+        $this->assertStringContainsString('"visibility":"PRIVATE"', $client->getResponse()->getContent());
     }
 
     public function testUpdateContainerSuccessVisibility() {
@@ -92,12 +92,12 @@ class ContainerTest extends LoginTest {
         $this->assertEquals(204, $client->getResponse()->getStatusCode());
         $client->request('GET', '/rest/container/2');
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
-        $this->assertStringContainsString('"visibilityName":"PUBLIC"', $client->getResponse()->getContent());
+        $this->assertStringContainsString('"visibility":"PUBLIC"', $client->getResponse()->getContent());
     }
 
     public function testUpdateContainerSuccessContainerName() {
         $client = self::loginClient();
-        $client->request('PUT', '/rest/container/2', [], [], [], json_encode(['name' => 'Palma Free']));
+        $client->request('PUT', '/rest/container/2', [], [], [], json_encode(['containerName' => 'Palma Free']));
         $this->assertEquals(204, $client->getResponse()->getStatusCode());
         $client->request('GET', '/rest/container/2');
         $this->assertEquals(200, $client->getResponse()->getStatusCode());

@@ -9,7 +9,6 @@ use App\Controller\UpdateContainerTransformed;
 use App\Entity\Container;
 use App\Entity\U2c;
 use App\Entity\User;
-use App\Entity\Visibility;
 use App\Structure\NewContainerTransformed;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
@@ -50,7 +49,7 @@ class ContainerModel
 
     public function createNew(NewContainerTransformed $trans): Message
     {
-        $haveSameName = $this->userRepository->isContainerForLoggedUserByName($this->usr->getId(), $trans->getName());
+        $haveSameName = $this->userRepository->isContainerForLoggedUserByName($this->usr->getId(), $trans->getContainerName());
         if (!empty($haveSameName)) {
             return new Message(ErrorConstants::ERROR_CONTAINER_NAME_EXISTS);
         }
@@ -61,7 +60,7 @@ class ContainerModel
     private function createNewContainer(NewContainerTransformed $trans)
     {
         $container = new Container();
-        $container->setContainerName($trans->getName());
+        $container->setContainerName($trans->getContainerName());
         $container->setVisibility($trans->getVisibility());
         $this->entityManager->persist($container);
 
@@ -85,8 +84,8 @@ class ContainerModel
 
     private function updateContainerProperties(UpdateContainerTransformed $trans, Container $container)
     {
-        if (!empty($trans->getName())) {
-            $container->setContainerName($trans->getName());
+        if (!empty($trans->getContainerName())) {
+            $container->setContainerName($trans->getContainerName());
         }
 
         $visibility = $trans->getVisibility();

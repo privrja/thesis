@@ -36,7 +36,7 @@ class ContainerTest extends KernelTestCase {
      */
     public function testFindVisibleContainers() {
         $containers = $this->entityManager->getRepository(Container::class)
-            ->findBy([EntityColumnsEnum::CONTAINER_VISIBILITY => 1]);
+            ->findBy([EntityColumnsEnum::CONTAINER_VISIBILITY => 'PUBLIC']);
         $cnt = 0;
         foreach ($containers as $container) {
             if ($container->getContainerName() !== 'Palma Free' && $container->getContainerName() !== 'Public Container') {

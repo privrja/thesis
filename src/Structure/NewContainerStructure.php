@@ -23,7 +23,7 @@ class NewContainerStructure extends AbstractStructure {
     public $visibility;
 
     public function checkInput(): Message {
-        if ($this->visibility === ContainerVisibilityEnum::PUBLIC || $this->visibility === ContainerVisibilityEnum::PRIVATE) {
+        if (($this->visibility === ContainerVisibilityEnum::PUBLIC || $this->visibility === ContainerVisibilityEnum::PRIVATE) && !empty($this->containerName)) {
             return Message::createOkMessage();
         } else {
             return new Message(ErrorConstants::ERROR_VISIBILITY_FORMAT);
@@ -32,7 +32,7 @@ class NewContainerStructure extends AbstractStructure {
 
     public function transform(): AbstractTransformed {
         $trans = new NewContainerTransformed();
-        $trans->setName($this->containerName);
+        $trans->setContainerName($this->containerName);
         $trans->setVisibility($this->visibility);
         return $trans;
     }

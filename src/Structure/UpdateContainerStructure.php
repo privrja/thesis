@@ -13,15 +13,16 @@ use App\Structure\AbstractTransformed;
 class UpdateContainerStructure extends AbstractStructure
 {
 
-    public $name;
+    public $containerName;
     public $visibility;
 
     public function checkInput(): Message
     {
-        if ($this->name === null && $this->visibility === null) {
+        if (empty($this->containerName) && empty($this->visibility)) {
             return new Message(ErrorConstants::ERROR_EMPTY_PARAMS);
         }
-        if ($this->visibility === null || $this->visibility === ContainerVisibilityEnum::PUBLIC || $this->visibility === ContainerVisibilityEnum::PRIVATE) {
+
+        if (($this->visibility === ContainerVisibilityEnum::PUBLIC || $this->visibility === ContainerVisibilityEnum::PRIVATE || $this->visibility === null)) {
             return Message::createOkMessage();
         } else {
             return new Message(ErrorConstants::ERROR_VISIBILITY_FORMAT);
@@ -31,7 +32,7 @@ class UpdateContainerStructure extends AbstractStructure
     public function transform(): AbstractTransformed
     {
         $trans = new UpdateContainerTransformed();
-        $trans->setName($this->name);
+        $trans->setContainerName($this->containerName);
         if ($this->visibility !== null) {
             $trans->setVisibility($this->visibility);
         } else {

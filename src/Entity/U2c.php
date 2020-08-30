@@ -29,7 +29,7 @@ class U2c
     private $container;
 
     /**
-     * @ORM\Column(type="string", length=10)
+     * @ORM\Column(type="string", length=10, nullable=false)
      */
     private $mode;
 

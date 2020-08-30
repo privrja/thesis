@@ -24,7 +24,7 @@ class Modification
     /**
      * @ORM\Column(type="string", length=255)
      */
-    private $mosdificationFormula;
+    private $modificationFormula;
 
     /**
      * @ORM\Column(type="float", nullable=true)
@@ -64,14 +64,14 @@ class Modification
         return $this;
     }
 
-    public function getMosdificationFormula(): ?string
+    public function getModificationFormula(): ?string
     {
-        return $this->mosdificationFormula;
+        return $this->modificationFormula;
     }
 
-    public function setMosdificationFormula(string $mosdificationFormula): self
+    public function setModificationFormula(string $modificationFormula): self
     {
-        $this->mosdificationFormula = $mosdificationFormula;
+        $this->modificationFormula = $modificationFormula;
 
         return $this;
     }

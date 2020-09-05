@@ -23,7 +23,7 @@ class Block
     /**
      * @ORM\Column(type="string", length=255)
      */
-    private $name;
+    private $blockName;
 
     /**
      * @ORM\Column(type="string", length=30)
@@ -38,7 +38,7 @@ class Block
     /**
      * @ORM\Column(type="float", nullable=true)
      */
-    private $mass;
+    private $blockMass;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
@@ -48,7 +48,7 @@ class Block
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
      */
-    private $smiles;
+    private $blockSmiles;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
@@ -63,10 +63,10 @@ class Block
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
      */
-    private $indetifier;
+    private $identifier;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\B2s", mappedBy="blockId")
+     * @ORM\OneToMany(targetEntity="App\Entity\B2s", mappedBy="block")
      */
     private $b2s;
 
@@ -77,7 +77,7 @@ class Block
     private $container;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\B2f", mappedBy="blockId")
+     * @ORM\OneToMany(targetEntity="App\Entity\B2f", mappedBy="block")
      */
     private $b2families;
 
@@ -92,14 +92,14 @@ class Block
         return $this->id;
     }
 
-    public function getName(): ?string
+    public function getBlockName(): ?string
     {
-        return $this->name;
+        return $this->blockName;
     }
 
-    public function setName(string $name): self
+    public function setBlockName(string $blockName): self
     {
-        $this->name = $name;
+        $this->blockName = $blockName;
 
         return $this;
     }
@@ -128,14 +128,14 @@ class Block
         return $this;
     }
 
-    public function getMass(): ?float
+    public function getBlockMass(): ?float
     {
-        return $this->mass;
+        return $this->blockMass;
     }
 
-    public function setMass(?float $mass): self
+    public function setBlockMass(?float $blockMass): self
     {
-        $this->mass = $mass;
+        $this->blockMass = $blockMass;
 
         return $this;
     }
@@ -152,14 +152,14 @@ class Block
         return $this;
     }
 
-    public function getSmiles(): ?string
+    public function getBlockSmiles(): ?string
     {
-        return $this->smiles;
+        return $this->blockSmiles;
     }
 
-    public function setSmiles(?string $smiles): self
+    public function setBlockSmiles(?string $blockSmiles): self
     {
-        $this->smiles = $smiles;
+        $this->blockSmiles = $blockSmiles;
 
         return $this;
     }
@@ -176,14 +176,14 @@ class Block
         return $this;
     }
 
-    public function getIndetifier(): ?string
+    public function getIdentifier(): ?string
     {
-        return $this->indetifier;
+        return $this->identifier;
     }
 
-    public function setIndetifier(?string $indetifier): self
+    public function setIdentifier(?string $identifier): self
     {
-        $this->indetifier = $indetifier;
+        $this->identifier = $identifier;
 
         return $this;
     }

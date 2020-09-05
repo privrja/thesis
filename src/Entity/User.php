@@ -46,13 +46,12 @@ class User implements UserInterface
     private $apiToken;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\U2c", mappedBy="userId", orphanRemoval=true)
+     * @ORM\OneToMany(targetEntity="App\Entity\U2c", mappedBy="user", orphanRemoval=true)
      */
     private $u2container;
 
     public function __construct()
     {
-        $this->containers = new ArrayCollection();
         $this->u2container = new ArrayCollection();
     }
 
@@ -88,11 +87,11 @@ class User implements UserInterface
      */
     public function getRoles(): array
     {
-        $roles = $this->roles;
+        $userRoles = $this->roles;
         // guarantee every user at least has ROLE_USER
-        $roles[] = 'ROLE_USER';
+        $userRoles[] = 'ROLE_USER';
 
-        return array_unique($roles);
+        return array_unique($userRoles);
     }
 
     public function setRoles(array $roles): self
@@ -131,7 +130,6 @@ class User implements UserInterface
     public function eraseCredentials()
     {
         // If you store any temporary, sensitive data on the user, clear it here
-        // $this->plainPassword = null;
     }
 
     public function getMail(): ?string

@@ -62,3 +62,8 @@
 
 # Idea files
 /.idea
+
+###> symfony/phpunit-bridge ###
+.phpunit
+.phpunit.result.cache
+###< symfony/phpunit-bridge ###

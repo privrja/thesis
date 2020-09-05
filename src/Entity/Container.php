@@ -5,11 +5,12 @@ namespace App\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use JsonSerializable;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\ContainerRepository")
  */
-class Container
+class Container implements JsonSerializable
 {
     /**
      * @ORM\Id()
@@ -19,12 +20,12 @@ class Container
     private $id;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="string", length=255, nullable=false)
      */
-    private $name;
+    private $containerName;
 
     /**
-     * @ORM\Column(type="smallint", options={"default": 0})
+     * @ORM\Column(type="string", length=10, nullable=false)
      */
     private $visibility;
 
@@ -44,17 +45,17 @@ class Container
     private $sequenceId;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\BlockFamily", mappedBy="containerId", orphanRemoval=true)
+     * @ORM\OneToMany(targetEntity="App\Entity\BlockFamily", mappedBy="container", orphanRemoval=true)
      */
     private $blockFamilies;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\SequenceFamily", mappedBy="containerId", orphanRemoval=true)
+     * @ORM\OneToMany(targetEntity="App\Entity\SequenceFamily", mappedBy="container", orphanRemoval=true)
      */
     private $sequenceFamilies;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\U2c", mappedBy="containerId", orphanRemoval=true)
+     * @ORM\OneToMany(targetEntity="App\Entity\U2c", mappedBy="container", orphanRemoval=true)
      */
     private $c2users;
 
@@ -73,24 +74,24 @@ class Container
         return $this->id;
     }
 
-    public function getName(): ?string
+    public function getContainerName(): ?string
     {
-        return $this->name;
+        return $this->containerName;
     }
 
-    public function setName(string $name): self
+    public function setContainerName(string $containerName): self
     {
-        $this->name = $name;
+        $this->containerName = $containerName;
 
         return $this;
     }
 
-    public function getVisibility(): ?int
+    public function getVisibility(): string
     {
         return $this->visibility;
     }
 
-    public function setVisibility(int $visibility): self
+    public function setVisibility(string $visibility): self
     {
         $this->visibility = $visibility;
 
@@ -282,4 +283,12 @@ class Container
 
         return $this;
     }
+
+    /**
+     * @inheritDoc
+     */
+    public function jsonSerialize() {
+        return [EntityColumnsEnum::ID => $this->id, EntityColumnsEnum::CONTAINER_NAME => $this->containerName, EntityColumnsEnum::CONTAINER_VISIBILITY => $this->visibility];
+    }
+
 }

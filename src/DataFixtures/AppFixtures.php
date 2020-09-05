@@ -2,13 +2,21 @@
 
 namespace App\DataFixtures;
 
+use App\Constant\BaseAminoAcids;
+use App\Constant\ContainerModeEnum;
+use App\Constant\ContainerVisibilityEnum;
+use App\Entity\Container;
+use App\Entity\Mode;
+use App\Entity\U2c;
 use App\Entity\User;
+use App\Entity\Visibility;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
 class AppFixtures extends Fixture
 {
+    const En = 'PUBLIC';
     private $passwordEncoder;
 
     public function __construct(UserPasswordEncoderInterface $passwordEncoder)
@@ -16,23 +24,15 @@ class AppFixtures extends Fixture
         $this->passwordEncoder = $passwordEncoder;
     }
 
-    public function load(ObjectManager $manager)
-    {
-        $user = new User();
-        $user->setNick("kokos");
-        $user->setMail("kokos@palma.cz");
-        $user->setRoles(["ROLE_USER"]);
-        $user->setPassword($this->passwordEncoder->encodePassword($user, 'the_new_password'));
-        $user->setApiToken("12345");
+    public function load(ObjectManager $manager) {
 
-        $manager->persist($user);
-
-        $user = new User();
-        $user->setNick("privrja");
-        $user->setMail("privrja@gmail.com");
-        $user->setRoles(["ROLE_USER"]);
-        $user->setPassword($this->passwordEncoder->encodePassword($user, 'nic'));
-        $manager->persist($user);
+        /* Testing users */
+        $userP = new User();
+        $userP->setNick("privrja");
+        $userP->setMail("privrja@gmail.com");
+        $userP->setRoles(["ROLE_USER"]);
+        $userP->setPassword($this->passwordEncoder->encodePassword($userP, 'nic'));
+        $manager->persist($userP);
 
         $user = new User();
         $user->setNick("admin");
@@ -41,9 +41,61 @@ class AppFixtures extends Fixture
         $user->setPassword($this->passwordEncoder->encodePassword($user, 'kokos'));
         $manager->persist($user);
 
-        $manager->flush();
+        $user = new User();
+        $user->setNick("kokos");
+        $user->setMail("kokos@palma.cz");
+        $user->setRoles(["ROLE_USER"]);
+        $user->setPassword($this->passwordEncoder->encodePassword($user, 'the_new_password'));
+        $user->setApiToken("12345");
+        $manager->persist($user);
+
+        /* Add containers for user kokos and privrja */
+        $container = new Container();
+        $container->setContainerName("Palma");
+        $container->setVisibility(ContainerVisibilityEnum::PRIVATE);
+        $manager->persist($container);
+
+        $u2c = new U2c();
+        $u2c->setContainer($container);
+        $u2c->setUser($user);
+        $u2c->setMode(ContainerModeEnum::RW);
+        $manager->persist($u2c);
+
+        $container = new Container();
+        $container->setContainerName("Palma Free");
+        $container->setVisibility(ContainerVisibilityEnum::PUBLIC);
+        $manager->persist($container);
+
+        $u2c = new U2c();
+        $u2c->setContainer($container);
+        $u2c->setUser($user);
+        $u2c->setMode(ContainerModeEnum::RW);
+        $manager->persist($u2c);
+
+        $container = new Container();
+        $container->setContainerName("Testing database");
+        $container->setVisibility(ContainerVisibilityEnum::PRIVATE);
+        $manager->persist($container);
+
+        $u2c = new U2c();
+        $u2c->setContainer($container);
+        $u2c->setUser($userP);
+        $u2c->setMode(ContainerModeEnum::RW);
+        $manager->persist($u2c);
 
         /* Main database data for main visible container */
-        // TODO
+        $container = new Container();
+        $container->setContainerName("Public Container");
+        $container->setVisibility(ContainerVisibilityEnum::PUBLIC);
+        $manager->persist($container);
+
+        $acids = new BaseAminoAcids($container);
+        $acidList = $acids->getList();
+        foreach ($acidList as $block) {
+            $manager->persist($block);
+        }
+
+        $manager->flush();
     }
+
 }

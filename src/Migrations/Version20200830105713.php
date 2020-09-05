@@ -10,7 +10,7 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20200228155251 extends AbstractMigration
+final class Version20200830105713 extends AbstractMigration
 {
     public function getDescription() : string
     {
@@ -20,23 +20,23 @@ final class Version20200228155251 extends AbstractMigration
     public function up(Schema $schema) : void
     {
         // this up() migration is auto-generated, please modify it to your needs
-        $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
-
         $this->addSql('CREATE TABLE b2f (id INT AUTO_INCREMENT NOT NULL, block_id INT NOT NULL, family_id INT NOT NULL, INDEX IDX_FDB35640E9ED820C (block_id), INDEX IDX_FDB35640C35E566A (family_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
-        $this->addSql('CREATE TABLE b2s (id INT AUTO_INCREMENT NOT NULL, sequence_id INT NOT NULL, block_id INT NOT NULL, sort INT NOT NULL, INDEX IDX_906EB2AB98FB19AE (sequence_id), INDEX IDX_906EB2ABE9ED820C (block_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
-        $this->addSql('CREATE TABLE block (id INT AUTO_INCREMENT NOT NULL, container_id INT NOT NULL, name VARCHAR(255) NOT NULL, acronym VARCHAR(30) NOT NULL, residue VARCHAR(255) NOT NULL, mass DOUBLE PRECISION DEFAULT NULL, losses VARCHAR(255) DEFAULT NULL, smiles VARCHAR(255) DEFAULT NULL, usmiles VARCHAR(255) DEFAULT NULL, source SMALLINT DEFAULT NULL, indetifier VARCHAR(255) DEFAULT NULL, INDEX IDX_831B9722BC21F742 (container_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
-        $this->addSql('CREATE TABLE block_family (id INT AUTO_INCREMENT NOT NULL, container_id INT NOT NULL, name VARCHAR(255) NOT NULL, INDEX IDX_EC4877D0BC21F742 (container_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
-        $this->addSql('CREATE TABLE container (id INT AUTO_INCREMENT NOT NULL, name VARCHAR(255) NOT NULL, visibility SMALLINT DEFAULT 0 NOT NULL, PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
-        $this->addSql('CREATE TABLE modification (id INT AUTO_INCREMENT NOT NULL, container_id INT NOT NULL, name VARCHAR(255) NOT NULL, formula VARCHAR(255) NOT NULL, mass DOUBLE PRECISION DEFAULT NULL, n_terminal TINYINT(1) DEFAULT \'0\' NOT NULL, c_terminal TINYINT(1) DEFAULT \'0\' NOT NULL, INDEX IDX_EF6425D2BC21F742 (container_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
+        $this->addSql('CREATE TABLE b2s (id INT AUTO_INCREMENT NOT NULL, sequence_id INT NOT NULL, block_id INT NOT NULL, next_block_id INT DEFAULT NULL, branch_reference_id INT DEFAULT NULL, is_branch TINYINT(1) NOT NULL, INDEX IDX_906EB2AB98FB19AE (sequence_id), INDEX IDX_906EB2ABE9ED820C (block_id), UNIQUE INDEX UNIQ_906EB2ABD1F7CEE2 (next_block_id), UNIQUE INDEX UNIQ_906EB2AB4BA1090F (branch_reference_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
+        $this->addSql('CREATE TABLE block (id INT AUTO_INCREMENT NOT NULL, container_id INT NOT NULL, block_name VARCHAR(255) NOT NULL, acronym VARCHAR(30) NOT NULL, residue VARCHAR(255) NOT NULL, block_mass DOUBLE PRECISION DEFAULT NULL, losses VARCHAR(255) DEFAULT NULL, block_smiles VARCHAR(255) DEFAULT NULL, usmiles VARCHAR(255) DEFAULT NULL, source SMALLINT DEFAULT NULL, identifier VARCHAR(255) DEFAULT NULL, INDEX IDX_831B9722BC21F742 (container_id), INDEX IDX_BLOCK_ID (id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
+        $this->addSql('CREATE TABLE block_family (id INT AUTO_INCREMENT NOT NULL, container_id INT NOT NULL, block_family_name VARCHAR(255) NOT NULL, INDEX IDX_EC4877D0BC21F742 (container_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
+        $this->addSql('CREATE TABLE container (id INT AUTO_INCREMENT NOT NULL, container_name VARCHAR(255) NOT NULL, visibility VARCHAR(10) NOT NULL, PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
+        $this->addSql('CREATE TABLE modification (id INT AUTO_INCREMENT NOT NULL, container_id INT NOT NULL, modification_name VARCHAR(255) NOT NULL, modification_formula VARCHAR(255) NOT NULL, modification_mass DOUBLE PRECISION DEFAULT NULL, n_terminal TINYINT(1) DEFAULT \'0\' NOT NULL, c_terminal TINYINT(1) DEFAULT \'0\' NOT NULL, INDEX IDX_EF6425D2BC21F742 (container_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
         $this->addSql('CREATE TABLE s2f (id INT AUTO_INCREMENT NOT NULL, sequence_id INT NOT NULL, family_id INT NOT NULL, INDEX IDX_E0579F0798FB19AE (sequence_id), INDEX IDX_E0579F07C35E566A (family_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
-        $this->addSql('CREATE TABLE sequence (id INT AUTO_INCREMENT NOT NULL, n_modification_id INT DEFAULT NULL, c_modification_id INT DEFAULT NULL, b_modification_id INT DEFAULT NULL, container_id INT NOT NULL, type VARCHAR(255) DEFAULT \'other\' NOT NULL, name VARCHAR(255) NOT NULL, formula VARCHAR(255) NOT NULL, mass DOUBLE PRECISION DEFAULT NULL, sequence VARCHAR(255) DEFAULT NULL, smiles VARCHAR(500) DEFAULT NULL, source SMALLINT DEFAULT NULL, identifier VARCHAR(255) DEFAULT NULL, decays VARCHAR(255) DEFAULT NULL, INDEX IDX_5286D72B202EA3BB (n_modification_id), INDEX IDX_5286D72B329000A9 (c_modification_id), INDEX IDX_5286D72BB536CBEA (b_modification_id), INDEX IDX_5286D72BBC21F742 (container_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
-        $this->addSql('CREATE TABLE sequence_family (id INT AUTO_INCREMENT NOT NULL, container_id INT NOT NULL, name VARCHAR(255) NOT NULL, INDEX IDX_C1F60532BC21F742 (container_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
-        $this->addSql('CREATE TABLE u2c (id INT AUTO_INCREMENT NOT NULL, user_id INT NOT NULL, container_id INT NOT NULL, mode SMALLINT DEFAULT 0 NOT NULL, INDEX IDX_94B0173AA76ED395 (user_id), INDEX IDX_94B0173ABC21F742 (container_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
+        $this->addSql('CREATE TABLE sequence (id INT AUTO_INCREMENT NOT NULL, n_modification_id INT DEFAULT NULL, c_modification_id INT DEFAULT NULL, b_modification_id INT DEFAULT NULL, container_id INT NOT NULL, sequence_type VARCHAR(255) DEFAULT \'other\' NOT NULL, sequence_name VARCHAR(255) NOT NULL, sequence_formula VARCHAR(255) NOT NULL, sequence_mass DOUBLE PRECISION DEFAULT NULL, sequence_smiles VARCHAR(500) DEFAULT NULL, source SMALLINT DEFAULT NULL, identifier VARCHAR(255) DEFAULT NULL, decays VARCHAR(255) DEFAULT NULL, INDEX IDX_5286D72B202EA3BB (n_modification_id), INDEX IDX_5286D72B329000A9 (c_modification_id), INDEX IDX_5286D72BB536CBEA (b_modification_id), INDEX IDX_5286D72BBC21F742 (container_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
+        $this->addSql('CREATE TABLE sequence_family (id INT AUTO_INCREMENT NOT NULL, container_id INT NOT NULL, sequence_family_name VARCHAR(255) NOT NULL, INDEX IDX_C1F60532BC21F742 (container_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
+        $this->addSql('CREATE TABLE u2c (id INT AUTO_INCREMENT NOT NULL, user_id INT NOT NULL, container_id INT NOT NULL, mode VARCHAR(10) NOT NULL, INDEX IDX_94B0173AA76ED395 (user_id), INDEX IDX_94B0173ABC21F742 (container_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
         $this->addSql('CREATE TABLE user (id INT AUTO_INCREMENT NOT NULL, nick VARCHAR(180) NOT NULL, roles JSON NOT NULL, password VARCHAR(255) NOT NULL, mail VARCHAR(255) NOT NULL, api_token VARCHAR(255) DEFAULT NULL, UNIQUE INDEX UNIQ_8D93D649290B2F37 (nick), UNIQUE INDEX UNIQ_8D93D6497BA2F5EB (api_token), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
         $this->addSql('ALTER TABLE b2f ADD CONSTRAINT FK_FDB35640E9ED820C FOREIGN KEY (block_id) REFERENCES block (id)');
         $this->addSql('ALTER TABLE b2f ADD CONSTRAINT FK_FDB35640C35E566A FOREIGN KEY (family_id) REFERENCES block_family (id)');
         $this->addSql('ALTER TABLE b2s ADD CONSTRAINT FK_906EB2AB98FB19AE FOREIGN KEY (sequence_id) REFERENCES sequence (id)');
         $this->addSql('ALTER TABLE b2s ADD CONSTRAINT FK_906EB2ABE9ED820C FOREIGN KEY (block_id) REFERENCES block (id)');
+        $this->addSql('ALTER TABLE b2s ADD CONSTRAINT FK_906EB2ABD1F7CEE2 FOREIGN KEY (next_block_id) REFERENCES block (id)');
+        $this->addSql('ALTER TABLE b2s ADD CONSTRAINT FK_906EB2AB4BA1090F FOREIGN KEY (branch_reference_id) REFERENCES block (id)');
         $this->addSql('ALTER TABLE block ADD CONSTRAINT FK_831B9722BC21F742 FOREIGN KEY (container_id) REFERENCES container (id)');
         $this->addSql('ALTER TABLE block_family ADD CONSTRAINT FK_EC4877D0BC21F742 FOREIGN KEY (container_id) REFERENCES container (id)');
         $this->addSql('ALTER TABLE modification ADD CONSTRAINT FK_EF6425D2BC21F742 FOREIGN KEY (container_id) REFERENCES container (id)');
@@ -54,10 +54,10 @@ final class Version20200228155251 extends AbstractMigration
     public function down(Schema $schema) : void
     {
         // this down() migration is auto-generated, please modify it to your needs
-        $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
-
         $this->addSql('ALTER TABLE b2f DROP FOREIGN KEY FK_FDB35640E9ED820C');
         $this->addSql('ALTER TABLE b2s DROP FOREIGN KEY FK_906EB2ABE9ED820C');
+        $this->addSql('ALTER TABLE b2s DROP FOREIGN KEY FK_906EB2ABD1F7CEE2');
+        $this->addSql('ALTER TABLE b2s DROP FOREIGN KEY FK_906EB2AB4BA1090F');
         $this->addSql('ALTER TABLE b2f DROP FOREIGN KEY FK_FDB35640C35E566A');
         $this->addSql('ALTER TABLE block DROP FOREIGN KEY FK_831B9722BC21F742');
         $this->addSql('ALTER TABLE block_family DROP FOREIGN KEY FK_EC4877D0BC21F742');

@@ -106,7 +106,7 @@ class TokenAuthenticator extends AbstractGuardAuthenticator
     public function onAuthenticationFailure(Request $request, AuthenticationException $exception)
     {
         $this->logger->warning(strtr($exception->getMessageKey(), $exception->getMessageData()));
-        return new JsonResponse(['message' => self::WRONG_CREDENTIALS], Response::HTTP_FORBIDDEN);
+        return new JsonResponse(['message' => self::WRONG_CREDENTIALS], Response::HTTP_UNAUTHORIZED);
     }
 
     /**

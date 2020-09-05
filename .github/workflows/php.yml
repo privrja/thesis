@@ -1,0 +1,62 @@
+name: Test App
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+  
+    services:
+      # https://docs.docker.com/samples/library/mysql/
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: qHTavO1ajSOnQzUdi3ef
+        ports:
+          - 3306:3306
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+    steps:
+    - uses: actions/checkout@v2
+      
+    - name: Validate composer.json and composer.lock
+      run: composer validate
+
+    - name: Cache Composer packages
+      id: composer-cache
+      uses: actions/cache@v2
+      with:
+        path: vendor
+        key: ${{ runner.os }}-php-${{ hashFiles('**/composer.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-php-
+
+    - name: Install dependencies
+      if: steps.composer-cache.outputs.cache-hit != 'true'
+      run: composer install --dev --no-suggest --no-interaction --optimize-autoloader
+
+    # Add a test script to composer.json, for instance: "test": "vendor/bin/phpunit"
+    # Docs: https://getcomposer.org/doc/articles/scripts.md
+
+    - name: Prepare Database
+      env:
+        DATABASE_URL: mysql2://root:qHTavO1ajSOnQzUdi3ef@127.0.0.1:3306/bbdgnc?serverVersion=8.0
+      run: |
+        php bin/console doctrine:database:create -n
+        php bin/console doctrine:mig:mig -n
+        php bin/console doctrine:fixtures:load -n
+        
+    - name: Run Tests
+      run: vendor/symfony/phpunit-bridge/bin/simple-phpunit
+      
+#    - name: SonarCloud Scan
+#      uses: SonarSource/sonarcloud-github-action@v1.3
+#      env:
+#        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+

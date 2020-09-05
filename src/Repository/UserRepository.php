@@ -36,32 +36,58 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         $this->_em->flush();
     }
 
-    // /**
-    //  * @return User[] Returns an array of User objects
-    //  */
-    /*
-    public function findByExampleField($value)
-    {
-        return $this->createQueryBuilder('u')
-            ->andWhere('u.exampleField = :val')
-            ->setParameter('val', $value)
-            ->orderBy('u.id', 'ASC')
-            ->setMaxResults(10)
+    /**
+     * @param String $usrId user ID of logged user
+     * @return array
+     */
+    public function findContainersForLoggedUser(string $usrId) {
+        return $this->createQueryBuilder('usr')
+            ->select('cnt.id', 'cnt.containerName', 'cnt.visibility', 'u2c.mode')
+            ->innerJoin('usr.u2container', 'u2c')
+            ->innerJoin('u2c.container', 'cnt')
+            ->andWhere('usr.id = :val')
+            ->setParameter('val', $usrId)
+            ->orderBy('cnt.containerName', 'asc')
             ->getQuery()
-            ->getResult()
-        ;
+            ->getArrayResult();
     }
-    */
 
-    /*
-    public function findOneBySomeField($value): ?User
-    {
-        return $this->createQueryBuilder('u')
-            ->andWhere('u.exampleField = :val')
-            ->setParameter('val', $value)
+    public function findContainersForLoggedUserById(string $usrId, int $containerId) {
+        return $this->createQueryBuilder('usr')
+            ->select('cnt.containerName', 'cnt.visibility', 'u2c.mode')
+            ->innerJoin('usr.u2container', 'u2c')
+            ->innerJoin('u2c.container', 'cnt')
+            ->andWhere('usr.id = :usrId')
+            ->andWhere('cnt.id = : cntId')
+            ->setParameters(['usrId' => $usrId, 'cntId' => $containerId])
             ->getQuery()
-            ->getOneOrNullResult()
-        ;
+            ->getArrayResult();
     }
-    */
+
+    public function isContainerForLoggedUserByName(string $usrId, string $containerName) {
+        return $this->createQueryBuilder('usr')
+            ->select('1')
+            ->innerJoin('usr.u2container', 'u2c')
+            ->innerJoin('u2c.container', 'cnt')
+            ->andWhere('usr.id = :usrId')
+            ->setParameter('usrId', $usrId)
+            ->andWhere('cnt.containerName = :cntName')
+            ->setParameter('cntName', $containerName)
+            ->getQuery()
+            ->getArrayResult();
+    }
+
+    public function isContainerForLoggedUserByContainerId(string $usrId, int $containerId) {
+        return $this->createQueryBuilder('usr')
+            ->select('1')
+            ->innerJoin('usr.u2container', 'u2c')
+            ->innerJoin('u2c.container', 'cnt')
+            ->andWhere('usr.id = :usrId')
+            ->setParameter('usrId', $usrId)
+            ->andWhere('cnt.id = :cntId')
+            ->setParameter('cntId', $containerId)
+            ->getQuery()
+            ->getArrayResult();
+    }
+
 }

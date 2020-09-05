@@ -1,10 +1,6 @@
 <?php
 
-
-namespace App\Controller;
-
-
-use App\Structure\AbstractTransformed;
+namespace App\Structure;
 
 class UpdateContainerTransformed extends AbstractTransformed {
 

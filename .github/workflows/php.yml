@@ -44,7 +44,7 @@ jobs:
 
     - name: Prepare Database
       env:
-        DATABASE_URL: mysql2://root:qHTavO1ajSOnQzUdi3ef@127.0.0.1:3306/bbdgnc?serverVersion=8.0
+        DATABASE_URL: mysql2://root:qHTavO1ajSOnQzUdi3ef@127.0.0.1:3306/msb?serverVersion=8.0
       run: |
         php bin/console doctrine:database:create -n
         php bin/console doctrine:mig:mig -n

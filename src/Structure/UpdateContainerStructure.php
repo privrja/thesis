@@ -1,14 +1,11 @@
 <?php
 
 
-namespace App\Controller;
-
+namespace App\Structure;
 
 use App\Base\Message;
 use App\Constant\ContainerVisibilityEnum;
 use App\Constant\ErrorConstants;
-use App\Structure\AbstractStructure;
-use App\Structure\AbstractTransformed;
 
 class UpdateContainerStructure extends AbstractStructure
 {

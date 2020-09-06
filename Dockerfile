@@ -11,7 +11,7 @@ RUN docker-php-ext-install -j$(nproc) zip
 RUN docker-php-ext-install -j$(nproc) soap
 RUN docker-php-ext-install -j$(nproc) pdo_mysql
 
-RUN apt-get isntall -y mysql-server-8.0
+RUN apt-get isntall -y mysql-server
 
 COPY wait-for-it.sh /usr/bin/wait-for-it
 COPY vhost.conf /etc/apache2/sites-available/bbdgnc.conf

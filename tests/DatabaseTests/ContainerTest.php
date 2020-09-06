@@ -3,8 +3,8 @@
 
 namespace App\Tests\DatabaseTests;
 
+use App\Constant\EntityColumnsEnum;
 use App\Entity\Container;
-use App\Entity\EntityColumnsEnum;
 use App\Entity\User;
 use Doctrine\ORM\EntityManager;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;

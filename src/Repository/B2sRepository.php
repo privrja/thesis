@@ -4,7 +4,7 @@ namespace App\Repository;
 
 use App\Entity\B2s;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\Common\Persistence\ManagerRegistry;
+use Doctrine\Persistence\ManagerRegistry;
 
 /**
  * @method B2s|null find($id, $lockMode = null, $lockVersion = null)

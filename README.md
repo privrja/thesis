@@ -1,8 +1,6 @@
-# thesis
-
-
+# MassSpecBlocks backend
 ## Development
-
+### Clone project and install dependencies
 ```git clone https://github.com/privrja/thesis.git```
 
 ```cd thesis/```
@@ -10,6 +8,7 @@
 ```composer install --dev```
 
 ### Database
+
 ```php bin/console doctrine:database:create```
 
 ```php bin/console doctrine:mig:mig```
@@ -29,11 +28,9 @@ or
 ```run: vendor/symfony/phpunit-bridge/bin/simple-phpunit```
 
 ### Start local dev server 
-
 ```symfony server:start```
 
 ## How to deploy on server
-
 ### Checkout project
 
 ```git clone https://github.com/privrja/thesis.git```
@@ -43,15 +40,12 @@ or
 ```git checkout deploy```
 
 ### Setup ENV variables and export them
-
 ```composer dump-env prod```
 
 ### Install dependecies
-
  ```composer install --no-dev --optimize-autoloader```
 
 ### Clear cache
-
 ```php bin/console cache:clear```
 
 ### Zip it and transfer to server

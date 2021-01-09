@@ -1,6 +1,37 @@
 # thesis
 
 
+## Development
+
+```git clone https://github.com/privrja/thesis.git```
+
+```cd thesis/```
+
+```composer install --dev```
+
+### Database
+```php bin/console doctrine:database:create```
+
+```php bin/console doctrine:mig:mig```
+
+```php bin/console doctrine:fixtures:load```
+
+### Run tests
+
+Before every test you need to purge DB, now test can't be run more times in a row.
+
+```php bin/console doctrine:fixtures:load```
+
+To run test use
+```composer test```
+or
+
+```run: vendor/symfony/phpunit-bridge/bin/simple-phpunit```
+
+### Start local dev server 
+
+```symfony server:start```
+
 ## How to deploy on server
 
 ### Checkout project

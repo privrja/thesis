@@ -8,7 +8,6 @@
 ```composer install --dev```
 
 ### Database
-
 ```php bin/console doctrine:database:create```
 
 ```php bin/console doctrine:mig:mig```
@@ -16,7 +15,6 @@
 ```php bin/console doctrine:fixtures:load```
 
 ### Run tests
-
 Before every test you need to purge DB, now test can't be run more times in a row.
 
 ```php bin/console doctrine:fixtures:load```
@@ -30,9 +28,13 @@ or
 ### Start local dev server 
 ```symfony server:start```
 
+### CORS
+To test on local machine you need to use chrome without CORS policy check
+
+```”C:\Program Files (x86)\Google\Chrome\Application\chrome.exe” — disable-web-security — disable-gpu — user-data-dir=~/chromeTemp```
+
 ## How to deploy on server
 ### Checkout project
-
 ```git clone https://github.com/privrja/thesis.git```
 
 ```cd thesis/```

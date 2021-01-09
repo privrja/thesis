@@ -1,7 +1,7 @@
 name: Test App
 on: [push, pull_request]
 jobs:
-  symfony:
+  build:
     name: Symfony (PHP ${{ matrix.php-versions }})
     runs-on: ubuntu-18.04
     services:

@@ -54,7 +54,7 @@ jobs:
       env:
         DATABASE_URL: mysql2://root:qHTavO1ajSOnQzUdi3ef@127.0.0.1:3306/msb?serverVersion=8.0
       run: |
-        mysql -h 127.0.0.1 --port 3306 -u root -pqHTavO1ajSOnQzUdi3ef -e "ALTER USER 'root'@'%' IDENTIFIED WITH mysql_native_password BY 'pqHTavO1ajSOnQzUdi3ef';"
+        mysql -h 127.0.0.1 --port 3306 -u root -pqHTavO1ajSOnQzUdi3ef -e "ALTER USER 'root'@'%' IDENTIFIED WITH mysql_native_password BY 'qHTavO1ajSOnQzUdi3ef';"
         php bin/console doctrine:database:create -n
         php bin/console doctrine:mig:mig -n
         php bin/console doctrine:fixtures:load -n

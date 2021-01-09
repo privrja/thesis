@@ -112,18 +112,6 @@
             "./config/routes/nelmio_api_doc.yaml"
         ]
     },
-    "nelmio/cors-bundle": {
-        "version": "1.5",
-        "recipe": {
-            "repo": "github.com/symfony/recipes",
-            "branch": "master",
-            "version": "1.5",
-            "ref": "6388de23860284db9acce0a7a5d9d13153bcb571"
-        },
-        "files": [
-            "./config/packages/nelmio_cors.yaml"
-        ]
-    },
     "netresearch/jsonmapper": {
         "version": "v3.0.0"
     },
@@ -264,6 +252,9 @@
             "./src/Controller/.gitignore",
             "./src/Kernel.php"
         ]
+    },
+    "symfony/http-client-contracts": {
+        "version": "v2.3.1"
     },
     "symfony/http-foundation": {
         "version": "v5.0.4"

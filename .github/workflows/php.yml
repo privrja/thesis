@@ -24,7 +24,7 @@ jobs:
     - uses: actions/checkout@v2
     
     - name: Setup PHP, with composer and extensions
-    - uses: shivammathur/setup-php@v2 #https://github.com/shivammathur/setup-php
+      uses: shivammathur/setup-php@v2
       with:
         php-version: 7.3
         extensions: mbstring, xml, ctype, iconv, intl, pdo_sqlite, mysql
@@ -41,6 +41,7 @@ jobs:
         key: ${{ runner.os }}-php-${{ hashFiles('**/composer.lock') }}
         restore-keys: |
           ${{ runner.os }}-php-
+          
     - name: Install dependencies
       if: steps.composer-cache.outputs.cache-hit != 'true'
       run: composer install --dev --no-suggest --no-interaction --optimize-autoloader

@@ -52,6 +52,12 @@ class ContainerTest extends LoginTest {
         $this->assertEquals(400, $client->getResponse()->getStatusCode());
     }
 
+    public function testNewContainerBadValuesName() {
+        $client = self::loginClient();
+        $client->request('POST', '/rest/container', [], [], [], json_encode(['containerName' => '', 'visibility' => 'PRIVATE']));
+        $this->assertEquals(400, $client->getResponse()->getStatusCode());
+    }
+
     public function testNewContainerSuccess() {
         $client = self::loginClient();
         $client->request('POST', '/rest/container', [], [], [], json_encode(['containerName' => 'Jedle', 'visibility' => 'PRIVATE']));

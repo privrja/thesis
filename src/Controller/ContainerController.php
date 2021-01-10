@@ -130,7 +130,7 @@ class ContainerController extends AbstractController
      *          required=true,
      *          description="Two paramas: name and visibility. At least one shouldn't be empty. Visibility has values: PRIVATE or PUBLIC.",
      *          @SWG\Schema(type="string",
-     *              example="{""name"":""ContainerName"",""visibility"":""PRIVATE""}"),
+     *              example="{""containerName"":""ContainerName"",""visibility"":""PRIVATE""}"),
      *      ),
      *     @SWG\Response(response="201", description="Create new container."),
      *     @SWG\Response(response="400", description="Return when input is wrong."),

@@ -23,7 +23,7 @@ To run test use
 ```composer test```
 or
 
-```run: vendor/symfony/phpunit-bridge/bin/simple-phpunit```
+```php ./vendor/symfony/phpunit-bridge/bin/simple-phpunit```
 
 ### Start local dev server 
 ```symfony server:start```

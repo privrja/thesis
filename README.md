@@ -15,9 +15,7 @@
 ```php bin/console doctrine:fixtures:load```
 
 ### Run tests
-Before every test you need to purge DB, now test can't be run more times in a row.
-
-```php bin/console doctrine:fixtures:load```
+Before every test you need to delete, create, migrate and purge DB like in previuos step, now test can't be run more times in a row.
 
 To run test use
 ```composer test```

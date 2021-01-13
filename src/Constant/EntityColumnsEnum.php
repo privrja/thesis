@@ -16,4 +16,6 @@ abstract class EntityColumnsEnum {
 
     const ID = 'id';
 
+    const COLLABORATORS = 'collaborators';
+
 }

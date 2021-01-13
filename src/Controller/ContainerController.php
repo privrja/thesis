@@ -10,6 +10,7 @@ use App\Entity\Container;
 use App\Model\ContainerModel;
 use App\Repository\ContainerRepository;
 use App\Repository\UserRepository;
+use App\Structure\ConcreateContainer;
 use App\Structure\NewContainerStructure;
 use App\Structure\NewContainerTransformed;
 use App\Structure\UpdateContainerStructure;
@@ -105,7 +106,8 @@ class ContainerController extends AbstractController
         if (!$modelMessage->result) {
             return ResponseHelper::jsonResponse();
         }
-        return new JsonResponse($container, Response::HTTP_OK);
+        $ccContainer = new ConcreateContainer($container->getId(), $container->getContainerName(), $container->getVisibility(), $model->concreteContainerCollaborators($container->getId()));
+        return new JsonResponse($ccContainer, Response::HTTP_OK);
     }
 
     /**

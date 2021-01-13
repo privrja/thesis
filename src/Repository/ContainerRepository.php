@@ -14,9 +14,24 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class ContainerRepository extends ServiceEntityRepository
 {
-    public function __construct(ManagerRegistry $registry)
-    {
+    public function __construct(ManagerRegistry $registry) {
         parent::__construct($registry, Container::class);
     }
+
+    /**
+     * @param int $containerId
+     * @return array
+     */
+    public function getContainerCollaborators(int $containerId) {
+        return $this->createQueryBuilder('cnt')
+            ->select('usr.id', 'usr.nick', 'col.mode')
+            ->innerJoin('cnt.c2users', 'col')
+            ->innerJoin('col.user', 'usr')
+            ->where('cnt.id = :containerId')
+            ->setParameter('containerId', $containerId)
+            ->getQuery()
+            ->getArrayResult();
+    }
+
 
 }

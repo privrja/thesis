@@ -22,6 +22,7 @@ class ContainerModel
     private $entityManager;
     private $logger;
     private $userRepository;
+    private $containerRepository;
 
     /**
      * ContainerModel constructor.
@@ -37,6 +38,7 @@ class ContainerModel
         $this->usr = $usr;
         $this->logger = $logger;
         $this->userRepository = $doctrine->getRepository(User::class);
+        $this->containerRepository = $doctrine->getRepository(Container::class);
     }
 
     public function concreteContainer(Container $container) {
@@ -45,6 +47,10 @@ class ContainerModel
             return new Message(ErrorConstants::ERROR_CONTAINER_NOT_EXISTS_FOR_USER);
         }
         return Message::createOkMessage();
+    }
+
+    public function concreteContainerCollaborators($containerId) {
+        return $this->containerRepository->getContainerCollaborators($containerId);
     }
 
     public function createNew(NewContainerTransformed $trans): Message

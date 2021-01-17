@@ -6,17 +6,14 @@ use App\Constant\BaseAminoAcids;
 use App\Constant\ContainerModeEnum;
 use App\Constant\ContainerVisibilityEnum;
 use App\Entity\Container;
-use App\Entity\Mode;
 use App\Entity\U2c;
 use App\Entity\User;
-use App\Entity\Visibility;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
 class AppFixtures extends Fixture
 {
-    const En = 'PUBLIC';
     private $passwordEncoder;
 
     public function __construct(UserPasswordEncoderInterface $passwordEncoder)

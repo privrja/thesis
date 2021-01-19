@@ -23,10 +23,10 @@ class SecurityController extends AbstractController
 {
 
     /**
+     * Registration of new user
      * @Route("/rest/register", name="register", methods={"POST"})
      * @param Request $request
      * @param EntityManagerInterface $entityManager
-     * @param Security $security
      * @param UserPasswordEncoderInterface $passwordEncoder
      * @param UserRepository $userRepository
      * @param LoggerInterface $logger

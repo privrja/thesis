@@ -8,6 +8,11 @@
 ```composer install --dev```
 
 ### Database
+
+To drop DB use:
+
+```php bin/console doctrine:database:drop --force```
+
 ```php bin/console doctrine:database:create```
 
 ```php bin/console doctrine:mig:mig```

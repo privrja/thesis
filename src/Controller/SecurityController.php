@@ -32,10 +32,7 @@ class SecurityController extends AbstractController
      * @param LoggerInterface $logger
      * @return JsonResponse
      */
-    public function registration(Request $request, EntityManagerInterface $entityManager, Security $security, UserPasswordEncoderInterface $passwordEncoder, UserRepository $userRepository, LoggerInterface $logger) {
-        if ($security->getUser()) {
-            return ResponseHelper::jsonResponse(new Message("Already registered user"), Response::HTTP_BAD_REQUEST);
-        }
+    public function registration(Request $request, EntityManagerInterface $entityManager, UserPasswordEncoderInterface $passwordEncoder, UserRepository $userRepository, LoggerInterface $logger) {
         /** @var NewRegistrationTransformed $trans */
         $trans = RequestHelper::evaluateRequest($request, new NewRegistrationStructure(), $logger);
         if ($trans instanceof JsonResponse) {

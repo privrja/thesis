@@ -2,57 +2,40 @@
 
 namespace App\Controller;
 
-class NewRegistrationStructure {
+use App\Base\Message;
+use App\Constant\ErrorConstants;
+use App\Structure\AbstractStructure;
+use App\Structure\AbstractTransformed;
+use App\Structure\NewRegistrationTransformed;
+
+class NewRegistrationStructure extends AbstractStructure {
 
     /** @var string $name */
-    private $name;
+    public $name;
 
     /** @var string $password */
-    private $password;
+    public $password;
 
     /** @var string $mail */
     private $mail;
 
-    /**
-     * @return string
-     */
-    public function getName(): string {
-        return $this->name;
+    public function checkInput(): Message {
+        if (empty($this->name) || empty($this->password)) {
+            return new Message(ErrorConstants::ERROR_EMPTY_PARAMS);
+        }
+        // TODO if mail is setup then check it
+        return Message::createOkMessage();
     }
 
-    /**
-     * @return string
-     */
-    public function getPassword(): string {
-        return $this->password;
-    }
-
-    /**
-     * @return string
-     */
-    public function getMail(): ?string {
-        return $this->mail;
-    }
-
-    /**
-     * @param string $name
-     */
-    public function setName(string $name): void {
-        $this->name = $name;
-    }
-
-    /**
-     * @param string $password
-     */
-    public function setPassword(string $password): void {
-        $this->password = $password;
-    }
-
-    /**
-     * @param string $mail
-     */
-    public function setMail(string $mail): void {
-        $this->mail = $mail;
+    public function transform(): AbstractTransformed {
+        $ret = new NewRegistrationTransformed();
+        $ret->setName($this->name);
+        $ret->setPassword($this->password);
+        $this->password = '';
+        if ($this->mail !== null) {
+            $ret->setMail($this->mail);
+        }
+        return $ret;
     }
 
 }

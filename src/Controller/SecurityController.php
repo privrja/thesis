@@ -3,13 +3,13 @@
 namespace App\Controller;
 
 use App\Base\Message;
+use App\Base\RequestHelper;
 use App\Base\ResponseHelper;
-use App\Constant\ErrorConstants;
 use App\Entity\User;
+use App\Repository\UserRepository;
+use App\Structure\NewRegistrationTransformed;
 use Doctrine\ORM\EntityManagerInterface;
-use InvalidArgumentException;
-use JsonMapper;
-use JsonMapper_Exception;
+use Exception;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -19,7 +19,8 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use Symfony\Component\Security\Core\Security;
 
-class SecurityController extends AbstractController {
+class SecurityController extends AbstractController
+{
 
     /**
      * @Route("/rest/register", name="register", methods={"POST"})
@@ -27,32 +28,34 @@ class SecurityController extends AbstractController {
      * @param EntityManagerInterface $entityManager
      * @param Security $security
      * @param UserPasswordEncoderInterface $passwordEncoder
+     * @param UserRepository $userRepository
      * @param LoggerInterface $logger
      * @return JsonResponse
      */
-    public function registration(Request $request, EntityManagerInterface $entityManager, Security $security, UserPasswordEncoderInterface $passwordEncoder, LoggerInterface $logger) {
-        if($security->getUser()) {
+    public function registration(Request $request, EntityManagerInterface $entityManager, Security $security, UserPasswordEncoderInterface $passwordEncoder, UserRepository $userRepository, LoggerInterface $logger) {
+        if ($security->getUser()) {
             return ResponseHelper::jsonResponse(new Message("Already registered user"), Response::HTTP_BAD_REQUEST);
         }
-
-        $mapper = new JsonMapper();
-        // TODO check if user name exists
-
+        /** @var NewRegistrationTransformed $trans */
+        $trans = RequestHelper::evaluateRequest($request, new NewRegistrationStructure(), $logger);
+        if ($trans instanceof JsonResponse) {
+            return $trans;
+        }
+        if ($userRepository->findOneBy(['nick' => $trans->getName()])) {
+            return ResponseHelper::jsonResponse(new Message('This name is taken'), Response::HTTP_BAD_REQUEST);
+        }
         $user = new User();
+        $user->setNick($trans->getName());
+        if ($trans->getMail() !== null) {
+            $user->setMail($trans->getMail());
+        }
         try {
-            /** @var NewRegistrationStructure $regData */
-            $regData = $mapper->map(json_decode($request->getContent()), new NewRegistrationStructure());
-            $user->setNick($regData->getName());
-            if ($regData->getMail() !== null) {
-                $user->setMail($regData->getMail());
-            }
-            $user->setPassword($passwordEncoder->encodePassword($user, $regData->getPassword()));
-
+            $user->setPassword($passwordEncoder->encodePassword($user, $trans->getPassword()));
+            $trans->setPassword('');
             $entityManager->persist($user);
             $entityManager->flush();
-        } catch (JsonMapper_Exception | InvalidArgumentException  $e) {
-            $logger->warning($e->getMessage(), $e->getTrace());
-            return ResponseHelper::jsonResponse(new Message(ErrorConstants::ERROR_JSON_FORMAT), Response::HTTP_BAD_REQUEST);
+        } catch (Exception $exception) {
+            return ResponseHelper::jsonResponse(new Message('Something go wrong'), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
         return ResponseHelper::jsonResponse(Message::createOkMessage(), Response::HTTP_CREATED);
     }

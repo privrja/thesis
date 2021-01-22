@@ -31,8 +31,8 @@ or
 ### Start local dev server 
 ```symfony server:start```
 
-Documentation of API is [localhost:8000/api/doc]
-Rest API is on [localhost:8000/rest]
+Documentation of API is [localhost:8000/api/doc](https://localhost:8000/api/doc)
+Rest API is on [localhost:8000/rest](https://localhost:8000/rest)
 
 ### CORS
 To test on local machine you need to use chrome without CORS policy check

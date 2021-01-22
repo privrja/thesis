@@ -36,8 +36,7 @@ class SecurityController extends AbstractController
         $trans = RequestHelper::evaluateRequest($request, new NewRegistrationStructure(), $logger);
         if ($trans instanceof JsonResponse) {
             return $trans;
-        }
-        if ($userRepository->findOneBy(['nick' => $trans->getName()])) {
+        } else if ($userRepository->findOneBy(['nick' => $trans->getName()])) {
             return ResponseHelper::jsonResponse(new Message('This name is taken'), Response::HTTP_BAD_REQUEST);
         }
         $user = new User();

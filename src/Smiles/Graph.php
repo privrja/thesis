@@ -48,8 +48,8 @@ class Graph {
     }
 
     /**
-     * Add node to graph, in graph stored as @see \App\Smiles\Node
-     * @param Element $element
+     * Add node to graph, in graph stored as @param Element $element
+     * @see \App\Smiles\Node
      */
     public function addNode(Element $element): void {
         $this->arNodes[] = new Node($element);
@@ -85,16 +85,15 @@ class Graph {
         $smilesParser = new SmilesParser($this);
         $result = $smilesParser->parse($strText);
         if (!$result->isAccepted()) {
-//            Logger::log(LoggerEnum::ERROR, $strText . ' Graph cannot be build');
-            throw new InvalidArgumentException();
+            throw new InvalidArgumentException('Graph can\'t be build');
         }
     }
 
     /**
      * Get formula from graph
      * @param int $losses losses to formula, this value will by subtracted from formula
-     * @see LossesEnum
      * @return string formula
+     * @see LossesEnum
      */
     public function getFormula(int $losses): string {
         $arMapNodesAndCount = [];
@@ -123,9 +122,6 @@ class Graph {
             $this->cangen();
             $this->genes();
         } catch (Error $e) {
-            var_dump($e->getMessage());
-
-//            Logger::log(LoggerEnum::ERROR, $this->smiles . PHP_EOL . $e->getMessage() . PHP_EOL . $e->getTraceAsString());
             return $this->smiles;
         }
         return $this->uniqueSmiles;
@@ -595,9 +591,6 @@ class Graph {
                             if (isset($path[$index + 1])) {
                                 $bond = $this->findBondTo($path[$index], $path[$index + 1]);
                                 $bondBack = $this->findBondTo($path[$index + 1], $path[$index]);
-//                            } else {
-//                                $strArray = implode(" ", $path);
-//                                Logger::log(LoggerEnum::WARNING, "index $index + 1 out of range in path array $strArray");
                             }
                         } catch (NotFoundException $exception) {
                             throw new IllegalStateException();
@@ -605,8 +598,8 @@ class Graph {
                         $bond->setBondType(BondTypeEnum::DOUBLE);
                         $bondBack->setBondType(BondTypeEnum::DOUBLE);
                     } else if ($index === 2) {
-                       $atom = $this->arNodes[$path[$index]]->getAtom()->asBracketElement();
-                       $atom->setHydrogens(1);
+                        $atom = $this->arNodes[$path[$index]]->getAtom()->asBracketElement();
+                        $atom->setHydrogens(1);
                     }
                 } else {
                     if ($index % 2 === 0) {
@@ -614,9 +607,6 @@ class Graph {
                             if (isset($path[$index + 1])) {
                                 $bond = $this->findBondTo($path[$index], $path[$index + 1]);
                                 $bondBack = $this->findBondTo($path[$index + 1], $path[$index]);
-//                            } else {
-//                                $strArray = implode(" ", $path);
-//                                Logger::log(LoggerEnum::WARNING, "index $index + 1 out of range in path array $strArray");
                             }
                         } catch (NotFoundException $exception) {
                             throw new IllegalStateException();

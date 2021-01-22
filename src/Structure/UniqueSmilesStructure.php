@@ -2,24 +2,24 @@
 
 namespace App\Structure;
 
-use App\Base\Message;
+use JsonSerializable;
 
-class UniqueSmilesStructure extends AbstractStructure {
+class UniqueSmilesStructure implements JsonSerializable {
 
     /** @var string */
     public $smiles;
 
-    public function checkInput(): Message {
-        if (empty($this->smiles)) {
-            return new Message("SMILES is empty");
-        }
-        return Message::createOkMessage();
-    }
+    /** @var string */
+    public $unique;
 
-    public function transform(): AbstractTransformed {
-        $sm = new UniqueSmilesTransformed();
-        $sm->setSmiles($this->smiles);
-        return $sm;
+    /** @var int */
+    public $sameAs;
+
+    /**
+     * @inheritDoc
+     */
+    public function jsonSerialize() {
+        return [ 'smiles' => $this->smiles, 'unique' => $this->unique, 'sameAs' => $this->sameAs];
     }
 
 }

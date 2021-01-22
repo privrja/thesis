@@ -122,7 +122,7 @@ class Graph {
             $this->cangen();
             $this->genes();
         } catch (Error $e) {
-            return $this->smiles;
+            throw new IllegalStateException($e->getMessage());
         }
         return $this->uniqueSmiles;
     }

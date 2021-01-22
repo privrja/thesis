@@ -2,7 +2,9 @@
 
 namespace App\Structure;
 
-class UniqueSmilesTransformed extends AbstractTransformed {
+use JsonSerializable;
+
+class UniqueSmilesTransformed extends AbstractTransformed implements JsonSerializable {
 
     /** @var string */
     private $smiles;
@@ -19,6 +21,13 @@ class UniqueSmilesTransformed extends AbstractTransformed {
      */
     public function setSmiles(string $smiles): void {
         $this->smiles = $smiles;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function jsonSerialize() {
+        return ['smiles' => $this->smiles];
     }
 
 }

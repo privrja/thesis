@@ -23,12 +23,12 @@ use Swagger\Annotations as SWG;
 class SmilesController extends AbstractController {
 
     /**
-     * @Route("/rest/smiles/unique", name="smiles_unique", methods={"GET"})
+     * @Route("/rest/smiles/unique", name="smiles_unique", methods={"POST"})
      * @param Request $request
      * @param LoggerInterface $logger
      * @return UniqueSmilesTransformed|JsonResponse
      *
-     * @SWG\Get(
+     * @SWG\Post(
      *     tags={"SMILES"},
      *     @SWG\Parameter(
      *          name="body",
@@ -51,7 +51,9 @@ class SmilesController extends AbstractController {
         }
 
         try {
-            return ResponseHelper::jsonResponse(new Message(SmilesHelper::getUniqueSmiles($trans->getSmiles())));
+            $smiles = new UniqueSmilesTransformed();
+            $smiles->setSmiles(SmilesHelper::getUniqueSmiles($trans->getSmiles()));
+            return new JsonResponse($smiles);
         } catch (IllegalStateException $e) {
             return ResponseHelper::jsonResponse(new Message($e->getMessage()));
         }

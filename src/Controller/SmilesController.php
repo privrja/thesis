@@ -8,12 +8,13 @@ use App\Constant\ErrorConstants;
 use App\Exception\IllegalStateException;
 use App\Smiles\Graph;
 use App\Structure\UniqueSmilesStructure;
+use Exception;
 use JsonMapper;
 use JsonMapper_Exception;
-use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Swagger\Annotations as SWG;
 
@@ -26,7 +27,6 @@ class SmilesController extends AbstractController {
     /**
      * @Route("/rest/smiles/unique", name="smiles_unique", methods={"POST"})
      * @param Request $request
-     * @param LoggerInterface $logger
      * @return JsonResponse
      *
      * @SWG\Post(
@@ -41,18 +41,49 @@ class SmilesController extends AbstractController {
      *              example="[{""smiles"": ""CC(=O)CC""}]"),
      *      ),
      *     @SWG\Response(response="200", description="Return Unique SMILES."),
-     *     @SWG\Response(response="401", description="Return when input is wrong."),
+     *     @SWG\Response(response="400", description="Return when input is wrong."),
      *)
      */
     public function uniqueSmiles(Request $request) {
+        $smilesInput = $this->checkInputJson($request);
+        if ($smilesInput instanceof JsonResponse) {
+            return $smilesInput;
+        }
+        $length = count($smilesInput);
+        $nextCheck = $this->checkNext($smilesInput, $length);
+        if ($nextCheck instanceof JsonResponse) {
+            return $nextCheck;
+        }
+        return $this->unique($smilesInput, $length);
+    }
+
+    function checkInputJson(Request $request) {
         $mapper = new JsonMapper();
         try {
             $smilesInput = $mapper->mapArray(json_decode($request->getContent()), []);
         } catch (JsonMapper_Exception $e) {
-            return ResponseHelper::jsonResponse(new Message(ErrorConstants::ERROR_JSON_FORMAT));
+            return ResponseHelper::jsonResponse(new Message(ErrorConstants::ERROR_JSON_FORMAT), Response::HTTP_BAD_REQUEST);
+        } catch (Exception $e) {
+            return ResponseHelper::jsonResponse(new Message(ErrorConstants::ERROR_JSON_FORMAT), Response::HTTP_BAD_REQUEST);
         }
+        return $smilesInput;
+    }
 
-        $length = count($smilesInput);
+    function checkNext(array $smilesInput, int $length) {
+        if ($length === 0) {
+            return ResponseHelper::jsonResponse(new Message(ErrorConstants::ERROR_JSON_FORMAT), Response::HTTP_BAD_REQUEST);
+        }
+        foreach ($smilesInput as $input) {
+            try {
+                $input->smiles;
+            } catch (Exception $e) {
+                return ResponseHelper::jsonResponse(new Message(ErrorConstants::ERROR_JSON_FORMAT), Response::HTTP_BAD_REQUEST);
+            }
+        }
+        return false;
+    }
+
+    function unique(array $smilesInput, int $length) {
         $smilesFirst = new UniqueSmilesStructure();
         $smilesFirst->smiles = $smilesInput[0]->smiles;
         $smilesFirst->sameAs = null;

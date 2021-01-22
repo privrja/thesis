@@ -17,7 +17,6 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
-use Symfony\Component\Security\Core\Security;
 
 class SecurityController extends AbstractController
 {
@@ -43,6 +42,7 @@ class SecurityController extends AbstractController
         }
         $user = new User();
         $user->setNick($trans->getName());
+        $user->setRoles(["ROLE_USER"]);
         if ($trans->getMail() !== null) {
             $user->setMail($trans->getMail());
         }

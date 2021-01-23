@@ -6,6 +6,8 @@ use JsonSerializable;
 
 class UniqueSmilesStructure implements JsonSerializable {
 
+    public $id;
+
     /** @var string */
     public $smiles;
 
@@ -19,7 +21,7 @@ class UniqueSmilesStructure implements JsonSerializable {
      * @inheritDoc
      */
     public function jsonSerialize() {
-        return [ 'smiles' => $this->smiles, 'unique' => $this->unique, 'sameAs' => $this->sameAs];
+        return [ 'id' => $this->id, 'smiles' => $this->smiles, 'unique' => $this->unique, 'sameAs' => $this->sameAs];
     }
 
 }

@@ -85,6 +85,7 @@ class SmilesController extends AbstractController {
 
     function unique(array $smilesInput, int $length) {
         $smilesFirst = new UniqueSmilesStructure();
+        $smilesFirst->id = 0;
         $smilesFirst->smiles = $smilesInput[0]->smiles;
         $smilesFirst->sameAs = null;
         $smilesFirst->smiles = $smilesInput[0]->smiles;
@@ -98,6 +99,7 @@ class SmilesController extends AbstractController {
         $res = [$smilesFirst];
         for ($i = 1; $i < $length; $i++) {
             $smiles = new UniqueSmilesStructure();
+            $smiles->id = $i;
             $smiles->smiles = $smilesInput[$i]->smiles;
             $graph = new Graph($smiles->smiles);
             try {

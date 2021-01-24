@@ -31,7 +31,7 @@ class ContainerModel
      * @param User $usr
      * @param LoggerInterface $logger
      */
-    public function __construct(EntityManagerInterface $entityManager, ManagerRegistry $doctrine, User $usr, LoggerInterface $logger)
+    public function __construct(EntityManagerInterface $entityManager, ManagerRegistry $doctrine, ?User $usr, LoggerInterface $logger)
     {
         $this->doctrine = $doctrine;
         $this->entityManager = $entityManager;
@@ -116,6 +116,10 @@ class ContainerModel
     private function hasContainer(Container $container)
     {
         return $this->userRepository->isContainerForLoggedUserByContainerId($this->usr->getId(), $container->getId());
+    }
+
+    public function getContainerModifications(int $containerId) {
+        return $this->containerRepository->getContainerModifications($containerId);
     }
 
 }

@@ -33,5 +33,15 @@ class ContainerRepository extends ServiceEntityRepository
             ->getArrayResult();
     }
 
+    public function getContainerModifications(int $containerId) {
+        return $this->createQueryBuilder('cnt')
+            ->select('mdf.id', 'cnt.id as containerId', 'mdf.modificationName', 'mdf.modificationFormula', 'mdf.modificationMass', 'mdf.nTerminal', 'mdf.cTerminal')
+            ->innerJoin('cnt.modificationId', 'mdf')
+            ->where('cnt.id = :containerId')
+            ->setParameter('containerId', $containerId)
+            ->getQuery()
+            ->getArrayResult();
+    }
+
 
 }

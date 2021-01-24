@@ -6,6 +6,7 @@ use App\Constant\BaseAminoAcids;
 use App\Constant\ContainerModeEnum;
 use App\Constant\ContainerVisibilityEnum;
 use App\Entity\Container;
+use App\Entity\Modification;
 use App\Entity\U2c;
 use App\Entity\User;
 use Doctrine\Bundle\FixturesBundle\Fixture;
@@ -74,6 +75,8 @@ class AppFixtures extends Fixture
         $container->setVisibility(ContainerVisibilityEnum::PRIVATE);
         $manager->persist($container);
 
+        $this->saveModifications($container, $manager);
+
         $u2c = new U2c();
         $u2c->setContainer($container);
         $u2c->setUser($userP);
@@ -92,7 +95,29 @@ class AppFixtures extends Fixture
             $manager->persist($block);
         }
 
+        $this->saveModifications($container, $manager);
+
         $manager->flush();
+    }
+
+    public function saveModifications(Container $container, ObjectManager $manager) {
+        $modification = new Modification();
+        $modification->setContainer($container);
+        $modification->setModificationName('Acetyl');
+        $modification->setModificationFormula('H2C2O');
+        $modification->setModificationMass(42.0105650000);
+        $modification->setNTerminal(true);
+        $modification->setCTerminal(false);
+        $manager->persist($modification);
+
+        $modification = new Modification();
+        $modification->setContainer($container);
+        $modification->setModificationName('Amidated');
+        $modification->setModificationFormula('HNO-1');
+        $modification->setModificationMass(-0.9840155848);
+        $modification->setNTerminal(false);
+        $modification->setCTerminal(true);
+        $manager->persist($modification);
     }
 
 }

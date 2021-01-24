@@ -57,7 +57,6 @@ class ModificationController extends AbstractController {
      * @Route("/rest/container/{id}/modification", name="modification", methods={"GET"})
      * @param Container $container
      * @param EntityManagerInterface $entityManager
-     * @param Security $security
      * @param LoggerInterface $logger
      * @return JsonResponse
      *

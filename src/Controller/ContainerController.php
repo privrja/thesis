@@ -182,7 +182,7 @@ class ContainerController extends AbstractController
         $model = new ContainerModel($entityManager, $this->getDoctrine(), $security->getUser(), $logger);
         $modelMessage = $model->delete($container);
         if (!$modelMessage->result) {
-            return ResponseHelper::jsonResponse();
+            return ResponseHelper::jsonResponse($modelMessage, Response::HTTP_BAD_REQUEST);
         }
         return new JsonResponse(null, Response::HTTP_NO_CONTENT);
     }
@@ -226,11 +226,10 @@ class ContainerController extends AbstractController
         if ($trans instanceof JsonResponse) {
             return $trans;
         }
-
         $model = new ContainerModel($entityManager, $this->getDoctrine(), $security->getUser(), $logger);
         $modelMessage = $model->update($trans, $container);
         if (!$modelMessage->result) {
-            return ResponseHelper::jsonResponse();
+            return ResponseHelper::jsonResponse($modelMessage, Response::HTTP_BAD_REQUEST);
         }
         return ResponseHelper::jsonResponse(null, Response::HTTP_NO_CONTENT);
     }

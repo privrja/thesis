@@ -59,18 +59,6 @@ class ModificationController extends AbstractController {
      * @param EntityManagerInterface $entityManager
      * @param LoggerInterface $logger
      * @return JsonResponse
-     *
-     * @SWG\Get(
-     *     tags={"Container"},
-     *     security={
-     *         {"ApiKeyAuth":{}}
-     *     },
-     *     @SWG\Response(response="200", description="Return list of containers for logged user."),
-     *     @SWG\Response(response="401", description="Return when user is not logged in."),
-     *     @SWG\Swagger(
-     *      @SWG\SecurityScheme(type="apiKey", securityDefinition="ApiKeyAuth", in="header", name="X-AUTH-TOKEN")
-     *     )
-     * )
      */
     public function getModificationsFree(Container $container, EntityManagerInterface $entityManager, LoggerInterface $logger) {
         if ($container->getVisibility() === ContainerVisibilityEnum::PRIVATE) {

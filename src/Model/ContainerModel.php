@@ -84,8 +84,7 @@ class ContainerModel
         if (empty($hasContainer)) {
             return new Message(ErrorConstants::ERROR_CONTAINER_NOT_EXISTS_FOR_USER);
         }
-        $this->updateContainerProperties($trans, $container);
-        return Message::createOkMessage();
+        return $this->updateContainerProperties($trans, $container);
     }
 
     private function updateContainerProperties(UpdateContainerTransformed $trans, Container $container)
@@ -93,13 +92,13 @@ class ContainerModel
         if (!empty($trans->getContainerName())) {
             $container->setContainerName($trans->getContainerName());
         }
-
         $visibility = $trans->getVisibility();
         if (isset($visibility)) {
             $container->setVisibility($trans->getVisibility());
         }
-
+        $this->entityManager->persist($container);
         $this->entityManager->flush();
+        return Message::createOkMessage();
     }
 
     public function delete(Container $container)

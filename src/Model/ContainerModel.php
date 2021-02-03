@@ -14,8 +14,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
 use Psr\Log\LoggerInterface;
 
-class ContainerModel
-{
+class ContainerModel {
 
     private $usr;
     private $doctrine;
@@ -31,8 +30,7 @@ class ContainerModel
      * @param User $usr
      * @param LoggerInterface $logger
      */
-    public function __construct(EntityManagerInterface $entityManager, ManagerRegistry $doctrine, ?User $usr, LoggerInterface $logger)
-    {
+    public function __construct(EntityManagerInterface $entityManager, ManagerRegistry $doctrine, ?User $usr, LoggerInterface $logger) {
         $this->doctrine = $doctrine;
         $this->entityManager = $entityManager;
         $this->usr = $usr;
@@ -53,8 +51,7 @@ class ContainerModel
         return $this->containerRepository->getContainerCollaborators($containerId);
     }
 
-    public function createNew(NewContainerTransformed $trans): Message
-    {
+    public function createNew(NewContainerTransformed $trans): Message {
         $haveSameName = $this->userRepository->isContainerForLoggedUserByName($this->usr->getId(), $trans->getContainerName());
         if (!empty($haveSameName)) {
             return new Message(ErrorConstants::ERROR_CONTAINER_NAME_EXISTS);
@@ -63,8 +60,7 @@ class ContainerModel
         return Message::createOkMessage();
     }
 
-    private function createNewContainer(NewContainerTransformed $trans)
-    {
+    private function createNewContainer(NewContainerTransformed $trans) {
         $container = new Container();
         $container->setContainerName($trans->getContainerName());
         $container->setVisibility($trans->getVisibility());
@@ -78,8 +74,7 @@ class ContainerModel
         $this->entityManager->flush();
     }
 
-    public function update(UpdateContainerTransformed $trans, Container $container): Message
-    {
+    public function update(UpdateContainerTransformed $trans, Container $container): Message {
         $hasContainer = $this->hasContainer($container);
         if (empty($hasContainer)) {
             return new Message(ErrorConstants::ERROR_CONTAINER_NOT_EXISTS_FOR_USER);
@@ -87,8 +82,7 @@ class ContainerModel
         return $this->updateContainerProperties($trans, $container);
     }
 
-    private function updateContainerProperties(UpdateContainerTransformed $trans, Container $container)
-    {
+    private function updateContainerProperties(UpdateContainerTransformed $trans, Container $container) {
         if (!empty($trans->getContainerName())) {
             $container->setContainerName($trans->getContainerName());
         }
@@ -101,8 +95,7 @@ class ContainerModel
         return Message::createOkMessage();
     }
 
-    public function delete(Container $container)
-    {
+    public function delete(Container $container) {
         $hasContainer = $this->hasContainer($container);
         if (empty($hasContainer)) {
             return new Message(ErrorConstants::ERROR_CONTAINER_NOT_EXISTS_FOR_USER);
@@ -112,8 +105,7 @@ class ContainerModel
         return Message::createOkMessage();
     }
 
-    private function hasContainer(Container $container)
-    {
+    public function hasContainer(Container $container) {
         return $this->userRepository->isContainerForLoggedUserByContainerId($this->usr->getId(), $container->getId());
     }
 

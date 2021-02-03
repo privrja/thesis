@@ -30,8 +30,7 @@ use Symfony\Component\Security\Core\Security;
  * Class ContainerController
  * @package App\Controller
  */
-class ContainerController extends AbstractController
-{
+class ContainerController extends AbstractController {
 
     /**
      * Return containers for logged user
@@ -54,8 +53,7 @@ class ContainerController extends AbstractController
      * )
      *
      */
-    public function index(UserRepository $userRepository, Security $security)
-    {
+    public function index(UserRepository $userRepository, Security $security) {
         // TODO prepare sorting and filtering options to query, maybe paging
         return new JsonResponse($userRepository->findContainersForLoggedUser($security->getUser()->getId()));
     }
@@ -72,8 +70,7 @@ class ContainerController extends AbstractController
      * )
      *
      */
-    public function freeContainers(ContainerRepository $containerRepository)
-    {
+    public function freeContainers(ContainerRepository $containerRepository) {
         // TODO prepare sorting and filtering options to query, maybe paging
         return new JsonResponse($containerRepository->findBy([EntityColumnsEnum::CONTAINER_VISIBILITY => ContainerVisibilityEnum::PUBLIC]));
     }
@@ -99,12 +96,11 @@ class ContainerController extends AbstractController
      * )
      *
      */
-    public function containerId(Container $container, EntityManagerInterface $entityManager, Security $security, LoggerInterface $logger)
-    {
+    public function containerId(Container $container, EntityManagerInterface $entityManager, Security $security, LoggerInterface $logger) {
         $model = new ContainerModel($entityManager, $this->getDoctrine(), $security->getUser(), $logger);
         $modelMessage = $model->concreteContainer($container);
         if (!$modelMessage->result) {
-            return ResponseHelper::jsonResponse();
+            return ResponseHelper::jsonResponse($modelMessage);
         }
         $ccContainer = new ConcreateContainer($container->getId(), $container->getContainerName(), $container->getVisibility(), $model->concreteContainerCollaborators($container->getId()));
         return new JsonResponse($ccContainer, Response::HTTP_OK);
@@ -140,20 +136,15 @@ class ContainerController extends AbstractController
      * )
      *
      */
-    public function addNewContainer(Request $request, EntityManagerInterface $entityManager, Security $security, LoggerInterface $logger)
-    {
+    public function addNewContainer(Request $request, EntityManagerInterface $entityManager, Security $security, LoggerInterface $logger) {
         /** @var NewContainerTransformed $trans */
         $trans = RequestHelper::evaluateRequest($request, new NewContainerStructure(), $logger);
         if ($trans instanceof JsonResponse) {
             return $trans;
         }
-
         $model = new ContainerModel($entityManager, $this->getDoctrine(), $security->getUser(), $logger);
         $modelMessage = $model->createNew($trans);
-        if (!$modelMessage->result) {
-            return ResponseHelper::jsonResponse($modelMessage, Response::HTTP_BAD_REQUEST);
-        }
-        return new JsonResponse(null, Response::HTTP_CREATED);
+        return ResponseHelper::jsonResponse($modelMessage);
     }
 
     /**
@@ -177,14 +168,10 @@ class ContainerController extends AbstractController
      * )
      *
      */
-    public function deleteContainer(Container $container, EntityManagerInterface $entityManager, Security $security, LoggerInterface $logger)
-    {
+    public function deleteContainer(Container $container, EntityManagerInterface $entityManager, Security $security, LoggerInterface $logger) {
         $model = new ContainerModel($entityManager, $this->getDoctrine(), $security->getUser(), $logger);
         $modelMessage = $model->delete($container);
-        if (!$modelMessage->result) {
-            return ResponseHelper::jsonResponse($modelMessage, Response::HTTP_BAD_REQUEST);
-        }
-        return new JsonResponse(null, Response::HTTP_NO_CONTENT);
+        return ResponseHelper::jsonResponse($modelMessage);
     }
 
     /**
@@ -219,8 +206,7 @@ class ContainerController extends AbstractController
      * )
      *
      */
-    public function updateContainer(Container $container, Request $request, EntityManagerInterface $entityManager, Security $security, LoggerInterface $logger)
-    {
+    public function updateContainer(Container $container, Request $request, EntityManagerInterface $entityManager, Security $security, LoggerInterface $logger) {
         /** @var UpdateContainerTransformed $trans */
         $trans = RequestHelper::evaluateRequest($request, new UpdateContainerStructure(), $logger);
         if ($trans instanceof JsonResponse) {
@@ -228,10 +214,7 @@ class ContainerController extends AbstractController
         }
         $model = new ContainerModel($entityManager, $this->getDoctrine(), $security->getUser(), $logger);
         $modelMessage = $model->update($trans, $container);
-        if (!$modelMessage->result) {
-            return ResponseHelper::jsonResponse($modelMessage, Response::HTTP_BAD_REQUEST);
-        }
-        return ResponseHelper::jsonResponse(null, Response::HTTP_NO_CONTENT);
+        return ResponseHelper::jsonResponse($modelMessage);
     }
 
 }

@@ -14,11 +14,14 @@ class ResponseHelper {
     /**
      * Help to generate JsonResponse with specified message and status code.
      * @param Message $message
-     * @param int $httpStatusCode
      * @return JsonResponse
      */
-    public static function jsonResponse(Message $message = null, int $httpStatusCode = Response::HTTP_NOT_FOUND) : JsonResponse {
-        return new JsonResponse($message , $httpStatusCode);
+    public static function jsonResponse(Message $message = null) : JsonResponse {
+        return new JsonResponse($message , $message->status);
+    }
+
+    public static function emplaceJsonResponse(string $text, int $status = Response::HTTP_BAD_REQUEST): JsonResponse {
+        return new JsonResponse(new Message($text), $status);
     }
 
 }

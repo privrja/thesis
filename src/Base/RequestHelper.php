@@ -11,7 +11,6 @@ use JsonMapper_Exception;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 
 class RequestHelper {
 
@@ -28,11 +27,11 @@ class RequestHelper {
             $containerData = $mapper->map(json_decode($request->getContent()), $structure);
         } catch (JsonMapper_Exception | InvalidArgumentException  $e) {
             $logger->warning($e->getMessage(), $e->getTrace());
-            return ResponseHelper::jsonResponse(new Message(ErrorConstants::ERROR_JSON_FORMAT), Response::HTTP_BAD_REQUEST);
+            return ResponseHelper::emplaceJsonResponse(ErrorConstants::ERROR_JSON_FORMAT);
         }
         $message = $containerData->checkInput();
         if(!$message->result) {
-            return ResponseHelper::jsonResponse($message, Response::HTTP_BAD_REQUEST);
+            return ResponseHelper::jsonResponse($message);
         }
         return $containerData->transform();
     }

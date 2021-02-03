@@ -14,7 +14,6 @@ use JsonMapper_Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Swagger\Annotations as SWG;
 
@@ -62,22 +61,22 @@ class SmilesController extends AbstractController {
         try {
             $smilesInput = $mapper->mapArray(json_decode($request->getContent()), []);
         } catch (JsonMapper_Exception $e) {
-            return ResponseHelper::jsonResponse(new Message(ErrorConstants::ERROR_JSON_FORMAT), Response::HTTP_BAD_REQUEST);
+            return ResponseHelper::jsonResponse(new Message(ErrorConstants::ERROR_JSON_FORMAT));
         } catch (Exception $e) {
-            return ResponseHelper::jsonResponse(new Message(ErrorConstants::ERROR_JSON_FORMAT), Response::HTTP_BAD_REQUEST);
+            return ResponseHelper::jsonResponse(new Message(ErrorConstants::ERROR_JSON_FORMAT));
         }
         return $smilesInput;
     }
 
     function checkNext(array $smilesInput, int $length) {
         if ($length === 0) {
-            return ResponseHelper::jsonResponse(new Message(ErrorConstants::ERROR_JSON_FORMAT), Response::HTTP_BAD_REQUEST);
+            return ResponseHelper::jsonResponse(new Message(ErrorConstants::ERROR_JSON_FORMAT));
         }
         foreach ($smilesInput as $input) {
             try {
                 $input->smiles;
             } catch (Exception $e) {
-                return ResponseHelper::jsonResponse(new Message(ErrorConstants::ERROR_JSON_FORMAT), Response::HTTP_BAD_REQUEST);
+                return ResponseHelper::jsonResponse(new Message(ErrorConstants::ERROR_JSON_FORMAT));
             }
         }
         return false;

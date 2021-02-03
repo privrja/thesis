@@ -13,6 +13,7 @@ use Psr\Log\LoggerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Swagger\Annotations as SWG;
 use Symfony\Component\Security\Core\Security;
@@ -46,7 +47,7 @@ class ModificationController extends AbstractController {
         if ($container->getVisibility() === ContainerVisibilityEnum::PRIVATE) {
             $modelMessage = $model->concreteContainer($container);
             if (!$modelMessage->result) {
-                return ResponseHelper::jsonResponse(new Message(ErrorConstants::ERROR_CONTAINER_NOT_EXISTS_FOR_USER));
+                return ResponseHelper::jsonResponse(new Message(ErrorConstants::ERROR_CONTAINER_NOT_EXISTS_FOR_USER, Response::HTTP_NOT_FOUND));
             }
         }
         return new JsonResponse($model->getContainerModifications($container->getId()));
@@ -62,7 +63,7 @@ class ModificationController extends AbstractController {
      */
     public function getModificationsFree(Container $container, EntityManagerInterface $entityManager, LoggerInterface $logger) {
         if ($container->getVisibility() === ContainerVisibilityEnum::PRIVATE) {
-            return ResponseHelper::jsonResponse(new Message(ErrorConstants::ERROR_CONTAINER_NOT_EXISTS_FOR_USER));
+            return ResponseHelper::jsonResponse(new Message(ErrorConstants::ERROR_CONTAINER_NOT_EXISTS_FOR_USER, Response::HTTP_NOT_FOUND));
         }
         $model = new ContainerModel($entityManager, $this->getDoctrine(), null, $logger);
         return new JsonResponse($model->getContainerModifications($container->getId()));

@@ -1,20 +1,17 @@
 <?php
 
-
 namespace App\Structure;
 
 use App\Base\Message;
 use App\Constant\ContainerVisibilityEnum;
 use App\Constant\ErrorConstants;
 
-class UpdateContainerStructure extends AbstractStructure
-{
+class UpdateContainerStructure extends AbstractStructure {
 
     public $containerName;
     public $visibility;
 
-    public function checkInput(): Message
-    {
+    public function checkInput(): Message {
         if (empty($this->containerName) && empty($this->visibility)) {
             return new Message(ErrorConstants::ERROR_EMPTY_PARAMS);
         }
@@ -26,8 +23,7 @@ class UpdateContainerStructure extends AbstractStructure
         }
     }
 
-    public function transform(): AbstractTransformed
-    {
+    public function transform(): AbstractTransformed {
         $trans = new UpdateContainerTransformed();
         $trans->setContainerName($this->containerName);
         if ($this->visibility !== null) {

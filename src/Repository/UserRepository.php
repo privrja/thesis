@@ -90,4 +90,19 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
             ->getArrayResult();
     }
 
+    public function isContainerForLoggedUserByContainerIdRW(string $usrId, int $containerId) {
+        return $this->createQueryBuilder('usr')
+            ->select('1')
+            ->innerJoin('usr.u2container', 'u2c')
+            ->innerJoin('u2c.container', 'cnt')
+            ->andWhere('usr.id = :usrId')
+            ->setParameter('usrId', $usrId)
+            ->andWhere('cnt.id = :cntId')
+            ->setParameter('cntId', $containerId)
+            ->andWhere('u2c.mode = :mode')
+            ->setParameter('mode', 'RW')
+            ->getQuery()
+            ->getArrayResult();
+    }
+
 }

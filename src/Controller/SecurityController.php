@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Base\Message;
 use App\Base\RequestHelper;
 use App\Base\ResponseHelper;
+use App\Constant\ErrorConstants;
 use App\Entity\User;
 use App\Repository\UserRepository;
 use App\Structure\NewRegistrationTransformed;
@@ -36,7 +37,7 @@ class SecurityController extends AbstractController {
         if ($trans instanceof JsonResponse) {
             return $trans;
         } else if ($userRepository->findOneBy(['nick' => $trans->getName()])) {
-            return ResponseHelper::jsonResponse(new Message('This name is taken'), Response::HTTP_BAD_REQUEST);
+            return ResponseHelper::jsonResponse(new Message(ErrorConstants::ERROR_NAME_IS_TAKEN));
         }
         $user = new User();
         $user->setNick($trans->getName());
@@ -50,9 +51,9 @@ class SecurityController extends AbstractController {
             $entityManager->persist($user);
             $entityManager->flush();
         } catch (Exception $exception) {
-            return ResponseHelper::jsonResponse(new Message('Something go wrong'), Response::HTTP_INTERNAL_SERVER_ERROR);
+            return ResponseHelper::jsonResponse(new Message(ErrorConstants::ERROR_SOMETHING_GO_WRONG, Response::HTTP_INTERNAL_SERVER_ERROR));
         }
-        return ResponseHelper::jsonResponse(Message::createOkMessage(), Response::HTTP_CREATED);
+        return ResponseHelper::jsonResponse(Message::createCreated());
     }
 
 }

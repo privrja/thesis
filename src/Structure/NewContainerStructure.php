@@ -24,7 +24,7 @@ class NewContainerStructure extends AbstractStructure {
 
     public function checkInput(): Message {
         if (empty($this->containerName)) {
-           return new Message(ErrorConstants::ERROR_EMPTY_PARAMS);
+            return new Message(ErrorConstants::ERROR_EMPTY_PARAMS);
         } else if ($this->visibility === ContainerVisibilityEnum::PUBLIC || $this->visibility === ContainerVisibilityEnum::PRIVATE) {
             return Message::createOkMessage();
         } else {

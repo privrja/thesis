@@ -2,16 +2,16 @@
 
 namespace App\Controller;
 
+use App\Base\Message;
 use App\Base\ResponseHelper;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Swagger\Annotations as SWG;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-class MainController extends AbstractController
-{
+class MainController extends AbstractController {
+
     /**
      * Auth
      * @Route("/rest", name="rest", methods={"GET"})
@@ -28,16 +28,14 @@ class MainController extends AbstractController
      * )
      *
      */
-    public function rest()
-    {
-        return ResponseHelper::jsonResponse(null, Response::HTTP_NO_CONTENT);
+    public function rest() {
+        return ResponseHelper::jsonResponse(Message::createNoContent());
     }
 
     /**
      * @Route("/", name="main", methods={"GET"})
      */
-    public function main()
-    {
+    public function main() {
         return new RedirectResponse('/api/doc');
     }
 

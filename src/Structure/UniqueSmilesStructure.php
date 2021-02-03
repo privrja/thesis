@@ -21,7 +21,7 @@ class UniqueSmilesStructure implements JsonSerializable {
      * @inheritDoc
      */
     public function jsonSerialize() {
-        return [ 'id' => $this->id, 'smiles' => $this->smiles, 'unique' => $this->unique, 'sameAs' => $this->sameAs];
+        return ['id' => $this->id, 'smiles' => $this->smiles, 'unique' => $this->unique, 'sameAs' => $this->sameAs];
     }
 
 }

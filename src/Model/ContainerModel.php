@@ -5,6 +5,7 @@ namespace App\Model;
 use App\Base\Message;
 use App\Constant\ContainerModeEnum;
 use App\Constant\ErrorConstants;
+use App\Entity\Block;
 use App\Entity\Container;
 use App\Entity\U2c;
 use App\Entity\User;
@@ -13,6 +14,7 @@ use App\Structure\UpdateContainerTransformed;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\HttpFoundation\Response;
 
 class ContainerModel {
 
@@ -40,9 +42,9 @@ class ContainerModel {
     }
 
     public function concreteContainer(Container $container) {
-        $hasContainer = $this->hasContainer($container);
+        $hasContainer = $this->hasContainer($container->getId());
         if (empty($hasContainer)) {
-            return new Message(ErrorConstants::ERROR_CONTAINER_NOT_EXISTS_FOR_USER);
+            return new Message(ErrorConstants::ERROR_CONTAINER_NOT_EXISTS_FOR_USER, Response::HTTP_NOT_FOUND);
         }
         return Message::createOkMessage();
     }
@@ -56,11 +58,10 @@ class ContainerModel {
         if (!empty($haveSameName)) {
             return new Message(ErrorConstants::ERROR_CONTAINER_NAME_EXISTS);
         }
-        $this->createNewContainer($trans);
-        return Message::createOkMessage();
+        return $this->createNewContainer($trans);
     }
 
-    private function createNewContainer(NewContainerTransformed $trans) {
+    private function createNewContainer(NewContainerTransformed $trans): Message {
         $container = new Container();
         $container->setContainerName($trans->getContainerName());
         $container->setVisibility($trans->getVisibility());
@@ -72,12 +73,13 @@ class ContainerModel {
         $u2c->setMode(ContainerModeEnum::RW);
         $this->entityManager->persist($u2c);
         $this->entityManager->flush();
+        return Message::createCreated();
     }
 
     public function update(UpdateContainerTransformed $trans, Container $container): Message {
-        $hasContainer = $this->hasContainer($container);
+        $hasContainer = $this->hasContainer($container->getId());
         if (empty($hasContainer)) {
-            return new Message(ErrorConstants::ERROR_CONTAINER_NOT_EXISTS_FOR_USER);
+            return new Message(ErrorConstants::ERROR_CONTAINER_NOT_EXISTS_FOR_USER, Response::HTTP_NOT_FOUND);
         }
         return $this->updateContainerProperties($trans, $container);
     }
@@ -92,25 +94,39 @@ class ContainerModel {
         }
         $this->entityManager->persist($container);
         $this->entityManager->flush();
-        return Message::createOkMessage();
+        return Message::createNoContent();
     }
 
-    public function delete(Container $container) {
-        $hasContainer = $this->hasContainer($container);
+    public function delete(Container $container): Message {
+        $hasContainer = $this->hasContainer($container->getId());
         if (empty($hasContainer)) {
-            return new Message(ErrorConstants::ERROR_CONTAINER_NOT_EXISTS_FOR_USER);
+            return new Message(ErrorConstants::ERROR_CONTAINER_NOT_EXISTS_FOR_USER, Response::HTTP_NOT_FOUND);
         }
         $this->entityManager->remove($container);
         $this->entityManager->flush();
-        return Message::createOkMessage();
+        return Message::createNoContent();
     }
 
-    public function hasContainer(Container $container) {
-        return $this->userRepository->isContainerForLoggedUserByContainerId($this->usr->getId(), $container->getId());
+    public function hasContainer(int $containerId) {
+        return $this->userRepository->isContainerForLoggedUserByContainerId($this->usr->getId(), $containerId);
+    }
+
+    public function hasContainerRW(int $containerId) {
+        return $this->userRepository->isContainerForLoggedUserByContainerIdRW($this->usr->getId(), $containerId);
     }
 
     public function getContainerModifications(int $containerId) {
         return $this->containerRepository->getContainerModifications($containerId);
+    }
+
+    public function deleteBlock(Container $container, Block $block): Message {
+        $hasContainerRW = $this->hasContainerRW($container->getId());
+        if (empty($hasContainerRW) || $container->getId() === $block->getContainer()->getId()) {
+            return new Message(ErrorConstants::ERROR_CONTAINER_NOT_EXISTS_FOR_USER, Response::HTTP_NOT_FOUND);
+        }
+        $this->entityManager->remove($block);
+        $this->entityManager->flush();
+        return Message::createNoContent();
     }
 
 }

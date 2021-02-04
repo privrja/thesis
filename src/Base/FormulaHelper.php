@@ -185,19 +185,4 @@ class FormulaHelper {
         return array_merge($stack, $text);
     }
 
-    /**
-     * Compute mass from formula if mass not set in $mass
-     * @param $mass float
-     * @param $formula string
-     * @param $TO
-     * @throws IllegalStateException
-     */
-    public static function computeMassIfMassNotSet($mass, $formula, $TO) {
-        if ($mass === "") {
-            $TO->mass = FormulaHelper::computeMass($formula);
-        } else {
-            $TO->mass = $mass;
-        }
-    }
-
 }

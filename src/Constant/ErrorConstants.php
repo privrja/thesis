@@ -12,5 +12,9 @@ class ErrorConstants {
     const ERROR_CONTAINER_NOT_EXISTS_FOR_USER = 'Container with specified id for user not exists';
     const ERROR_NAME_IS_TAKEN = 'This name is taken';
     const ERROR_SOMETHING_GO_WRONG = 'Something go wrong';
+    const ERROR_SERVER_IDENTIFIER = 'Server is unknown';
+    const ERROR_SERVER_IDENTIFIER_PROBLEM = 'Server identifier or server is empty, but one of them is filled';
+    const ERROR_FORMULA_OR_SMILES = 'Formula or SMILES need to be filled';
+    const ERROR_CONTAINER_INSUFIENT_RIGHTS = 'You don\'t have enough permissions';
 
 }

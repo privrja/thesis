@@ -12,6 +12,17 @@ class LossesEnum {
 
     const H2 = 2;
 
+    public static function toLosses(string $losses) {
+        switch ($losses) {
+            case 'H20':
+                return self::H2O;
+            case 'H2':
+                return self::H2;
+            default:
+                return self::NONE;
+        }
+    }
+
     public static function subtractLosses(int $losses, array $arMap) {
         switch ($losses) {
             case LossesEnum::NONE:

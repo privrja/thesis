@@ -15,7 +15,6 @@ class UpdateContainerStructure extends AbstractStructure {
         if (empty($this->containerName) && empty($this->visibility)) {
             return new Message(ErrorConstants::ERROR_EMPTY_PARAMS);
         }
-
         if ($this->visibility === ContainerVisibilityEnum::PUBLIC || $this->visibility === ContainerVisibilityEnum::PRIVATE || $this->visibility === null) {
             return Message::createOkMessage();
         } else {

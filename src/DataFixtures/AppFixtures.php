@@ -89,6 +89,12 @@ class AppFixtures extends Fixture
         $container->setVisibility(ContainerVisibilityEnum::PUBLIC);
         $manager->persist($container);
 
+        $u2c = new U2c();
+        $u2c->setContainer($container);
+        $u2c->setUser($user);
+        $u2c->setMode(ContainerModeEnum::RW);
+        $manager->persist($u2c);
+
         $acids = new BaseAminoAcids($container);
         $acidList = $acids->getList();
         foreach ($acidList as $block) {
@@ -96,7 +102,6 @@ class AppFixtures extends Fixture
         }
 
         $this->saveModifications($container, $manager);
-
         $manager->flush();
     }
 

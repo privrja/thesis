@@ -7,8 +7,10 @@ use App\Constant\ContainerModeEnum;
 use App\Constant\ErrorConstants;
 use App\Entity\Block;
 use App\Entity\Container;
+use App\Entity\Modification;
 use App\Entity\U2c;
 use App\Entity\User;
+use App\Structure\ModificationTransformed;
 use App\Structure\NewContainerTransformed;
 use App\Structure\BlockTransformed;
 use App\Structure\UpdateContainerTransformed;
@@ -123,7 +125,7 @@ class ContainerModel {
     public function deleteBlock(Container $container, Block $block): Message {
         $hasContainerRW = $this->hasContainerRW($container->getId());
         if (empty($hasContainerRW) || $container->getId() !== $block->getContainer()->getId()) {
-            return new Message(ErrorConstants::ERROR_CONTAINER_INSUFIENT_RIGHTS, Response::HTTP_NOT_FOUND);
+            return new Message(ErrorConstants::ERROR_CONTAINER_INSUFIENT_RIGHTS, Response::HTTP_FORBIDDEN);
         }
         $this->entityManager->remove($block);
         $this->entityManager->flush();
@@ -133,7 +135,7 @@ class ContainerModel {
     public function updateBlock(BlockTransformed $trans, Container $container, Block $block): Message {
         $hasContainerRW = $this->hasContainerRW($container->getId());
         if (empty($hasContainerRW) || $container->getId() !== $block->getContainer()->getId()) {
-            return new Message(ErrorConstants::ERROR_CONTAINER_INSUFIENT_RIGHTS, Response::HTTP_NOT_FOUND);
+            return new Message(ErrorConstants::ERROR_CONTAINER_INSUFIENT_RIGHTS, Response::HTTP_FORBIDDEN);
         }
         return $this->updateBlockProperties($trans, $block);
     }
@@ -145,13 +147,11 @@ class ContainerModel {
     public function createNewBlock(Container $container, BlockTransformed $trans): Message {
         $hasContainerRW = $this->hasContainerRW($container->getId());
         if (empty($hasContainerRW)) {
-            return new Message(ErrorConstants::ERROR_CONTAINER_INSUFIENT_RIGHTS, Response::HTTP_NOT_FOUND);
+            return new Message(ErrorConstants::ERROR_CONTAINER_INSUFIENT_RIGHTS, Response::HTTP_FORBIDDEN);
         }
-        return $this->createNewBlockProperties($trans);
-    }
-
-    private function createNewBlockProperties(BlockTransformed $trans): Message {
-        return $this->saveBlock(new Block(), $trans, Message::createCreated());
+        $block = new Block();
+        $block->setContainer($container);
+        return $this->saveBlock($block, $trans, Message::createCreated());
     }
 
     private function saveBlock(Block $block, BlockTransformed $trans, Message $message) {
@@ -167,6 +167,49 @@ class ContainerModel {
         $this->entityManager->persist($block);
         $this->entityManager->flush();
         return $message;
+    }
+
+    public function deleteModification(Container $container, Modification $modification): Message {
+        $hasContainerRW = $this->hasContainerRW($container->getId());
+        if (empty($hasContainerRW) || $container->getId() !== $modification->getContainer()->getId()) {
+            return new Message(ErrorConstants::ERROR_CONTAINER_INSUFIENT_RIGHTS, Response::HTTP_FORBIDDEN);
+        }
+        $this->entityManager->remove($modification);
+        $this->entityManager->flush();
+        return Message::createNoContent();
+    }
+
+    public function updateModification(ModificationTransformed $trans, Container $container, Modification $modification): Message {
+        $hasContainerRW = $this->hasContainerRW($container->getId());
+        if (empty($hasContainerRW) || $container->getId() !== $modification->getContainer()->getId()) {
+            return new Message(ErrorConstants::ERROR_CONTAINER_INSUFIENT_RIGHTS, Response::HTTP_FORBIDDEN);
+        }
+        return $this->updateModificationProperties($trans, $modification);
+    }
+
+    private function updateModificationProperties(ModificationTransformed $trans, Modification $modification) {
+        return $this->saveModification($modification, $trans, Message::createNoContent());
+    }
+
+    function saveModification(Modification $modification, ModificationTransformed $trans, Message $message) {
+        $modification->setModificationName($trans->getModificationName());
+        $modification->setModificationFormula($trans->getFormula());
+        $modification->setModificationMass($trans->getMass());
+        $modification->setNTerminal($trans->isNTerminal());
+        $modification->setCTerminal($trans->isCTerminal());
+        $this->entityManager->persist($modification);
+        $this->entityManager->flush();
+        return $message;
+    }
+
+    public function createNewModification(Container $container, ModificationTransformed $trans): Message {
+        $hasContainerRW = $this->hasContainerRW($container->getId());
+        if (empty($hasContainerRW)) {
+            return new Message(ErrorConstants::ERROR_CONTAINER_INSUFIENT_RIGHTS, Response::HTTP_FORBIDDEN);
+        }
+        $modification = new Modification();
+        $modification->setContainer($container);
+        return $this->saveModification($modification, $trans, Message::createCreated());
     }
 
 }

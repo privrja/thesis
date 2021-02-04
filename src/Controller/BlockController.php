@@ -88,6 +88,7 @@ class BlockController extends AbstractController {
      *     },
      *     @SWG\Response(response="204", description="Sucessfully deleted container."),
      *     @SWG\Response(response="401", description="Return when user is not logged in."),
+     *     @SWG\Response(response="403", description="Return when permisions is insufient."),
      *     @SWG\Response(response="404", description="Return when container is not found.")
      * )
      */
@@ -128,12 +129,11 @@ class BlockController extends AbstractController {
      *     @SWG\Response(response="204", description="Sucessfully update container."),
      *     @SWG\Response(response="400", description="Return when input is wrong."),
      *     @SWG\Response(response="401", description="Return when user is not logged in."),
+     *     @SWG\Response(response="403", description="Return when permisions is insufient."),
      *     @SWG\Response(response="404", description="Return when container is not found.")
      * )
      */
     public function updateBlock(Container $container, Block $block, Request $request, EntityManagerInterface $entityManager, Security $security, LoggerInterface $logger) {
-        var_dump($block->getId());
-        var_dump($container->getId());
         /** @var BlockTransformed $trans */
         $trans = RequestHelper::evaluateRequest($request, new BlockStructure(), $logger);
         if ($trans instanceof JsonResponse) {
@@ -172,6 +172,7 @@ class BlockController extends AbstractController {
      *     @SWG\Response(response="201", description="Create new container."),
      *     @SWG\Response(response="400", description="Return when input is wrong."),
      *     @SWG\Response(response="401", description="Return when user is not logged in."),
+     *     @SWG\Response(response="403", description="Return when permisions is insufient.")
      * )
      */
     public function addNewBlock(Container $container, Request $request, EntityManagerInterface $entityManager, Security $security, LoggerInterface $logger) {

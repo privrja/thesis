@@ -153,6 +153,7 @@ class ContainerController extends AbstractController {
      * Delete container with all content -> delete all blocks, sequences, modifications, etc.
      * @Route("/rest/container/{containerId}", name="container_delete", methods={"DELETE"})
      * @IsGranted("ROLE_USER")
+     * @Entity("container", expr="repository.find(containerId)")
      * @param Container $container
      * @param EntityManagerInterface $entityManager
      * @param Security $security
@@ -180,6 +181,7 @@ class ContainerController extends AbstractController {
      * Update container values (name, visibility)
      * @Route("/rest/container/{containerId}", name="container_update", methods={"PUT"})
      * @IsGranted("ROLE_USER")
+     * @Entity("container", expr="repository.find(containerId)")
      * @param Container $container
      * @param Request $request
      * @param EntityManagerInterface $entityManager

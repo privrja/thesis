@@ -30,6 +30,7 @@ class ModificationController extends AbstractController {
      * Return modifications for logged user
      * @Route("/rest/container/{containerId}/modification", name="modification", methods={"GET"})
      * @IsGranted("ROLE_USER")
+     * @Entity("container", expr="repository.find(containerId)")
      * @param Container $container
      * @param EntityManagerInterface $entityManager
      * @param Security $security
@@ -50,6 +51,7 @@ class ModificationController extends AbstractController {
     /**
      * Return modifications for logged user
      * @Route("/rest/container/{containerId}/modification", name="modification", methods={"GET"})
+     * @Entity("container", expr="repository.find(containerId)")
      * @param Container $container
      * @param EntityManagerInterface $entityManager
      * @param LoggerInterface $logger
@@ -149,6 +151,7 @@ class ModificationController extends AbstractController {
     /**
      * Add new modification for logged user
      * @Route("/rest/container/{containerId}/modification", name="modification_new", methods={"POST"})
+     * @Entity("container", expr="repository.find(containerId)")
      * @IsGranted("ROLE_USER")
      * @param Container $container
      * @param Request $request

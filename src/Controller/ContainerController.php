@@ -17,6 +17,7 @@ use App\Structure\UpdateContainerStructure;
 use App\Structure\UpdateContainerTransformed;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -79,6 +80,7 @@ class ContainerController extends AbstractController {
      * Return containers for logged user
      * @Route("/rest/container/{containerId}", name="container_id", methods={"GET"})
      * @IsGranted("ROLE_USER")
+     * @Entity("container", expr="repository.find(containerId)")
      * @param Container $container
      * @param EntityManagerInterface $entityManager
      * @param Security $security

@@ -10,6 +10,7 @@ use App\Structure\SequenceStructure;
 use App\Structure\SequenceTransformed;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -22,8 +23,9 @@ class SequenceController extends AbstractController {
 
     /**
      * Add new sequence for logged user
-     * @Route("/rest/container/{id}/sequence", name="sequence_new", methods={"POST"})
+     * @Route("/rest/container/{containerId}/sequence", name="sequence_new", methods={"POST"})
      * @IsGranted("ROLE_USER")
+     * @Entity("container", expr="repository.find(containerId)")
      * @param Container $container
      * @param Request $request
      * @param EntityManagerInterface $entityManager

@@ -35,6 +35,7 @@ class BlockController extends AbstractController {
     /**
      * Return containers for logged user
      * @Route("/rest/container/{containerId}/block", name="block", methods={"GET"})
+     * @Entity("container", expr="repository.find(containerId)")
      * @param Container $container
      * @param EntityManagerInterface $entityManager
      * @param Security $security
@@ -145,6 +146,7 @@ class BlockController extends AbstractController {
      * Add new container for logged user
      * @Route("/rest/container/{containerId}/block", name="block_new", methods={"POST"})
      * @IsGranted("ROLE_USER")
+     * @Entity("container", expr="repository.find(containerId)")
      * @param Container $container
      * @param Request $request
      * @param EntityManagerInterface $entityManager
@@ -186,6 +188,7 @@ class BlockController extends AbstractController {
     /**
      * Return containers for logged user
      * @Route("/rest/container/{containerId}/smiles", name="block_unique", methods={"POST"})
+     * @Entity("container", expr="repository.find(containerId)")
      * @param Container $container
      * @param Request $request
      * @param EntityManagerInterface $entityManager

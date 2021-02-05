@@ -5,51 +5,61 @@ namespace App\Structure;
 use App\Base\FormulaHelper;
 use App\Base\Message;
 use App\Constant\ErrorConstants;
-use App\Enum\ServerEnum;
 use App\Exception\IllegalStateException;
 use App\Smiles\Enum\LossesEnum;
 use App\Smiles\Graph;
 
-class BlockStructure extends AbstractStructure {
+class SequenceStructure extends AbstractStructure {
 
-    public $blockName;
-    public $acronym;
+    public $sequenceName;
     public $formula;
     public $mass;
-    public $losses;
     public $smiles;
     public $source;
     public $identifier;
+    public $sequence;
+    public $sequenceType;
+    public $decays;
+
+    /** @var array */
+    public $modifications;
+
+    /** @var array */
+    public $blocks;
 
     public function checkInput(): Message {
-        if (empty($this->blockName) || empty($this->acronym)) {
+        if (empty($this->sequenceName) || empty($this->sequenceType)) {
             return new Message(ErrorConstants::ERROR_EMPTY_PARAMS);
         }
-        if (!ServerEnum::isOneOf($this->source)) {
-            return new Message(ErrorConstants::ERROR_SERVER_IDENTIFIER);
+        if (!isset(SequenceEnum::$values[$this->sequenceType])) {
+            return new Message(ErrorConstants::ERROR_SEQUENCE_BAD_TYPE);
+        }
+        if(empty($this->formula) && empty($this->smiles)) {
+            return new Message(ErrorConstants::ERROR_EMPTY_PARAMS);
         }
         if ((!empty($this->source) && empty($this->identifier)) || empty($this->source) && !empty($this->identifier)) {
             return new Message(ErrorConstants::ERROR_SERVER_IDENTIFIER_PROBLEM);
         }
-        if (empty($this->formula) && empty($this->smiles)) {
-            return new Message(ErrorConstants::ERROR_FORMULA_OR_SMILES);
+        foreach ($this->modifications as $modification) {
+            if (!isset($modification->databaseId)) {
+                if (empty($modification->modificationName) || empty($modification->formula)) {
+                    return new Message(ErrorConstants::ERROR_EMPTY_PARAMS);
+                }
+            }
         }
+
+        // TODO foreach on blocks
         return Message::createOkMessage();
     }
 
     public function transform(): AbstractTransformed {
-        $trans = new BlockTransformed();
-        $trans->setblockName($this->blockName);
-        $trans->setAcronym($this->acronym);
-        $trans->setSource($this->source);
-        $trans->setIdentifier($this->identifier);
-        $trans->setLosses($this->losses);
-        $trans->setSmiles($this->smiles);
-        if (!empty($this->smiles)) {
+        $trans = new SequenceTransformed();
+        $trans->setSequenceName($this->sequenceName);
+        $trans->setSequenceType($this->sequenceType);
+        if (empty($this->smiles)) {
             $graph = new Graph($this->smiles);
-            $eLosses = LossesEnum::toLosses($this->losses);
             if (empty($this->formula)) {
-                $trans->setFormula($graph->getFormula($eLosses));
+                $trans->setFormula($graph->getFormula(LossesEnum::NONE));
             } else {
                 $trans->setFormula($this->formula);
             }
@@ -77,7 +87,8 @@ class BlockStructure extends AbstractStructure {
                 $trans->setMass($this->mass);
             }
         }
+
+
         return $trans;
     }
-
 }

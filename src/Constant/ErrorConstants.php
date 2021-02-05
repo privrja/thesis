@@ -16,5 +16,6 @@ class ErrorConstants {
     const ERROR_SERVER_IDENTIFIER_PROBLEM = 'Server identifier or server is empty, but one of them is filled';
     const ERROR_FORMULA_OR_SMILES = 'Formula or SMILES need to be filled';
     const ERROR_CONTAINER_INSUFIENT_RIGHTS = 'You don\'t have enough permissions';
+    const ERROR_SEQUENCE_BAD_TYPE = 'Bad sequence type';
 
 }

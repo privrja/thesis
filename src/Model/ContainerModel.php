@@ -8,11 +8,13 @@ use App\Constant\ErrorConstants;
 use App\Entity\Block;
 use App\Entity\Container;
 use App\Entity\Modification;
+use App\Entity\Sequence;
 use App\Entity\U2c;
 use App\Entity\User;
 use App\Structure\ModificationTransformed;
 use App\Structure\NewContainerTransformed;
 use App\Structure\BlockTransformed;
+use App\Structure\SequenceTransformed;
 use App\Structure\UpdateContainerTransformed;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
@@ -210,6 +212,23 @@ class ContainerModel {
         $modification = new Modification();
         $modification->setContainer($container);
         return $this->saveModification($modification, $trans, Message::createCreated());
+    }
+
+    public function createNewSequence(Container $container, SequenceTransformed $trans): Message {
+        $hasContainerRW = $this->hasContainerRW($container->getId());
+        if (empty($hasContainerRW)) {
+            return new Message(ErrorConstants::ERROR_CONTAINER_INSUFIENT_RIGHTS, Response::HTTP_FORBIDDEN);
+        }
+        $sequence = new Sequence();
+        $sequence->setContainer($container);
+        return $this->saveSequence($sequence, $trans, Message::createCreated());
+    }
+
+    function saveSequence(Sequence $modification, SequenceTransformed $trans, Message $message) {
+
+//        $this->entityManager->persist($modification);
+//        $this->entityManager->flush();
+        return $message;
     }
 
 }

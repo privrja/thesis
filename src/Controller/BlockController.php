@@ -11,8 +11,11 @@ use App\Entity\Block;
 use App\Entity\Container;
 use App\Model\ContainerModel;
 use App\Repository\BlockRepository;
+use App\Smiles\SmilesHelper;
+use App\Structure\BlockSmiles;
 use App\Structure\BlockStructure;
 use App\Structure\BlockTransformed;
+use App\Structure\UniqueSmilesStructure;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
@@ -184,6 +187,66 @@ class BlockController extends AbstractController {
         $model = new ContainerModel($entityManager, $this->getDoctrine(), $security->getUser(), $logger);
         $modelMessage = $model->createNewBlock($container, $trans);
         return ResponseHelper::jsonResponse($modelMessage);
+    }
+
+    /**
+     * Return containers for logged user
+     * @Route("/rest/container/{id}/smiles", name="block", methods={"POST"})
+     * @param Container $container
+     * @param Request $request
+     * @param EntityManagerInterface $entityManager
+     * @param Security $security
+     * @param LoggerInterface $logger
+     * @param BlockRepository $blockRepository
+     * @return JsonResponse
+     *
+     * @SWG\Get(
+     *     tags={"Block"},
+     *     security={
+     *         {"ApiKeyAuth":{}}
+     *     },
+     *     @SWG\Response(response="200", description="Return list of blocks in container."),
+     *     @SWG\Response(response="401", description="Return when user has not acces to container."),
+     *     @SWG\Response(response="404", description="Return when container not found."),
+     *     @SWG\Swagger(
+     *      @SWG\SecurityScheme(type="apiKey", securityDefinition="ApiKeyAuth", in="header", name="X-AUTH-TOKEN")
+     *     )
+     * )
+     */
+    public function smiles(Container $container, Request $request, EntityManagerInterface $entityManager, Security $security, LoggerInterface $logger, BlockRepository $blockRepository) {
+        $containerModel = new ContainerModel($entityManager, $this->getDoctrine(), $security->getUser(), $logger);
+        if (($security->getUser() !== null && $containerModel->hasContainer($container->getId())) || ($container->getVisibility() === ContainerVisibilityEnum::PUBLIC)) {
+            $smilesInput = SmilesHelper::checkInputJson($request);
+            if ($smilesInput instanceof JsonResponse) {
+                return $smilesInput;
+            }
+            $length = count($smilesInput);
+            $nextCheck = SmilesHelper::checkNext($smilesInput, $length);
+            if ($nextCheck instanceof JsonResponse) {
+                return $nextCheck;
+            }
+            $smiles = SmilesHelper::unique($smilesInput, $length);
+            /** @var UniqueSmilesStructure $smile */
+            foreach ($smiles as $smile) {
+                $block = $blockRepository->findOneBy(['container' => $container->getId(), 'usmiles' => $smile->unique]);
+                if ($block === null) {
+                    $smile->block = null;
+                    continue;
+                }
+                $blockSmiles = new BlockSmiles();
+                $blockSmiles->databaseId = $block->getId();
+                $blockSmiles->structureName = $block->getBlockName();
+                $blockSmiles->formula = $block->getResidue();
+                $blockSmiles->mass = $block->getBlockMass();
+                $blockSmiles->smiles = $block->getBlockSmiles();
+                $blockSmiles->database = $block->getSource();
+                $blockSmiles->identifier = $block->getIdentifier();
+                $smile->acronym = $block->getAcronym();
+                $smile->block = $blockSmiles;
+            }
+            return new JsonResponse($smiles);
+        }
+        return ResponseHelper::jsonResponse(new Message(ErrorConstants::ERROR_CONTAINER_NOT_EXISTS_FOR_USER, Response::HTTP_NOT_FOUND));
     }
 
 }

@@ -77,7 +77,7 @@ class ContainerController extends AbstractController {
 
     /**
      * Return containers for logged user
-     * @Route("/rest/container/{id}", name="container_id", methods={"GET"})
+     * @Route("/rest/container/{containerId}", name="container_id", methods={"GET"})
      * @IsGranted("ROLE_USER")
      * @param Container $container
      * @param EntityManagerInterface $entityManager
@@ -149,7 +149,7 @@ class ContainerController extends AbstractController {
 
     /**
      * Delete container with all content -> delete all blocks, sequences, modifications, etc.
-     * @Route("/rest/container/{id}", name="container_delete", methods={"DELETE"})
+     * @Route("/rest/container/{containerId}", name="container_delete", methods={"DELETE"})
      * @IsGranted("ROLE_USER")
      * @param Container $container
      * @param EntityManagerInterface $entityManager
@@ -176,7 +176,7 @@ class ContainerController extends AbstractController {
 
     /**
      * Update container values (name, visibility)
-     * @Route("/rest/container/{id}", name="container_update", methods={"PUT"})
+     * @Route("/rest/container/{containerId}", name="container_update", methods={"PUT"})
      * @IsGranted("ROLE_USER")
      * @param Container $container
      * @param Request $request

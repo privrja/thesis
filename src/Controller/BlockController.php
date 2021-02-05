@@ -185,7 +185,7 @@ class BlockController extends AbstractController {
 
     /**
      * Return containers for logged user
-     * @Route("/rest/container/{id}/smiles", name="block_unique", methods={"POST"})
+     * @Route("/rest/container/{containerId}/smiles", name="block_unique", methods={"POST"})
      * @param Container $container
      * @param Request $request
      * @param EntityManagerInterface $entityManager

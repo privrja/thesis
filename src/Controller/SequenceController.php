@@ -43,7 +43,7 @@ class SequenceController extends AbstractController {
      *          required=true,
      *          description="",
      *          @SWG\Schema(type="string",
-     *              example=""),
+     *              example="4545"),
      *      ),
      *     @SWG\Response(response="201", description="Create new sequence."),
      *     @SWG\Response(response="400", description="Return when input is wrong."),

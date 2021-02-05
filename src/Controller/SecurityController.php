@@ -18,6 +18,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
+use Swagger\Annotations as SWG;
 
 class SecurityController extends AbstractController {
 
@@ -30,6 +31,13 @@ class SecurityController extends AbstractController {
      * @param UserRepository $userRepository
      * @param LoggerInterface $logger
      * @return JsonResponse
+     *
+     * @SWG\Post(
+     *     tags={"Auth"},
+     *     @SWG\Response(response="201", description="User created"),
+     *     @SWG\Response(response="500", description="Internal server Error"),
+     *     @SWG\Response(response="400", description="Name is taken")
+     * )
      */
     public function registration(Request $request, EntityManagerInterface $entityManager, UserPasswordEncoderInterface $passwordEncoder, UserRepository $userRepository, LoggerInterface $logger) {
         /** @var NewRegistrationTransformed $trans */

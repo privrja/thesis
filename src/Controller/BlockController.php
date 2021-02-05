@@ -34,7 +34,7 @@ class BlockController extends AbstractController {
 
     /**
      * Return containers for logged user
-     * @Route("/rest/container/{id}/block", name="block", methods={"GET"})
+     * @Route("/rest/container/{containerId}/block", name="block", methods={"GET"})
      * @param Container $container
      * @param EntityManagerInterface $entityManager
      * @param Security $security
@@ -43,15 +43,9 @@ class BlockController extends AbstractController {
      *
      * @SWG\Get(
      *     tags={"Block"},
-     *     security={
-     *         {"ApiKeyAuth":{}}
-     *     },
      *     @SWG\Response(response="200", description="Return list of blocks in container."),
      *     @SWG\Response(response="401", description="Return when user has not acces to container."),
      *     @SWG\Response(response="404", description="Return when container not found."),
-     *     @SWG\Swagger(
-     *      @SWG\SecurityScheme(type="apiKey", securityDefinition="ApiKeyAuth", in="header", name="X-AUTH-TOKEN")
-     *     )
      * )
      */
     public function index(Container $container, EntityManagerInterface $entityManager, Security $security, LoggerInterface $logger, BlockRepository $blockRepository) {
@@ -149,7 +143,7 @@ class BlockController extends AbstractController {
 
     /**
      * Add new container for logged user
-     * @Route("/rest/container/{id}/block", name="block_new", methods={"POST"})
+     * @Route("/rest/container/{containerId}/block", name="block_new", methods={"POST"})
      * @IsGranted("ROLE_USER")
      * @param Container $container
      * @param Request $request
@@ -159,7 +153,7 @@ class BlockController extends AbstractController {
      * @return JsonResponse
      *
      * @SWG\Post(
-     *     tags={"Container"},
+     *     tags={"Block"},
      *     security={
      *         {"ApiKeyAuth":{}}
      *     },
@@ -191,7 +185,7 @@ class BlockController extends AbstractController {
 
     /**
      * Return containers for logged user
-     * @Route("/rest/container/{id}/smiles", name="block", methods={"POST"})
+     * @Route("/rest/container/{id}/smiles", name="block_unique", methods={"POST"})
      * @param Container $container
      * @param Request $request
      * @param EntityManagerInterface $entityManager
@@ -200,7 +194,7 @@ class BlockController extends AbstractController {
      * @param BlockRepository $blockRepository
      * @return JsonResponse
      *
-     * @SWG\Get(
+     * @SWG\Post(
      *     tags={"Block"},
      *     security={
      *         {"ApiKeyAuth":{}}
@@ -208,9 +202,6 @@ class BlockController extends AbstractController {
      *     @SWG\Response(response="200", description="Return list of blocks in container."),
      *     @SWG\Response(response="401", description="Return when user has not acces to container."),
      *     @SWG\Response(response="404", description="Return when container not found."),
-     *     @SWG\Swagger(
-     *      @SWG\SecurityScheme(type="apiKey", securityDefinition="ApiKeyAuth", in="header", name="X-AUTH-TOKEN")
-     *     )
      * )
      */
     public function smiles(Container $container, Request $request, EntityManagerInterface $entityManager, Security $security, LoggerInterface $logger, BlockRepository $blockRepository) {

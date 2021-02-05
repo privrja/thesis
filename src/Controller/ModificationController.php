@@ -21,32 +21,20 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Swagger\Annotations as SWG;
 use Symfony\Component\Security\Core\Security;
+use Swagger\Annotations as SWG;
 
 class ModificationController extends AbstractController {
 
     /**
-     * Return containers for logged user
-     * @Route("/rest/container/{id}/modification", name="modification", methods={"GET"})
+     * Return modifications for logged user
+     * @Route("/rest/container/{containerId}/modification", name="modification", methods={"GET"})
      * @IsGranted("ROLE_USER")
      * @param Container $container
      * @param EntityManagerInterface $entityManager
      * @param Security $security
      * @param LoggerInterface $logger
      * @return JsonResponse
-     *
-     * @SWG\Get(
-     *     tags={"Container"},
-     *     security={
-     *         {"ApiKeyAuth":{}}
-     *     },
-     *     @SWG\Response(response="200", description="Return list of containers for logged user."),
-     *     @SWG\Response(response="401", description="Return when user is not logged in."),
-     *     @SWG\Swagger(
-     *      @SWG\SecurityScheme(type="apiKey", securityDefinition="ApiKeyAuth", in="header", name="X-AUTH-TOKEN")
-     *     )
-     * )
      */
     public function getModifications(Container $container, EntityManagerInterface $entityManager, Security $security, LoggerInterface $logger) {
         $model = new ContainerModel($entityManager, $this->getDoctrine(), $security->getUser(), $logger);
@@ -60,12 +48,19 @@ class ModificationController extends AbstractController {
     }
 
     /**
-     * Return containers for logged user
-     * @Route("/rest/container/{id}/modification", name="modification", methods={"GET"})
+     * Return modifications for logged user
+     * @Route("/rest/container/{containerId}/modification", name="modification", methods={"GET"})
      * @param Container $container
      * @param EntityManagerInterface $entityManager
      * @param LoggerInterface $logger
      * @return JsonResponse
+     *
+     * @SWG\Get(
+     *     tags={"Modification"},
+     *     @SWG\Response(response="200", description="Return list of modifications in container."),
+     *     @SWG\Response(response="401", description="Return when user has not acces to container."),
+     *     @SWG\Response(response="404", description="Return when container not found."),
+     * )
      */
     public function getModificationsFree(Container $container, EntityManagerInterface $entityManager, LoggerInterface $logger) {
         if ($container->getVisibility() === ContainerVisibilityEnum::PRIVATE) {
@@ -74,7 +69,6 @@ class ModificationController extends AbstractController {
         $model = new ContainerModel($entityManager, $this->getDoctrine(), null, $logger);
         return new JsonResponse($model->getContainerModifications($container->getId()));
     }
-
 
     /**
      * Delete modification
@@ -90,7 +84,7 @@ class ModificationController extends AbstractController {
      * @return JsonResponse
      *
      * @SWG\Delete(
-     *     tags={"Block"},
+     *     tags={"Modification"},
      *     security={
      *         {"ApiKeyAuth":{}}
      *     },
@@ -121,7 +115,7 @@ class ModificationController extends AbstractController {
      * @return JsonResponse
      *
      * @SWG\Put(
-     *     tags={"Block"},
+     *     tags={"Modification"},
      *     security={
      *         {"ApiKeyAuth":{}}
      *     },
@@ -153,8 +147,8 @@ class ModificationController extends AbstractController {
     }
 
     /**
-     * Add new container for logged user
-     * @Route("/rest/container/{id}/modification", name="modification_new", methods={"POST"})
+     * Add new modification for logged user
+     * @Route("/rest/container/{containerId}/modification", name="modification_new", methods={"POST"})
      * @IsGranted("ROLE_USER")
      * @param Container $container
      * @param Request $request
@@ -164,7 +158,7 @@ class ModificationController extends AbstractController {
      * @return JsonResponse
      *
      * @SWG\Post(
-     *     tags={"Container"},
+     *     tags={"Modification"},
      *     security={
      *         {"ApiKeyAuth":{}}
      *     },

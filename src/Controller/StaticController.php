@@ -37,6 +37,7 @@ class StaticController {
     }
 
     static function findFamily(Container $container, ServiceEntityRepository $repository) {
+
         return new JsonResponse($repository->findBy([EntityColumnsEnum::CONTAINER => $container->getId()]), Response::HTTP_OK);
     }
 

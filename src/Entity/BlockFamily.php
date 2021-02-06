@@ -5,12 +5,12 @@ namespace App\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use JsonSerializable;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\BlockFamilyRepository")
  */
-class BlockFamily
-{
+class BlockFamily implements JsonSerializable {
     /**
      * @ORM\Id()
      * @ORM\GeneratedValue()
@@ -34,23 +34,19 @@ class BlockFamily
      */
     private $container;
 
-    public function __construct()
-    {
+    public function __construct() {
         $this->f2blocks = new ArrayCollection();
     }
 
-    public function getId(): ?int
-    {
+    public function getId(): ?int {
         return $this->id;
     }
 
-    public function getBlockFamilyName(): ?string
-    {
+    public function getBlockFamilyName(): ?string {
         return $this->blockFamilyName;
     }
 
-    public function setBlockFamilyName(string $blockFamilyName): self
-    {
+    public function setBlockFamilyName(string $blockFamilyName): self {
         $this->blockFamilyName = $blockFamilyName;
 
         return $this;
@@ -59,13 +55,11 @@ class BlockFamily
     /**
      * @return Collection|B2f[]
      */
-    public function getF2blocks(): Collection
-    {
+    public function getF2blocks(): Collection {
         return $this->f2blocks;
     }
 
-    public function addF2block(B2f $f2block): self
-    {
+    public function addF2block(B2f $f2block): self {
         if (!$this->f2blocks->contains($f2block)) {
             $this->f2blocks[] = $f2block;
             $f2block->setFamily($this);
@@ -74,8 +68,7 @@ class BlockFamily
         return $this;
     }
 
-    public function removeF2block(B2f $f2block): self
-    {
+    public function removeF2block(B2f $f2block): self {
         if ($this->f2blocks->contains($f2block)) {
             $this->f2blocks->removeElement($f2block);
             // set the owning side to null (unless already changed)
@@ -87,15 +80,21 @@ class BlockFamily
         return $this;
     }
 
-    public function getContainer(): ?Container
-    {
+    public function getContainer(): ?Container {
         return $this->container;
     }
 
-    public function setContainer(?Container $container): self
-    {
+    public function setContainer(?Container $container): self {
         $this->container = $container;
 
         return $this;
     }
+
+    /**
+     * @inheritDoc
+     */
+    public function jsonSerialize() {
+        return ['id' => $this->id, 'family' => $this->blockFamilyName];
+    }
+
 }

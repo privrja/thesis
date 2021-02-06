@@ -77,7 +77,7 @@ class BlockFamilyController extends AbstractController {
      *     @SWG\Response(response="403", description="Return when permisions is insufient.")
      * )
      */
-    public function addNewBlock(Container $container, Request $request, EntityManagerInterface $entityManager, Security $security, LoggerInterface $logger) {
+    public function addNewBlockFamily(Container $container, Request $request, EntityManagerInterface $entityManager, Security $security, LoggerInterface $logger) {
         /** @var FamilyTransformed $trans */
         $trans = RequestHelper::evaluateRequest($request, new FamilyStructure(), $logger);
         if ($trans instanceof JsonResponse) {
@@ -112,7 +112,7 @@ class BlockFamilyController extends AbstractController {
      *     @SWG\Response(response="404", description="Return when container is not found.")
      * )
      */
-    public function deleteBlock(Container $container, BlockFamily $blockFamily, EntityManagerInterface $entityManager, Security $security, LoggerInterface $logger) {
+    public function deleteBlockFamily(Container $container, BlockFamily $blockFamily, EntityManagerInterface $entityManager, Security $security, LoggerInterface $logger) {
         $model = new ContainerModel($entityManager, $this->getDoctrine(), $security->getUser(), $logger);
         $modelMessage = $model->deleteBlockFamily($container, $blockFamily);
         return ResponseHelper::jsonResponse($modelMessage);

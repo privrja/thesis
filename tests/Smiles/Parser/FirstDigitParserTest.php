@@ -1,5 +1,5 @@
 <?php
-namespace Bbdgnc\Test\Smiles\Parser;
+namespace App\Test\Smiles\Parser;
 
 use App\Smiles\Parser\Accept;
 use App\Smiles\Parser\FirstDigitParser;

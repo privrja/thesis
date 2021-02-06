@@ -1,6 +1,6 @@
 <?php
 
-namespace Bbdgnc\Test\Smiles\Parser;
+namespace App\Test\Smiles\Parser;
 
 use PHPUnit\Framework\TestCase;
 

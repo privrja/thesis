@@ -1,6 +1,6 @@
 <?php
 
-namespace Bbdgnc\Test\Smiles;
+namespace App\Test\Smiles;
 
 use App\Enum\PeriodicTableSingleton;
 use App\Smiles\Bond;

@@ -1,6 +1,6 @@
 <?php
 
-namespace Bbdgnc\Test\Smiles;
+namespace App\Test\Smiles;
 
 use App\Smiles\OpenNumbersSort;
 use PHPUnit\Framework\TestCase;

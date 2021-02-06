@@ -1,6 +1,6 @@
 <?php
 
-namespace Bbdgnc\Test\Smiles;
+namespace App\Test\Smiles;
 
 use App\Smiles\Graph;
 use PHPUnit\Framework\TestCase;

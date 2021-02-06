@@ -33,6 +33,7 @@ class ModificationStructure extends AbstractStructure {
             try {
                 $trans->setMass(FormulaHelper::computeMass($this->formula));
             } catch (IllegalStateException $e) {
+                /* Empty on purpose - mass can be null */
             }
         } else {
             $trans->setMass($this->mass);

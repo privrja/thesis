@@ -3,8 +3,8 @@
 namespace App\Structure;
 
 use App\Base\Message;
-use App\Constant\ContainerVisibilityEnum;
 use App\Constant\ErrorConstants;
+use App\Enum\ContainerVisibilityEnum;
 
 class UpdateContainerStructure extends AbstractStructure {
 

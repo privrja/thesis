@@ -95,7 +95,7 @@ class SequenceFamilyController extends AbstractController {
      * @Entity("sequenceFamily", expr="repository.find(familyId)")
      * @IsGranted("ROLE_USER")
      * @param Container $container
-     * @param SequenceFamily $blockFamily
+     * @param SequenceFamily $sequenceFamily
      * @param EntityManagerInterface $entityManager
      * @param Security $security
      * @param LoggerInterface $logger
@@ -112,9 +112,9 @@ class SequenceFamilyController extends AbstractController {
      *     @SWG\Response(response="404", description="Return when container is not found.")
      * )
      */
-    public function deleteBlock(Container $container, SequenceFamily $blockFamily, EntityManagerInterface $entityManager, Security $security, LoggerInterface $logger) {
+    public function deleteBlock(Container $container, SequenceFamily $sequenceFamily, EntityManagerInterface $entityManager, Security $security, LoggerInterface $logger) {
         $model = new ContainerModel($entityManager, $this->getDoctrine(), $security->getUser(), $logger);
-        $modelMessage = $model->deleteSequenceFamily($container, $blockFamily);
+        $modelMessage = $model->deleteSequenceFamily($container, $sequenceFamily);
         return ResponseHelper::jsonResponse($modelMessage);
     }
 

@@ -4,6 +4,7 @@ namespace App\Constant;
 
 use App\Entity\Block;
 use App\Entity\Container;
+use App\Enum\ServerEnum;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 
@@ -25,7 +26,7 @@ class BaseAminoAcids {
         $tryptophan->setBlockMass(186.07931300000001328);
         $tryptophan->setBlockSmiles("C1=CC=C2C(=C1)C(=CN2)CC(C(=O)O)N");
         $tryptophan->setUsmiles("NC(CC1=CNC2=CC=CC=C12)C(O)=O");
-        $tryptophan->setSource(SourceServer::PUBCHEM);
+        $tryptophan->setSource(ServerEnum::PUBCHEM);
         $tryptophan->setIdentifier("6305");
         $tryptophan->setContainer($container);
         $this->list->add($tryptophan);
@@ -37,7 +38,7 @@ class BaseAminoAcids {
         $glycine->setBlockMass(57.021464);
         $glycine->setBlockSmiles("C(C(=O)O)N");
         $glycine->setUsmiles("NCC(O)=O");
-        $glycine->setSource(SourceServer::PUBCHEM);
+        $glycine->setSource(ServerEnum::PUBCHEM);
         $glycine->setIdentifier("750");
         $glycine->setContainer($container);
         $this->list->add($glycine);
@@ -49,7 +50,7 @@ class BaseAminoAcids {
         $alanine->setBlockMass(71.037114);
         $alanine->setBlockSmiles("CC(C(=O)O)N");
         $alanine->setUsmiles("CC(N)C(O)=O");
-        $alanine->setSource(SourceServer::PUBCHEM);
+        $alanine->setSource(ServerEnum::PUBCHEM);
         $alanine->setIdentifier("5950");
         $alanine->setContainer($container);
         $this->list->add($alanine);
@@ -61,7 +62,7 @@ class BaseAminoAcids {
         $serine->setBlockMass(87.032028);
         $serine->setBlockSmiles("C(C(C(=O)O)N)O");
         $serine->setUsmiles("NC(CO)C(O)=O");
-        $serine->setSource(SourceServer::PUBCHEM);
+        $serine->setSource(ServerEnum::PUBCHEM);
         $serine->setIdentifier("5951");
         $serine->setContainer($container);
         $this->list->add($serine);
@@ -73,7 +74,7 @@ class BaseAminoAcids {
         $cysteine->setBlockMass(103.009184);
         $cysteine->setBlockSmiles("C(C(C(=O)O)N)S");
         $cysteine->setUsmiles("NC(CS)C(O)=O");
-        $cysteine->setSource(SourceServer::PUBCHEM);
+        $cysteine->setSource(ServerEnum::PUBCHEM);
         $cysteine->setIdentifier("5862");
         $cysteine->setContainer($container);
         $this->list->add($cysteine);
@@ -85,7 +86,7 @@ class BaseAminoAcids {
         $asparatic->setBlockMass(115.026943);
         $asparatic->setBlockSmiles("C(C(C(=O)O)N)C(=O)O");
         $asparatic->setUsmiles("NC(CC(O)=O)C(O)=O");
-        $asparatic->setSource(SourceServer::PUBCHEM);
+        $asparatic->setSource(ServerEnum::PUBCHEM);
         $asparatic->setIdentifier("5960");
         $asparatic->setContainer($container);
         $this->list->add($asparatic);
@@ -97,7 +98,7 @@ class BaseAminoAcids {
         $asparagine->setBlockMass(114.042927);
         $asparagine->setBlockSmiles("C(C(C(=O)O)N)C(=O)N");
         $asparagine->setUsmiles("NC(CC(N)=O)C(O)=O");
-        $asparagine->setSource(SourceServer::PUBCHEM);
+        $asparagine->setSource(ServerEnum::PUBCHEM);
         $asparagine->setIdentifier("6267");
         $asparagine->setContainer($container);
         $this->list->add($asparagine);
@@ -109,7 +110,7 @@ class BaseAminoAcids {
         $threonine->setBlockMass(101.047678);
         $threonine->setBlockSmiles("CC(C(C(=O)O)N)O");
         $threonine->setUsmiles("CC(O)C(N)C(O)=O");
-        $threonine->setSource(SourceServer::PUBCHEM);
+        $threonine->setSource(ServerEnum::PUBCHEM);
         $threonine->setIdentifier("6288");
         $threonine->setContainer($container);
         $this->list->add($threonine);
@@ -121,7 +122,7 @@ class BaseAminoAcids {
         $proline->setBlockMass(97.052764);
         $proline->setBlockSmiles("C1CC(NC1)C(=O)O");
         $proline->setUsmiles("OC(=O)C1CCCN1");
-        $proline->setSource(SourceServer::PUBCHEM);
+        $proline->setSource(ServerEnum::PUBCHEM);
         $proline->setIdentifier("145742");
         $proline->setContainer($container);
         $this->list->add($proline);
@@ -133,7 +134,7 @@ class BaseAminoAcids {
         $glutamic->setBlockMass(129.042593);
         $glutamic->setBlockSmiles("C(CC(=O)O)C(C(=O)O)N");
         $glutamic->setUsmiles("NC(CCC(O)=O)C(O)=O");
-        $glutamic->setSource(SourceServer::PUBCHEM);
+        $glutamic->setSource(ServerEnum::PUBCHEM);
         $glutamic->setIdentifier("33032");
         $glutamic->setContainer($container);
         $this->list->add($glutamic);
@@ -145,7 +146,7 @@ class BaseAminoAcids {
         $glutamine->setBlockMass(128.058578);
         $glutamine->setBlockSmiles("C(CC(=O)N)C(C(=O)O)N");
         $glutamine->setUsmiles("NC(CCC(N)=O)C(O)=O");
-        $glutamine->setSource(SourceServer::PUBCHEM);
+        $glutamine->setSource(ServerEnum::PUBCHEM);
         $glutamine->setIdentifier("5961");
         $glutamine->setContainer($container);
         $this->list->add($glutamine);
@@ -157,7 +158,7 @@ class BaseAminoAcids {
         $valine->setBlockMass(99.068414);
         $valine->setBlockSmiles("CC(C)C(C(=O)O)N");
         $valine->setUsmiles("CC(C)C(N)C(O)=O");
-        $valine->setSource(SourceServer::PUBCHEM);
+        $valine->setSource(ServerEnum::PUBCHEM);
         $valine->setIdentifier("6287");
         $valine->setContainer($container);
         $this->list->add($valine);
@@ -169,7 +170,7 @@ class BaseAminoAcids {
         $methionine->setBlockMass(131.040485);
         $methionine->setBlockSmiles("CSCCC(C(=O)O)N");
         $methionine->setUsmiles("CSCCC(N)C(O)=O");
-        $methionine->setSource(SourceServer::PUBCHEM);
+        $methionine->setSource(ServerEnum::PUBCHEM);
         $methionine->setIdentifier("6137");
         $methionine->setContainer($container);
         $this->list->add($methionine);
@@ -181,7 +182,7 @@ class BaseAminoAcids {
         $leucine->setBlockMass(113.084064);
         $leucine->setBlockSmiles("CC(C)CC(C(=O)O)N");
         $leucine->setUsmiles("CC(C)CC(N)C(O)=O");
-        $leucine->setSource(SourceServer::PUBCHEM);
+        $leucine->setSource(ServerEnum::PUBCHEM);
         $leucine->setIdentifier("6106");
         $leucine->setContainer($container);
         $this->list->add($leucine);
@@ -193,7 +194,7 @@ class BaseAminoAcids {
         $isoLeucine->setBlockMass(113.084064);
         $isoLeucine->setBlockSmiles("CCC(C)C(C(=O)O)N");
         $isoLeucine->setUsmiles("CCC(C)C(N)C(O)=O");
-        $isoLeucine->setSource(SourceServer::PUBCHEM);
+        $isoLeucine->setSource(ServerEnum::PUBCHEM);
         $isoLeucine->setIdentifier("6306");
         $isoLeucine->setContainer($container);
         $this->list->add($isoLeucine);
@@ -205,7 +206,7 @@ class BaseAminoAcids {
         $lysine->setBlockMass(128.094963);
         $lysine->setBlockSmiles("C(CCN)CC(C(=O)O)N");
         $lysine->setUsmiles("NCCCCC(N)C(O)=O");
-        $lysine->setSource(SourceServer::PUBCHEM);
+        $lysine->setSource(ServerEnum::PUBCHEM);
         $lysine->setIdentifier("5962");
         $lysine->setContainer($container);
         $this->list->add($lysine);
@@ -217,7 +218,7 @@ class BaseAminoAcids {
         $arginine->setBlockMass(156.101111);
         $arginine->setBlockSmiles("C(CC(C(=O)O)N)CN=C(N)N");
         $arginine->setUsmiles("NC(CCCN=C(N)N)C(O)=O");
-        $arginine->setSource(SourceServer::PUBCHEM);
+        $arginine->setSource(ServerEnum::PUBCHEM);
         $arginine->setIdentifier("6322");
         $arginine->setContainer($container);
         $this->list->add($arginine);
@@ -229,7 +230,7 @@ class BaseAminoAcids {
         $histidine->setBlockMass(137.058912);
         $histidine->setBlockSmiles("C1=C(NC=N1)CC(C(=O)O)N");
         $histidine->setUsmiles("NC(CC1=CN=CN1)C(O)=O");
-        $histidine->setSource(SourceServer::PUBCHEM);
+        $histidine->setSource(ServerEnum::PUBCHEM);
         $histidine->setIdentifier("6274");
         $histidine->setContainer($container);
         $this->list->add($histidine);
@@ -241,7 +242,7 @@ class BaseAminoAcids {
         $phenylAlanine->setBlockMass(147.068414);
         $phenylAlanine->setBlockSmiles("C1=CC=C(C=C1)CC(C(=O)O)N");
         $phenylAlanine->setUsmiles("NC(CC1=CC=CC=C1)C(O)=O");
-        $phenylAlanine->setSource(SourceServer::PUBCHEM);
+        $phenylAlanine->setSource(ServerEnum::PUBCHEM);
         $phenylAlanine->setIdentifier("6140");
         $phenylAlanine->setContainer($container);
         $this->list->add($phenylAlanine);
@@ -253,7 +254,7 @@ class BaseAminoAcids {
         $tyrosine->setBlockMass(163.063329);
         $tyrosine->setBlockSmiles("C1=CC(=CC=C1CC(C(=O)O)N)O");
         $tyrosine->setUsmiles("NC(CC1=CC=C(O)C=C1)C(O)=O");
-        $tyrosine->setSource(SourceServer::PUBCHEM);
+        $tyrosine->setSource(ServerEnum::PUBCHEM);
         $tyrosine->setIdentifier("6057");
         $tyrosine->setContainer($container);
         $this->list->add($tyrosine);

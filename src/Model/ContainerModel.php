@@ -3,14 +3,17 @@
 namespace App\Model;
 
 use App\Base\Message;
-use App\Constant\ContainerModeEnum;
 use App\Constant\ErrorConstants;
 use App\Entity\Block;
+use App\Entity\BlockFamily;
 use App\Entity\Container;
 use App\Entity\Modification;
 use App\Entity\Sequence;
+use App\Entity\SequenceFamily;
 use App\Entity\U2c;
 use App\Entity\User;
+use App\Enum\ContainerModeEnum;
+use App\Structure\FamilyTransformed;
 use App\Structure\ModificationTransformed;
 use App\Structure\NewContainerTransformed;
 use App\Structure\BlockTransformed;
@@ -229,6 +232,52 @@ class ContainerModel {
 //        $this->entityManager->persist($modification);
 //        $this->entityManager->flush();
         return $message;
+    }
+
+    public function createNewBlockFamily(Container $container, FamilyTransformed $trans): Message {
+        $hasContainerRW = $this->hasContainerRW($container->getId());
+        if (empty($hasContainerRW)) {
+            return new Message(ErrorConstants::ERROR_CONTAINER_INSUFIENT_RIGHTS, Response::HTTP_FORBIDDEN);
+        }
+        $blockFamily = new BlockFamily();
+        $blockFamily->setContainer($container);
+        $blockFamily->setBlockFamilyName($trans->getFamily());
+        $this->entityManager->persist($blockFamily);
+        $this->entityManager->flush();
+        return Message::createCreated();
+    }
+
+    public function deleteBlockFamily(Container $container, BlockFamily $blockFamily): Message {
+        $hasContainerRW = $this->hasContainerRW($container->getId());
+        if (empty($hasContainerRW) || $container->getId() !== $blockFamily->getContainer()->getId()) {
+            return new Message(ErrorConstants::ERROR_CONTAINER_INSUFIENT_RIGHTS, Response::HTTP_FORBIDDEN);
+        }
+        $this->entityManager->remove($blockFamily);
+        $this->entityManager->flush();
+        return Message::createNoContent();
+    }
+
+    public function createNewSequenceFamily(Container $container, FamilyTransformed $trans): Message {
+        $hasContainerRW = $this->hasContainerRW($container->getId());
+        if (empty($hasContainerRW)) {
+            return new Message(ErrorConstants::ERROR_CONTAINER_INSUFIENT_RIGHTS, Response::HTTP_FORBIDDEN);
+        }
+        $blockFamily = new SequenceFamily();
+        $blockFamily->setContainer($container);
+        $blockFamily->setSequenceFamilyName($trans->getFamily());
+        $this->entityManager->persist($blockFamily);
+        $this->entityManager->flush();
+        return Message::createCreated();
+    }
+
+    public function deleteSequenceFamily(Container $container, SequenceFamily $sequenceFamily): Message {
+        $hasContainerRW = $this->hasContainerRW($container->getId());
+        if (empty($hasContainerRW) || $container->getId() !== $sequenceFamily->getContainer()->getId()) {
+            return new Message(ErrorConstants::ERROR_CONTAINER_INSUFIENT_RIGHTS, Response::HTTP_FORBIDDEN);
+        }
+        $this->entityManager->remove($sequenceFamily);
+        $this->entityManager->flush();
+        return Message::createNoContent();
     }
 
 }

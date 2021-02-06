@@ -4,9 +4,9 @@ namespace App\Controller;
 
 use App\Base\RequestHelper;
 use App\Base\ResponseHelper;
-use App\Constant\ContainerVisibilityEnum;
 use App\Constant\EntityColumnsEnum;
 use App\Entity\Container;
+use App\Enum\ContainerVisibilityEnum;
 use App\Model\ContainerModel;
 use App\Repository\ContainerRepository;
 use App\Repository\UserRepository;

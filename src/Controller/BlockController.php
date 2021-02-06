@@ -5,10 +5,11 @@ namespace App\Controller;
 use App\Base\Message;
 use App\Base\RequestHelper;
 use App\Base\ResponseHelper;
-use App\Constant\ContainerVisibilityEnum;
+use App\Constant\EntityColumnsEnum;
 use App\Constant\ErrorConstants;
 use App\Entity\Block;
 use App\Entity\Container;
+use App\Enum\ContainerVisibilityEnum;
 use App\Model\ContainerModel;
 use App\Repository\BlockRepository;
 use App\Smiles\SmilesHelper;
@@ -30,8 +31,6 @@ use Swagger\Annotations as SWG;
 
 class BlockController extends AbstractController {
 
-    const CONTAINER = 'container';
-
     /**
      * Return containers for logged user
      * @Route("/rest/container/{containerId}/block", name="block", methods={"GET"})
@@ -40,6 +39,7 @@ class BlockController extends AbstractController {
      * @param EntityManagerInterface $entityManager
      * @param Security $security
      * @param LoggerInterface $logger
+     * @param BlockRepository $blockRepository
      * @return JsonResponse
      *
      * @SWG\Get(
@@ -51,12 +51,12 @@ class BlockController extends AbstractController {
      */
     public function index(Container $container, EntityManagerInterface $entityManager, Security $security, LoggerInterface $logger, BlockRepository $blockRepository) {
         if ($container->getVisibility() === ContainerVisibilityEnum::PUBLIC) {
-            return new JsonResponse($blockRepository->findBy([self::CONTAINER => $container->getId()]), Response::HTTP_OK);
+            return new JsonResponse($blockRepository->findBy([EntityColumnsEnum::CONTAINER => $container->getId()]), Response::HTTP_OK);
         } else {
             if ($security->getUser() !== null) {
                 $containerModel = new ContainerModel($entityManager, $this->getDoctrine(), $security->getUser(), $logger);
                 if ($containerModel->hasContainer($container->getId())) {
-                    return new JsonResponse($blockRepository->findBy([self::CONTAINER => $container->getId()]), Response::HTTP_OK);
+                    return new JsonResponse($blockRepository->findBy([EntityColumnsEnum::CONTAINER => $container->getId()]), Response::HTTP_OK);
                 } else {
                     return ResponseHelper::jsonResponse(new Message(ErrorConstants::ERROR_CONTAINER_NOT_EXISTS_FOR_USER, Response::HTTP_NOT_FOUND));
                 }

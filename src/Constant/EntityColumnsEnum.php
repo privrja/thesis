@@ -19,5 +19,6 @@ abstract class EntityColumnsEnum {
     const UNIQUE_SMILES = 'uniqueSmiles';
     const SOURCE = 'source';
     const IDENTIFIER = 'identifier';
+    const CONTAINER = 'container';
 
 }

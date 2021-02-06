@@ -3,12 +3,12 @@
 namespace App\DataFixtures;
 
 use App\Constant\BaseAminoAcids;
-use App\Constant\ContainerModeEnum;
-use App\Constant\ContainerVisibilityEnum;
 use App\Entity\Container;
 use App\Entity\Modification;
 use App\Entity\U2c;
 use App\Entity\User;
+use App\Enum\ContainerModeEnum;
+use App\Enum\ContainerVisibilityEnum;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Constant;
+namespace App\Enum;
 
 /**
  * Class ModeEnum

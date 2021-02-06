@@ -106,7 +106,7 @@ class BlockFamilyController extends AbstractController {
      *     security={
      *         {"ApiKeyAuth":{}}
      *     },
-     *     @SWG\Response(response="204", description="Sucessfully deleted container."),
+     *     @SWG\Response(response="204", description="Sucessfully deleted block family."),
      *     @SWG\Response(response="401", description="Return when user is not logged in."),
      *     @SWG\Response(response="403", description="Return when permisions is insufient."),
      *     @SWG\Response(response="404", description="Return when container is not found.")
@@ -115,6 +115,52 @@ class BlockFamilyController extends AbstractController {
     public function deleteBlockFamily(Container $container, BlockFamily $blockFamily, EntityManagerInterface $entityManager, Security $security, LoggerInterface $logger) {
         $model = new ContainerModel($entityManager, $this->getDoctrine(), $security->getUser(), $logger);
         $modelMessage = $model->deleteBlockFamily($container, $blockFamily);
+        return ResponseHelper::jsonResponse($modelMessage);
+    }
+
+    /**
+     * Update block family
+     * @Route("/rest/container/{containerId}/block/family/{familyId}", name="block_family_update", methods={"PUT"})
+     * @Entity("container", expr="repository.find(containerId)")
+     * @Entity("blockFamily", expr="repository.find(familyId)")
+     * @IsGranted("ROLE_USER")
+     * @param Container $container
+     * @param BlockFamily $blockFamily
+     * @param Request $request
+     * @param EntityManagerInterface $entityManager
+     * @param Security $security
+     * @param LoggerInterface $logger
+     * @return JsonResponse
+     *
+     * @SWG\Put(
+     *     tags={"Block Family"},
+     *     security={
+     *         {"ApiKeyAuth":{}}
+     *     },
+     *     @SWG\Parameter(
+     *          name="body",
+     *          in="body",
+     *          type="string",
+     *          required=true,
+     *          description="Params: family",
+     *          @SWG\Schema(type="string",
+     *              example=""),
+     *      ),
+     *     @SWG\Response(response="204", description="Sucessfully update block family."),
+     *     @SWG\Response(response="400", description="Return when input is wrong."),
+     *     @SWG\Response(response="401", description="Return when user is not logged in."),
+     *     @SWG\Response(response="403", description="Return when permisions is insufient."),
+     *     @SWG\Response(response="404", description="Return when container is not found.")
+     * )
+     */
+    public function updateBlock(Container $container, BlockFamily $blockFamily, Request $request, EntityManagerInterface $entityManager, Security $security, LoggerInterface $logger) {
+        /** @var FamilyTransformed $trans */
+        $trans = RequestHelper::evaluateRequest($request, new FamilyStructure(), $logger);
+        if ($trans instanceof JsonResponse) {
+            return $trans;
+        }
+        $model = new ContainerModel($entityManager, $this->getDoctrine(), $security->getUser(), $logger);
+        $modelMessage = $model->updateBlockFamily($trans, $container, $blockFamily);
         return ResponseHelper::jsonResponse($modelMessage);
     }
 

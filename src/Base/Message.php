@@ -53,7 +53,11 @@ class Message implements JsonSerializable {
      * @inheritDoc
      */
     public function jsonSerialize() {
-        return ['message' => $this->messageText];
+        if ($this->messageText === null) {
+            return null;
+        } else {
+            return ['message' => $this->messageText];
+        }
     }
 
 }

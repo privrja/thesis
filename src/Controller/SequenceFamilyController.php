@@ -106,7 +106,7 @@ class SequenceFamilyController extends AbstractController {
      *     security={
      *         {"ApiKeyAuth":{}}
      *     },
-     *     @SWG\Response(response="204", description="Sucessfully deleted container."),
+     *     @SWG\Response(response="204", description="Sucessfully deleted sequence family."),
      *     @SWG\Response(response="401", description="Return when user is not logged in."),
      *     @SWG\Response(response="403", description="Return when permisions is insufient."),
      *     @SWG\Response(response="404", description="Return when container is not found.")
@@ -115,6 +115,52 @@ class SequenceFamilyController extends AbstractController {
     public function deleteBlock(Container $container, SequenceFamily $blockFamily, EntityManagerInterface $entityManager, Security $security, LoggerInterface $logger) {
         $model = new ContainerModel($entityManager, $this->getDoctrine(), $security->getUser(), $logger);
         $modelMessage = $model->deleteSequenceFamily($container, $blockFamily);
+        return ResponseHelper::jsonResponse($modelMessage);
+    }
+
+    /**
+     * Update sequence family
+     * @Route("/rest/container/{containerId}/sequence/family/{familyId}", name="sequence_family_update", methods={"PUT"})
+     * @Entity("container", expr="repository.find(containerId)")
+     * @Entity("sequenceFamily", expr="repository.find(familyId)")
+     * @IsGranted("ROLE_USER")
+     * @param Container $container
+     * @param SequenceFamily $sequenceFamily
+     * @param Request $request
+     * @param EntityManagerInterface $entityManager
+     * @param Security $security
+     * @param LoggerInterface $logger
+     * @return JsonResponse
+     *
+     * @SWG\Put(
+     *     tags={"Block Family"},
+     *     security={
+     *         {"ApiKeyAuth":{}}
+     *     },
+     *     @SWG\Parameter(
+     *          name="body",
+     *          in="body",
+     *          type="string",
+     *          required=true,
+     *          description="Params: family",
+     *          @SWG\Schema(type="string",
+     *              example=""),
+     *      ),
+     *     @SWG\Response(response="204", description="Sucessfully update sequence family."),
+     *     @SWG\Response(response="400", description="Return when input is wrong."),
+     *     @SWG\Response(response="401", description="Return when user is not logged in."),
+     *     @SWG\Response(response="403", description="Return when permisions is insufient."),
+     *     @SWG\Response(response="404", description="Return when container is not found.")
+     * )
+     */
+    public function updateBlock(Container $container, SequenceFamily $sequenceFamily, Request $request, EntityManagerInterface $entityManager, Security $security, LoggerInterface $logger) {
+        /** @var FamilyTransformed $trans */
+        $trans = RequestHelper::evaluateRequest($request, new FamilyStructure(), $logger);
+        if ($trans instanceof JsonResponse) {
+            return $trans;
+        }
+        $model = new ContainerModel($entityManager, $this->getDoctrine(), $security->getUser(), $logger);
+        $modelMessage = $model->updateSequenceFamily($trans, $container, $sequenceFamily);
         return ResponseHelper::jsonResponse($modelMessage);
     }
 

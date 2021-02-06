@@ -34,17 +34,15 @@ class SequenceStructure extends AbstractStructure {
         if (!isset(SequenceEnum::$values[$this->sequenceType])) {
             return new Message(ErrorConstants::ERROR_SEQUENCE_BAD_TYPE);
         }
-        if(empty($this->formula) && empty($this->smiles)) {
+        if (empty($this->formula) && empty($this->smiles)) {
             return new Message(ErrorConstants::ERROR_EMPTY_PARAMS);
         }
         if ((!empty($this->source) && empty($this->identifier)) || empty($this->source) && !empty($this->identifier)) {
             return new Message(ErrorConstants::ERROR_SERVER_IDENTIFIER_PROBLEM);
         }
         foreach ($this->modifications as $modification) {
-            if (!isset($modification->databaseId)) {
-                if (empty($modification->modificationName) || empty($modification->formula)) {
-                    return new Message(ErrorConstants::ERROR_EMPTY_PARAMS);
-                }
+            if (!isset($modification->databaseId) && (empty($modification->modificationName) || empty($modification->formula))) {
+                return new Message(ErrorConstants::ERROR_EMPTY_PARAMS);
             }
         }
 
@@ -67,6 +65,7 @@ class SequenceStructure extends AbstractStructure {
                 try {
                     $trans->setMass(FormulaHelper::computeMass($trans->getFormula()));
                 } catch (IllegalStateException $e) {
+                    /* Empty on purpose - mass can be null */
                 }
             } else {
                 $trans->setMass($this->mass);
@@ -82,6 +81,7 @@ class SequenceStructure extends AbstractStructure {
                 try {
                     $trans->setMass(FormulaHelper::computeMass($this->formula));
                 } catch (IllegalStateException $e) {
+                    /* Empty on purpose - mass can be null */
                 }
             } else {
                 $trans->setMass($this->mass);

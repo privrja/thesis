@@ -2,12 +2,16 @@
 
 namespace App\Structure;
 
-use App\Enum\ServerEnum;
-
 class SequenceTransformed extends AbstractTransformed {
 
     /** @var string */
     private $sequenceName;
+
+    /** @var string */
+    private $sequence;
+
+    /** @var string */
+    private $sequenceType;
 
     /** @var string */
     private $formula;
@@ -21,14 +25,14 @@ class SequenceTransformed extends AbstractTransformed {
     /** @var string|null */
     private $usmiles;
 
-    /** @var ServerEnum|null */
+    /** @var int|null */
     private $source;
 
     /** @var string|null */
     private $identifier;
 
-    /** @var string */
-    private $sequenceType;
+    /** @var string|null*/
+    private $decays;
 
     /** @var array */
     private $modifications;
@@ -93,16 +97,16 @@ class SequenceTransformed extends AbstractTransformed {
     }
 
     /**
-     * @return ServerEnum|null
+     * @return int|null
      */
-    public function getSource(): ?ServerEnum {
+    public function getSource(): ?int {
         return $this->source;
     }
 
     /**
-     * @param ServerEnum|null $source
+     * @param int|null $source
      */
-    public function setSource(?ServerEnum $source): void {
+    public function setSource(?int $source): void {
         $this->source = $source;
     }
 
@@ -174,6 +178,34 @@ class SequenceTransformed extends AbstractTransformed {
      */
     public function setUsmiles(?string $usmiles): void {
         $this->usmiles = $usmiles;
+    }
+
+    /**
+     * @return string
+     */
+    public function getSequence(): string {
+        return $this->sequence;
+    }
+
+    /**
+     * @param string $sequence
+     */
+    public function setSequence(string $sequence): void {
+        $this->sequence = $sequence;
+    }
+
+    /**
+     * @return string
+     */
+    public function getDecays(): ?string {
+        return $this->decays;
+    }
+
+    /**
+     * @param string|null $decays
+     */
+    public function setDecays(?string $decays): void {
+        $this->decays = $decays;
     }
 
 }

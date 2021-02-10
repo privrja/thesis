@@ -28,16 +28,16 @@ class SequenceStructure extends AbstractStructure {
     public $blocks;
 
     public function checkInput(): Message {
-        if (empty($this->sequenceName) || empty($this->sequenceType)) {
+        if (empty($this->sequenceName) || empty($this->sequenceType) || empty($this->sequence)) {
             return new Message(ErrorConstants::ERROR_EMPTY_PARAMS);
         }
-        if (!isset(SequenceEnum::$values[$this->sequenceType])) {
+        if (!isset(SequenceEnum::$backValues[$this->sequenceType])) {
             return new Message(ErrorConstants::ERROR_SEQUENCE_BAD_TYPE);
         }
         if (empty($this->formula) && empty($this->smiles)) {
             return new Message(ErrorConstants::ERROR_EMPTY_PARAMS);
         }
-        if ((!empty($this->source) && empty($this->identifier)) || empty($this->source) && !empty($this->identifier)) {
+        if ((!isset($this->source) || empty($this->identifier))) {
             return new Message(ErrorConstants::ERROR_SERVER_IDENTIFIER_PROBLEM);
         }
         foreach ($this->modifications as $modification) {
@@ -45,8 +45,11 @@ class SequenceStructure extends AbstractStructure {
                 return new Message(ErrorConstants::ERROR_EMPTY_PARAMS);
             }
         }
-
-        // TODO foreach on blocks
+        foreach ($this->blocks as $block) {
+            if (!isset($block->databaseId) && !isset($block->sameAs) && (empty($block->blockName) || empty($block->acronym) || ((empty($block->formula) && empty($block->smiles))))) {
+                return new Message(ErrorConstants::ERROR_EMPTY_PARAMS);
+            }
+        }
         return Message::createOkMessage();
     }
 
@@ -54,6 +57,7 @@ class SequenceStructure extends AbstractStructure {
         $trans = new SequenceTransformed();
         $trans->setSequenceName($this->sequenceName);
         $trans->setSequenceType($this->sequenceType);
+        $trans->setSequence($this->sequence);
         if (empty($this->smiles)) {
             $graph = new Graph($this->smiles);
             if (empty($this->formula)) {
@@ -87,8 +91,11 @@ class SequenceStructure extends AbstractStructure {
                 $trans->setMass($this->mass);
             }
         }
-
-
+        $trans->setSource($this->source);
+        $trans->setIdentifier($this->identifier);
+        $trans->setDecays($this->decays);
+        $trans->setModifications($this->modifications);
+        $trans->setBlocks($this->blocks);
         return $trans;
     }
 }

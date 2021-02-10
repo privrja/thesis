@@ -12,7 +12,6 @@ final class RemoveUnnecessaryParenthesesTest extends TestCase {
         $this->assertEquals("CCC(C)C1NC(=O)C2C(C)CCN2C(=O)C(CC(C)C)OC(=O)CCNC(=O)C(C)N(C)C(=O)C(C(C)C)N(C)C1=O", $result);
     }
 
-
     public function testWithRightData2() {
         $result = SmilesBuilder::removeUnnecessaryParentheses("CCC(C)C(NC(C)=O)C(=O)NC2CCCNC(=O)C(NC(=O)C(NC(=O)C3CCCN3(C(=O)C(Cc1ccccc1)NC2(=O)))C(C)CC)C(C)CC");
         $this->assertEquals("CCC(C)C(NC(C)=O)C(=O)NC2CCCNC(=O)C(NC(=O)C(NC(=O)C3CCCN3C(=O)C(Cc1ccccc1)NC2=O)C(C)CC)C(C)CC", $result);

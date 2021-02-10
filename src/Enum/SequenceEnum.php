@@ -23,6 +23,16 @@ class SequenceEnum {
         self::OTHER => "other"
     ];
 
+    public static $backValues = [
+        "linear" => self::LINEAR,
+        "cyclic" => self::CYCLIC,
+        "branched" => self::BRANCHED,
+        "branch-cyclic" => self::BRANCH_CYCLIC,
+        "linear-polyketide" => self::LINEAR_POLYKETIDE,
+        "cyclic-polyketide" => self::CYCLIC_POLYKETIDE,
+        "other" => self::OTHER
+    ];
+
     static function isOneOf(int $value): bool {
         return $value >= self::LINEAR && $value <= self::OTHER;
     }

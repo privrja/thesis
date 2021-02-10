@@ -2,7 +2,9 @@
 
 namespace App\Model;
 
+use App\Base\FormulaHelper;
 use App\Base\Message;
+use App\Base\SequenceHelper;
 use App\Constant\ErrorConstants;
 use App\Entity\Block;
 use App\Entity\BlockFamily;
@@ -13,14 +15,18 @@ use App\Entity\SequenceFamily;
 use App\Entity\U2c;
 use App\Entity\User;
 use App\Enum\ContainerModeEnum;
+use App\Exception\IllegalStateException;
+use App\Smiles\Graph;
 use App\Structure\FamilyTransformed;
 use App\Structure\ModificationTransformed;
 use App\Structure\NewContainerTransformed;
 use App\Structure\BlockTransformed;
+use App\Structure\SequenceEnum;
 use App\Structure\SequenceTransformed;
 use App\Structure\UpdateContainerTransformed;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
+use InvalidArgumentException;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -32,6 +38,7 @@ class ContainerModel {
     private $logger;
     private $userRepository;
     private $containerRepository;
+    private $blockRepository;
 
     /**
      * ContainerModel constructor.
@@ -47,6 +54,7 @@ class ContainerModel {
         $this->logger = $logger;
         $this->userRepository = $doctrine->getRepository(User::class);
         $this->containerRepository = $doctrine->getRepository(Container::class);
+        $this->blockRepository = $doctrine->getRepository(Block::class);
     }
 
     public function concreteContainer(Container $container) {
@@ -228,9 +236,89 @@ class ContainerModel {
     }
 
     function saveSequence(Sequence $sequence, SequenceTransformed $trans, Message $message) {
-        // TODO
+        $sequence->setSequenceName($trans->getSequenceName());
+        $sequence->setSequenceType($trans->getSequenceType());
+        $sequence->setSource($trans->getSource());
+        $sequence->setIdentifier($trans->getIdentifier());
+        $sequence->setDecays($trans->getDecays());
+        $sequence->setSequenceFormula($trans->getFormula());
+        $sequence->setSequenceMass($trans->getMass());
 
+        // TODO modifications
+
+        // TODO blocks
+        /** @var Block[] $blockArray */
+        $blockArray = [];
+        foreach ($trans->getBlocks() as $block) {
+            array_push($blockArray, $this->setBlock($block));
+        }
+        $sequenceHelper = new SequenceHelper($trans->getSequence(), SequenceEnum::$backValues[$trans->getSequenceType()], $blockArray);
+        $sequenceHelper->sequenceBlocksStructure();
+
+        // TODO save
         return $message;
+    }
+
+
+    private function setBlock($block) {
+        if ($block === null) {
+            throw new InvalidArgumentException('Block in sequence is not in block array');
+        }
+        if (isset($block->databaseId)) {
+            $sBlock = $this->blockRepository->find($block->databaseId);
+            if ($sBlock === null) {
+                throw new InvalidArgumentException('Block has defined databaseId, but block in DB never existed');
+            }
+            return $sBlock;
+        } else {
+            $sBlock = new Block();
+            $sBlock->setBlockName($block->blockName);
+            $sBlock->setAcronym($block->acronym);
+            if (!empty($block->losses)) {
+                $sBlock->setLosses($block->losses);
+            }
+            if (!empty($block->source)) {
+                $sBlock->setSource($block->source);
+            }
+            if (!empty($block->identifier)) {
+                $sBlock->setIdentifier($block->identifier);
+            }
+            if ($block->smiles === null) {
+                $sBlock->setBlockSmiles($block->smiles);
+                $graph = new Graph($block->smiles);
+                try {
+                    $sBlock->setUsmiles($graph->getUniqueSmiles());
+                } catch (IllegalStateException $e) {
+                    $sBlock->setUsmiles($block->smiles);
+                }
+                if ($block->formula === null) {
+                    $graph->getFormula($block->losses);
+                } else {
+                    $sBlock->setResidue($block->formula);
+                }
+                if ($block->mass === null) {
+                    try {
+                        $sBlock->setBlockMass(FormulaHelper::computeMass($sBlock->getResidue()));
+                    } catch (IllegalStateException $e) {
+                        /* Empty on purpose, mass can be null */
+                    }
+                } else {
+                    $sBlock->setBlockMass($block->mass);
+                }
+            } else {
+                $sBlock->setResidue($block->formula);
+                if ($block->mass === null) {
+                    try {
+                        $sBlock->setBlockMass(FormulaHelper::computeMass($sBlock->getResidue()));
+                    } catch (IllegalStateException $e) {
+                        /* Empty on purpose, mass can be null */
+                    }
+                } else {
+                    $sBlock->setBlockMass($block->mass);
+                }
+            }
+            return $sBlock;
+        }
     }
 
     public function createNewBlockFamily(Container $container, FamilyTransformed $trans): Message {

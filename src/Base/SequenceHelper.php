@@ -34,7 +34,7 @@ class SequenceHelper {
      * @param string $sequenceType
      * @param Block[] $blocks
      */
-    public function __construct(string $sequence, string $sequenceType, array $blocks) {
+    public function __construct(string $sequence, int $sequenceType, array $blocks) {
         $this->sequence = $sequence;
         $this->sequenceType = $sequenceType;
         $this->blocks = $blocks;
@@ -63,7 +63,7 @@ class SequenceHelper {
     }
 
     function addCyclicReference(&$res, $len) {
-        if ($this->sequenceType == SequenceEnum::BRANCH_CYCLIC || $this->sequenceType == SequenceEnum::CYCLIC || $this->sequenceType === SequenceEnum::CYCLIC_POLYKETIDE) {
+        if ($this->sequenceType === SequenceEnum::BRANCH_CYCLIC || $this->sequenceType === SequenceEnum::CYCLIC || $this->sequenceType === SequenceEnum::CYCLIC_POLYKETIDE) {
             for ($i = $len - 1; $i > 0; $i--) {
                 if ($res[$i]->getIsBranch() === false) {
                     for ($j = 0; $j < $this->length; $j++) {

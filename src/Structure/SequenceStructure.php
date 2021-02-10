@@ -37,7 +37,7 @@ class SequenceStructure extends AbstractStructure {
         if (empty($this->formula) && empty($this->smiles)) {
             return new Message(ErrorConstants::ERROR_EMPTY_PARAMS);
         }
-        if ((!isset($this->source) || empty($this->identifier))) {
+        if (!isset($this->source) || empty($this->identifier)) {
             return new Message(ErrorConstants::ERROR_SERVER_IDENTIFIER_PROBLEM);
         }
         foreach ($this->modifications as $modification) {
@@ -46,7 +46,7 @@ class SequenceStructure extends AbstractStructure {
             }
         }
         foreach ($this->blocks as $block) {
-            if (!isset($block->databaseId) && !isset($block->sameAs) && (empty($block->blockName) || empty($block->acronym) || ((empty($block->formula) && empty($block->smiles))))) {
+            if (!isset($block->databaseId) && !isset($block->sameAs) && (empty($block->blockName) || empty($block->acronym) || (empty($block->formula) && empty($block->smiles)))) {
                 return new Message(ErrorConstants::ERROR_EMPTY_PARAMS);
             }
         }

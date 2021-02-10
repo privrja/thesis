@@ -58,7 +58,11 @@ class SequenceHelper {
             array_push($res, $b2s);
             $len++;
         }
-        /** add cyclic reference */
+        $this->addCyclicReference($res, $len);
+        return $res;
+    }
+
+    function addCyclicReference(&$res, $len) {
         if ($this->sequenceType == SequenceEnum::BRANCH_CYCLIC || $this->sequenceType == SequenceEnum::CYCLIC || $this->sequenceType === SequenceEnum::CYCLIC_POLYKETIDE) {
             for ($i = $len - 1; $i > 0; $i--) {
                 if ($res[$i]->getIsBranch() === false) {
@@ -72,19 +76,18 @@ class SequenceHelper {
                 }
             }
         }
-        return $res;
     }
 
     private function findNext() {
-        $indexStart = strpos($this->sequence, '[', $this->branchIndexEnd);
-        if ($indexStart === null) {
+        $start = strpos($this->sequence, '[', $this->branchIndexEnd);
+        if ($start === null) {
             return null;
         }
-        $indexEnd = strpos($this->sequence, ']', $indexStart);
-        if ($indexStart === false) {
+        $end = strpos($this->sequence, ']', $start);
+        if ($start === false) {
             return null;
         }
-        return $this->findBlock(substr($this->sequence, $indexStart + 1, $indexEnd - $indexStart - 1));
+        return $this->findBlock(substr($this->sequence, $start + 1, $end - $start - 1));
     }
 
     private function nextBlock() {
@@ -105,10 +108,7 @@ class SequenceHelper {
 
     private function findNextBranchAcronym() {
         $nextIndexStart = $this->indexEnd + 2;
-        if ($nextIndexStart >= $this->length) {
-            return null;
-        }
-        if (substr($this->sequence, $nextIndexStart, 1) == ")") {
+        if ($nextIndexStart >= $this->length || substr($this->sequence, $nextIndexStart, 1) == ")") {
             return null;
         } else {
             $nextIndexEnd = strpos($this->sequence, '[', $nextIndexStart);
@@ -149,17 +149,17 @@ class SequenceHelper {
                 $left = substr_count($this->sequence, '(', 0, $this->indexStart);
                 $right = substr_count($this->sequence, ')', 0, $this->indexStart);
                 if ($left !== $right) {
-                    $indexStart = strripos($this->sequence, '(', -($this->length - $this->indexStart));
-                    if ($indexStart === null) {
+                    $start = strripos($this->sequence, '(', -($this->length - $this->indexStart));
+                    if ($start === null) {
                         break;
                     }
-                    $indexEnd = strpos($this->sequence, ')', $indexStart);
-                    if ($indexEnd === null) {
+                    $end = strpos($this->sequence, ')', $start);
+                    if ($end === null) {
                         throw new InvalidArgumentException('Wrong braces');
                     }
-                    $this->branchIndexStart = $indexStart;
-                    $this->branchIndexEnd = $indexEnd;
-                    if ($indexStart === $this->indexStart - 1) {
+                    $this->branchIndexStart = $start;
+                    $this->branchIndexEnd = $end;
+                    if ($start === $this->indexStart - 1) {
                         return false;
                     }
                     return true;

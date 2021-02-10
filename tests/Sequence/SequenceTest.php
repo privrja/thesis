@@ -9,7 +9,7 @@ use PHPUnit\Framework\TestCase;
 
 final class SequenceTest extends TestCase {
 
-    public function testSequence() {
+    public function testSequencePseudacyclinOne() {
         $phe = new Block();
         $phe->setAcronym('Phe');
         $pro = new Block();
@@ -48,6 +48,129 @@ final class SequenceTest extends TestCase {
         $this->assertEquals('Orn', $res[3]->getNextBlock()->getAcronym());
         $this->assertEquals('Phe', $res[4]->getNextBlock()->getAcronym());
         $this->assertEquals(null, $res[5]->getNextBlock());
+
+        $this->assertEquals(null, $res[0]->getBranchReference());
+        $this->assertEquals(null, $res[1]->getBranchReference());
+        $this->assertEquals(null, $res[2]->getBranchReference());
+        $this->assertEquals(null, $res[3]->getBranchReference());
+        $this->assertEquals('Ace', $res[4]->getBranchReference()->getAcronym());
+        $this->assertEquals(null, $res[5]->getBranchReference());
+    }
+
+    public function testSequencePseudacyclinTwo() {
+        $phe = new Block();
+        $phe->setAcronym('Phe');
+        $pro = new Block();
+        $pro->setAcronym('Pro');
+        $ile = new Block();
+        $ile->setAcronym('Ile');
+        $orn = new Block();
+        $orn->setAcronym('Orn');
+        $ace = new Block();
+        $ace->setAcronym('Ace');
+        $helper = new SequenceHelper('[Pro]-[Ile]-[Ile]\([Orn]-[Ace]\)[Phe]', SequenceEnum::BRANCH_CYCLIC, [
+            0 => $ile,
+            1 => $ace,
+            2 => $pro,
+            3 => $orn,
+            4 => $phe,
+        ]);
+        $res = $helper->sequenceBlocksStructure();
+        $this->assertEquals('Pro', $res[0]->getBlock()->getAcronym());
+        $this->assertEquals('Ile', $res[1]->getBlock()->getAcronym());
+        $this->assertEquals('Ile', $res[2]->getBlock()->getAcronym());
+        $this->assertEquals('Orn', $res[3]->getBlock()->getAcronym());
+        $this->assertEquals('Ace', $res[4]->getBlock()->getAcronym());
+        $this->assertEquals('Phe', $res[5]->getBlock()->getAcronym());
+
+        $this->assertEquals(false, $res[0]->getIsBranch());
+        $this->assertEquals(false, $res[1]->getIsBranch());
+        $this->assertEquals(false, $res[2]->getIsBranch());
+        $this->assertEquals(false, $res[3]->getIsBranch());
+        $this->assertEquals(true, $res[4]->getIsBranch());
+        $this->assertEquals(false, $res[5]->getIsBranch());
+
+        $this->assertEquals('Ile', $res[0]->getNextBlock()->getAcronym());
+        $this->assertEquals('Ile', $res[1]->getNextBlock()->getAcronym());
+        $this->assertEquals('Orn', $res[2]->getNextBlock()->getAcronym());
+        $this->assertEquals('Phe', $res[3]->getNextBlock()->getAcronym());
+        $this->assertEquals(null, $res[4]->getNextBlock());
+        $this->assertEquals('Pro', $res[5]->getNextBlock()->getAcronym());
+
+        $this->assertEquals('Ace', $res[3]->getBranchReference()->getAcronym());
+    }
+
+    public function testSequencePseudacyclinThree() {
+        $phe = new Block();
+        $phe->setAcronym('Phe');
+        $pro = new Block();
+        $pro->setAcronym('Pro');
+        $ile = new Block();
+        $ile->setAcronym('Ile');
+        $orn = new Block();
+        $orn->setAcronym('Orn');
+        $ace = new Block();
+        $ace->setAcronym('Ace');
+        $helper = new SequenceHelper('[Pro]-[Ile]-[Ile]\([Orn]-[Ace]-[Ile]\)[Phe]', SequenceEnum::BRANCH_CYCLIC, [
+            0 => $ile,
+            1 => $ace,
+            2 => $pro,
+            3 => $orn,
+            4 => $phe,
+        ]);
+        $res = $helper->sequenceBlocksStructure();
+        $this->assertEquals('Pro', $res[0]->getBlock()->getAcronym());
+        $this->assertEquals('Ile', $res[1]->getBlock()->getAcronym());
+        $this->assertEquals('Ile', $res[2]->getBlock()->getAcronym());
+        $this->assertEquals('Orn', $res[3]->getBlock()->getAcronym());
+        $this->assertEquals('Ace', $res[4]->getBlock()->getAcronym());
+        $this->assertEquals('Ile', $res[5]->getBlock()->getAcronym());
+        $this->assertEquals('Phe', $res[6]->getBlock()->getAcronym());
+
+        $this->assertEquals(false, $res[0]->getIsBranch());
+        $this->assertEquals(false, $res[1]->getIsBranch());
+        $this->assertEquals(false, $res[2]->getIsBranch());
+        $this->assertEquals(false, $res[3]->getIsBranch());
+        $this->assertEquals(true, $res[4]->getIsBranch());
+        $this->assertEquals(true, $res[5]->getIsBranch());
+        $this->assertEquals(false, $res[6]->getIsBranch());
+
+        $this->assertEquals('Ile', $res[0]->getNextBlock()->getAcronym());
+        $this->assertEquals('Ile', $res[1]->getNextBlock()->getAcronym());
+        $this->assertEquals('Orn', $res[2]->getNextBlock()->getAcronym());
+        $this->assertEquals('Phe', $res[3]->getNextBlock()->getAcronym());
+        $this->assertEquals(null, $res[4]->getNextBlock());
+        $this->assertEquals(null, $res[5]->getNextBlock());
+        $this->assertEquals('Pro', $res[6]->getNextBlock()->getAcronym());
+
+        $this->assertEquals('Ace', $res[3]->getBranchReference()->getAcronym());
+        $this->assertEquals('Ile', $res[4]->getBranchReference()->getAcronym());
+    }
+
+    public function testSequenceLinear() {
+        $phe = new Block();
+        $phe->setAcronym('Phe');
+        $pro = new Block();
+        $pro->setAcronym('Pro');
+        $ile = new Block();
+        $ile->setAcronym('Ile');
+        $helper = new SequenceHelper('[Phe]-[Pro]-[Ile]', SequenceEnum::LINEAR, [
+            0 => $ile,
+            2 => $pro,
+            4 => $phe,
+        ]);
+        $res = $helper->sequenceBlocksStructure();
+        $this->assertEquals('Phe', $res[0]->getBlock()->getAcronym());
+        $this->assertEquals('Pro', $res[1]->getBlock()->getAcronym());
+        $this->assertEquals('Ile', $res[2]->getBlock()->getAcronym());
+
+        $this->assertEquals(false, $res[0]->getIsBranch());
+        $this->assertEquals(false, $res[1]->getIsBranch());
+        $this->assertEquals(false, $res[2]->getIsBranch());
+
+        $this->assertEquals('Pro', $res[0]->getNextBlock()->getAcronym());
+        $this->assertEquals('Ile', $res[1]->getNextBlock()->getAcronym());
+        $this->assertEquals(null, $res[2]->getNextBlock());
     }
 
 }

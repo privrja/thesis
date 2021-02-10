@@ -31,7 +31,7 @@ class SequenceHelper {
     /**
      * SequenceHelper constructor.
      * @param string $sequence
-     * @param string $sequenceType
+     * @param int $sequenceType
      * @param Block[] $blocks
      */
     public function __construct(string $sequence, int $sequenceType, array $blocks) {
@@ -79,15 +79,19 @@ class SequenceHelper {
     }
 
     private function findNext() {
-        $start = strpos($this->sequence, '[', $this->branchIndexEnd);
-        if ($start === null) {
+        if ($this->branch === false) {
+            $start = strpos($this->sequence, '[', $this->branchIndexEnd);
+            if ($start === false) {
+                return null;
+            }
+            $end = strpos($this->sequence, ']', $start);
+            if ($start === false) {
+                return null;
+            }
+            return $this->findBlock(substr($this->sequence, $start + 1, $end - $start - 1));
+        } else {
             return null;
         }
-        $end = strpos($this->sequence, ']', $start);
-        if ($start === false) {
-            return null;
-        }
-        return $this->findBlock(substr($this->sequence, $start + 1, $end - $start - 1));
     }
 
     private function nextBlock() {
@@ -111,16 +115,16 @@ class SequenceHelper {
         if ($nextIndexStart >= $this->length || substr($this->sequence, $nextIndexStart, 1) == ")") {
             return null;
         } else {
-            $nextIndexEnd = strpos($this->sequence, '[', $nextIndexStart);
+            $nextIndexEnd = strpos($this->sequence, ']', $nextIndexStart);
             if ($nextIndexEnd === null) {
                 return null;
             }
-            return $this->findBlock(substr($nextIndexStart + 1, $nextIndexEnd - $nextIndexStart - 1));
+            return $this->findBlock(substr($this->sequence, $nextIndexStart + 1, $nextIndexEnd - $nextIndexStart - 1));
         }
     }
 
     private function branchNext() {
-        if ($this->branch === false) {
+        if ($this->possibleBranch() === false) {
             return null;
         }
         return $this->findNextBranchAcronym();
@@ -168,6 +172,24 @@ class SequenceHelper {
         }
         $this->branchIndexEnd = $this->indexEnd;
         $this->branchIndexStart = $this->indexEnd;
+        return false;
+    }
+
+    private function possibleBranch() {
+        switch ($this->sequenceType) {
+            default:
+            case SequenceEnum::LINEAR:
+            case SequenceEnum::CYCLIC:
+            case SequenceEnum::LINEAR_POLYKETIDE:
+            case SequenceEnum::CYCLIC_POLYKETIDE:
+            case SequenceEnum::OTHER:
+                break;
+            case SequenceEnum::BRANCH_CYCLIC:
+            case SequenceEnum::BRANCHED:
+                $left = substr_count($this->sequence, '(', 0, $this->indexStart);
+                $right = substr_count($this->sequence, ')', 0, $this->indexStart);
+                return $left !== $right;
+        }
         return false;
     }
 

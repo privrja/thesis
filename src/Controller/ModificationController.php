@@ -29,7 +29,6 @@ class ModificationController extends AbstractController {
     /**
      * Return modifications for logged user
      * @Route("/rest/container/{containerId}/modification", name="modification", methods={"GET"})
-     * @IsGranted("ROLE_USER")
      * @Entity("container", expr="repository.find(containerId)")
      * @param Container $container
      * @param EntityManagerInterface $entityManager
@@ -38,33 +37,22 @@ class ModificationController extends AbstractController {
      * @return JsonResponse
      */
     public function getModifications(Container $container, EntityManagerInterface $entityManager, Security $security, LoggerInterface $logger) {
-        $model = new ContainerModel($entityManager, $this->getDoctrine(), $security->getUser(), $logger);
-        if ($container->getVisibility() === ContainerVisibilityEnum::PRIVATE) {
-            $modelMessage = $model->concreteContainer($container);
-            if (!$modelMessage->result) {
-                return ResponseHelper::jsonResponse(new Message(ErrorConstants::ERROR_CONTAINER_NOT_EXISTS_FOR_USER, Response::HTTP_NOT_FOUND));
+        if ($security->isGranted('ROLE_USER')) {
+            $model = new ContainerModel($entityManager, $this->getDoctrine(), $security->getUser(), $logger);
+            if ($container->getVisibility() === ContainerVisibilityEnum::PRIVATE) {
+                $modelMessage = $model->concreteContainer($container);
+                if (!$modelMessage->result) {
+                    return ResponseHelper::jsonResponse(new Message(ErrorConstants::ERROR_CONTAINER_NOT_EXISTS_FOR_USER, Response::HTTP_NOT_FOUND));
+                }
             }
+            return new JsonResponse($model->getContainerModifications($container->getId()));
+        } else {
+            return $this->getModificationsFree($container, $entityManager, $logger);
         }
-        return new JsonResponse($model->getContainerModifications($container->getId()));
     }
 
-    /**
-     * Return modifications for logged user
-     * @Route("/rest/container/{containerId}/modification", name="modification", methods={"GET"})
-     * @Entity("container", expr="repository.find(containerId)")
-     * @param Container $container
-     * @param EntityManagerInterface $entityManager
-     * @param LoggerInterface $logger
-     * @return JsonResponse
-     *
-     * @SWG\Get(
-     *     tags={"Modification"},
-     *     @SWG\Response(response="200", description="Return list of modifications in container."),
-     *     @SWG\Response(response="401", description="Return when user has not acces to container."),
-     *     @SWG\Response(response="404", description="Return when container not found."),
-     * )
-     */
     public function getModificationsFree(Container $container, EntityManagerInterface $entityManager, LoggerInterface $logger) {
+        var_dump('YYY');
         if ($container->getVisibility() === ContainerVisibilityEnum::PRIVATE) {
             return ResponseHelper::jsonResponse(new Message(ErrorConstants::ERROR_CONTAINER_NOT_EXISTS_FOR_USER, Response::HTTP_NOT_FOUND));
         }

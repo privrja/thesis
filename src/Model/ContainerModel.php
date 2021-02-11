@@ -232,10 +232,10 @@ class ContainerModel {
         }
         $sequence = new Sequence();
         $sequence->setContainer($container);
-        return $this->saveSequence($sequence, $trans, Message::createCreated());
+        return $this->saveSequence($sequence, $container, $trans, Message::createCreated());
     }
 
-    function saveSequence(Sequence $sequence, SequenceTransformed $trans, Message $message) {
+    function saveSequence(Sequence $sequence, Container $container, SequenceTransformed $trans, Message $message) {
         $sequence->setSequenceName($trans->getSequenceName());
         $sequence->setSequenceType($trans->getSequenceType());
         $sequence->setSource($trans->getSource());
@@ -243,24 +243,42 @@ class ContainerModel {
         $sequence->setDecays($trans->getDecays());
         $sequence->setSequenceFormula($trans->getFormula());
         $sequence->setSequenceMass($trans->getMass());
+        $sequence->setSequenceSmiles($trans->getUsmiles());
 
-        // TODO modifications
+        switch (SequenceEnum::$backValues[$trans->getSequenceType()]) {
+            case SequenceEnum::CYCLIC:
+            case SequenceEnum::CYCLIC_POLYKETIDE:
+                break;
+            default:
+            case SequenceEnum::OTHER:
+            case SequenceEnum::BRANCHED:
+            case SequenceEnum::BRANCH_CYCLIC:
+                $sequence->setBModification($trans->getBModification());
+                /** No break for purpose */
+            case SequenceEnum::LINEAR:
+            case SequenceEnum::LINEAR_POLYKETIDE:
+                $sequence->setNModification($trans->getNModification());
+                $sequence->setCModification($trans->getCModification());
+                break;
+        }
 
-        // TODO blocks
         /** @var Block[] $blockArray */
         $blockArray = [];
         foreach ($trans->getBlocks() as $block) {
-            array_push($blockArray, $this->setBlock($block));
+            array_push($blockArray, $this->setBlock($block, $container));
         }
         $sequenceHelper = new SequenceHelper($trans->getSequence(), SequenceEnum::$backValues[$trans->getSequenceType()], $blockArray);
-        $sequenceHelper->sequenceBlocksStructure();
+        $b2s = $sequenceHelper->sequenceBlocksStructure();
+        foreach ($b2s as $connection) {
+            $sequence->addB2($connection);
+        }
 
-        // TODO save
+        $this->entityManager->persist($sequence);
+        $this->entityManager->flush();
         return $message;
     }
 
-
-    private function setBlock($block) {
+    private function setBlock($block, $container) {
         if ($block === null) {
             throw new InvalidArgumentException('Block in sequence is not in block array');
         }
@@ -274,16 +292,17 @@ class ContainerModel {
             $sBlock = new Block();
             $sBlock->setBlockName($block->blockName);
             $sBlock->setAcronym($block->acronym);
+            $sBlock->setContainer($container);
             if (!empty($block->losses)) {
                 $sBlock->setLosses($block->losses);
             }
-            if (!empty($block->source)) {
+            if (isset($block->source)) {
                 $sBlock->setSource($block->source);
             }
             if (!empty($block->identifier)) {
                 $sBlock->setIdentifier($block->identifier);
             }
-            if ($block->smiles === null) {
+            if ($block->smiles !== null) {
                 $sBlock->setBlockSmiles($block->smiles);
                 $graph = new Graph($block->smiles);
                 try {

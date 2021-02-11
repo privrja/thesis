@@ -23,23 +23,24 @@ class B2s
     private $sequence;
 
     /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Block", inversedBy="b2s")
+     * @ORM\ManyToOne(targetEntity="App\Entity\Block", inversedBy="b2s", cascade={"persist"})
      * @ORM\JoinColumn(nullable=false)
      */
     private $block;
 
     /**
-     * @ORM\OneToOne(targetEntity="App\Entity\Block", cascade={"persist", "remove"})
+     * @ORM\ManyToOne(targetEntity="App\Entity\Block", cascade={"persist"})
      */
     private $nextBlock;
 
     /**
-     * @ORM\Column(type="boolean")
+     * @ORM\Column(type="boolean", nullable=false, options={"default": 0})
+     *
      */
     private $isBranch;
 
     /**
-     * @ORM\OneToOne(targetEntity="App\Entity\Block", cascade={"persist", "remove"})
+     * @ORM\ManyToOne(targetEntity="App\Entity\Block", cascade={"persist"})
      */
     private $branchReference;
 

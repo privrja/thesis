@@ -20,9 +20,6 @@ class SequenceTransformed extends AbstractTransformed {
     private $mass;
 
     /** @var string|null */
-    private $smiles;
-
-    /** @var string|null */
     private $usmiles;
 
     /** @var int|null */
@@ -34,8 +31,14 @@ class SequenceTransformed extends AbstractTransformed {
     /** @var string|null*/
     private $decays;
 
-    /** @var array */
-    private $modifications;
+    /** @var mixed|null */
+    private $nModification;
+
+    /** @var mixed|null */
+    private $cModification;
+
+    /** @var mixed|null */
+    private $bModification;
 
     /** @var array */
     private $blocks;
@@ -83,20 +86,6 @@ class SequenceTransformed extends AbstractTransformed {
     }
 
     /**
-     * @return string|null
-     */
-    public function getSmiles(): ?string {
-        return $this->smiles;
-    }
-
-    /**
-     * @param string|null $smiles
-     */
-    public function setSmiles(?string $smiles): void {
-        $this->smiles = $smiles;
-    }
-
-    /**
      * @return int|null
      */
     public function getSource(): ?int {
@@ -136,20 +125,6 @@ class SequenceTransformed extends AbstractTransformed {
      */
     public function setSequenceType(string $sequenceType): void {
         $this->sequenceType = $sequenceType;
-    }
-
-    /**
-     * @return array
-     */
-    public function getModifications(): array {
-        return $this->modifications;
-    }
-
-    /**
-     * @param array $modifications
-     */
-    public function setModifications(array $modifications): void {
-        $this->modifications = $modifications;
     }
 
     /**
@@ -206,6 +181,48 @@ class SequenceTransformed extends AbstractTransformed {
      */
     public function setDecays(?string $decays): void {
         $this->decays = $decays;
+    }
+
+    /**
+     * @return mixed|null
+     */
+    public function getNModification() {
+        return $this->nModification;
+    }
+
+    /**
+     * @param mixed|null $nModification
+     */
+    public function setNModification($nModification): void {
+        $this->nModification = $nModification;
+    }
+
+    /**
+     * @return mixed|null
+     */
+    public function getCModification() {
+        return $this->cModification;
+    }
+
+    /**
+     * @param mixed|null $cModification
+     */
+    public function setCModification($cModification): void {
+        $this->cModification = $cModification;
+    }
+
+    /**
+     * @return mixed|null
+     */
+    public function getBModification() {
+        return $this->bModification;
+    }
+
+    /**
+     * @param mixed|null $bModification
+     */
+    public function setBModification($bModification): void {
+        $this->bModification = $bModification;
     }
 
 }

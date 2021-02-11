@@ -59,22 +59,22 @@ class Sequence implements JsonSerializable {
     private $decays;
 
     /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Modification")
+     * @ORM\ManyToOne(targetEntity="App\Entity\Modification", cascade={"persist"})
      */
     private $nModification;
 
     /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Modification")
+     * @ORM\ManyToOne(targetEntity="App\Entity\Modification", cascade={"persist"})
      */
     private $cModification;
 
     /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Modification")
+     * @ORM\ManyToOne(targetEntity="App\Entity\Modification", cascade={"persist"})
      */
     private $bModification;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\B2s", mappedBy="sequence", orphanRemoval=true)
+     * @ORM\OneToMany(targetEntity="App\Entity\B2s", mappedBy="sequence", orphanRemoval=true, cascade={"persist"})
      */
     private $b2s;
 

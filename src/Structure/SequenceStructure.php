@@ -21,8 +21,14 @@ class SequenceStructure extends AbstractStructure {
     public $sequenceType;
     public $decays;
 
-    /** @var array */
-    public $modifications;
+    /** @var mixed|null */
+    public $nModification;
+
+    /** @var mixed|null */
+    public $cModification;
+
+    /** @var mixed|null */
+    public $bModification;
 
     /** @var array */
     public $blocks;
@@ -40,11 +46,6 @@ class SequenceStructure extends AbstractStructure {
         if (!isset($this->source) || empty($this->identifier)) {
             return new Message(ErrorConstants::ERROR_SERVER_IDENTIFIER_PROBLEM);
         }
-        foreach ($this->modifications as $modification) {
-            if (!isset($modification->databaseId) && (empty($modification->modificationName) || empty($modification->formula))) {
-                return new Message(ErrorConstants::ERROR_EMPTY_PARAMS);
-            }
-        }
         foreach ($this->blocks as $block) {
             if (!isset($block->databaseId) && !isset($block->sameAs) && (empty($block->blockName) || empty($block->acronym) || (empty($block->formula) && empty($block->smiles)))) {
                 return new Message(ErrorConstants::ERROR_EMPTY_PARAMS);
@@ -58,7 +59,7 @@ class SequenceStructure extends AbstractStructure {
         $trans->setSequenceName($this->sequenceName);
         $trans->setSequenceType($this->sequenceType);
         $trans->setSequence($this->sequence);
-        if (empty($this->smiles)) {
+        if (!empty($this->smiles)) {
             $graph = new Graph($this->smiles);
             if (empty($this->formula)) {
                 $trans->setFormula($graph->getFormula(LossesEnum::NONE));
@@ -94,7 +95,9 @@ class SequenceStructure extends AbstractStructure {
         $trans->setSource($this->source);
         $trans->setIdentifier($this->identifier);
         $trans->setDecays($this->decays);
-        $trans->setModifications($this->modifications);
+        $trans->setNModification($this->nModification);
+        $trans->setCModification($this->cModification);
+        $trans->setBModification($this->bModification);
         $trans->setBlocks($this->blocks);
         return $trans;
     }

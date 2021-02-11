@@ -2,13 +2,15 @@
 
 namespace App\Smiles\Parser;
 
+use App\Exception\IllegalStateException;
+
 class IntParser implements IParser {
 
     /**
      * Parse text
      * @param string $strText
      * @return Accept|Reject
-     * @throws \App\Exception\IllegalStateException
+     * @throws IllegalStateException
      */
     public function parse($strText) {
         $strSign = "";

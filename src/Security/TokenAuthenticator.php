@@ -4,6 +4,7 @@ namespace App\Security;
 
 use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
+use Exception;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -98,7 +99,7 @@ class TokenAuthenticator extends AbstractGuardAuthenticator
             $this->em->commit();
 
             $this->em->flush();
-            return JsonResponse::create(null, Response::HTTP_NO_CONTENT, [self::X_AUTH_TOKEN => $genToken]);
+            return new JsonResponse(null, Response::HTTP_NO_CONTENT, [self::X_AUTH_TOKEN => $genToken]);
         }
         return null;
     }
@@ -129,7 +130,7 @@ class TokenAuthenticator extends AbstractGuardAuthenticator
     {
         try {
             return bin2hex(random_bytes(64));
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->logger->warning($e);
             return rand(1000000, 999999999999);
         }

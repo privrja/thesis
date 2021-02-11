@@ -341,7 +341,6 @@ class Graph {
     private function dfsInitialization(): int {
         $this->uniqueSmiles = "";
         $this->isCyclic = false;
-        $this->digit = 1;
         $min = $this->arNodes[0]->getCangenStructure()->getRank();
         $index = $minIndex = 0;
         foreach ($this->arNodes as $node) {

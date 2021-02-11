@@ -2,6 +2,7 @@
 
 namespace App\Smiles\Parser;
 
+use App\Exception\IllegalStateException;
 use App\Smiles\Digit;
 
 class BondAndNumberParser implements IParser {
@@ -10,7 +11,7 @@ class BondAndNumberParser implements IParser {
      * Parse text
      * @param string $strText
      * @return Accept|Reject
-     * @throws \App\Exception\IllegalStateException
+     * @throws IllegalStateException
      */
     public function parse($strText) {
         $bondParser = new BondParser();

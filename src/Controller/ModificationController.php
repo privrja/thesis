@@ -52,7 +52,6 @@ class ModificationController extends AbstractController {
     }
 
     public function getModificationsFree(Container $container, EntityManagerInterface $entityManager, LoggerInterface $logger) {
-        var_dump('YYY');
         if ($container->getVisibility() === ContainerVisibilityEnum::PRIVATE) {
             return ResponseHelper::jsonResponse(new Message(ErrorConstants::ERROR_CONTAINER_NOT_EXISTS_FOR_USER, Response::HTTP_NOT_FOUND));
         }

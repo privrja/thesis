@@ -244,6 +244,7 @@ class ContainerModel {
         $sequence->setSequenceFormula($trans->getFormula());
         $sequence->setSequenceMass($trans->getMass());
         $sequence->setSequenceSmiles($trans->getUsmiles());
+        $sequence->setSequence($trans->getSequence());
 
         switch (SequenceEnum::$backValues[$trans->getSequenceType()]) {
             case SequenceEnum::CYCLIC:

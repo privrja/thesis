@@ -2,10 +2,15 @@
 
 namespace App\Controller;
 
+use App\Base\Message;
 use App\Base\RequestHelper;
 use App\Base\ResponseHelper;
+use App\Constant\EntityColumnsEnum;
+use App\Constant\ErrorConstants;
 use App\Entity\Container;
+use App\Enum\ContainerVisibilityEnum;
 use App\Model\ContainerModel;
+use App\Repository\SequenceRepository;
 use App\Structure\SequenceStructure;
 use App\Structure\SequenceTransformed;
 use Doctrine\ORM\EntityManagerInterface;
@@ -15,6 +20,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Swagger\Annotations as SWG;
 use Symfony\Component\Security\Core\Security;
@@ -64,5 +70,39 @@ class SequenceController extends AbstractController {
         return ResponseHelper::jsonResponse($modelMessage);
     }
 
+    /**
+     * Return sequences for logged user
+     * @Route("/rest/container/{containerId}/sequence", name="block", methods={"GET"})
+     * @Entity("container", expr="repository.find(containerId)")
+     * @param Container $container
+     * @param EntityManagerInterface $entityManager
+     * @param Security $security
+     * @param LoggerInterface $logger
+     * @param SequenceRepository $sequenceRepository
+     * @return JsonResponse
+     *
+     * @SWG\Get(
+     *     tags={"Sequence"},
+     *     @SWG\Response(response="200", description="Return list of blocks in container."),
+     *     @SWG\Response(response="401", description="Return when user has not acces to container."),
+     *     @SWG\Response(response="404", description="Return when container not found."),
+     * )
+     */
+    public function index(Container $container, EntityManagerInterface $entityManager, Security $security, LoggerInterface $logger, SequenceRepository $sequenceRepository) {
+        if ($container->getVisibility() === ContainerVisibilityEnum::PUBLIC) {
+            return new JsonResponse($sequenceRepository->findBy([EntityColumnsEnum::CONTAINER => $container->getId()]), Response::HTTP_OK);
+        } else {
+            if ($security->getUser() !== null) {
+                $containerModel = new ContainerModel($entityManager, $this->getDoctrine(), $security->getUser(), $logger);
+                if ($containerModel->hasContainer($container->getId())) {
+                    return new JsonResponse($sequenceRepository->findBy([EntityColumnsEnum::CONTAINER => $container->getId()]), Response::HTTP_OK);
+                } else {
+                    return ResponseHelper::jsonResponse(new Message(ErrorConstants::ERROR_CONTAINER_NOT_EXISTS_FOR_USER, Response::HTTP_NOT_FOUND));
+                }
+            } else {
+                return ResponseHelper::jsonResponse(new Message(ErrorConstants::ERROR_CONTAINER_NOT_EXISTS_FOR_USER, Response::HTTP_UNAUTHORIZED));
+            }
+        }
+    }
 
 }

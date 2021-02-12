@@ -11,5 +11,6 @@ abstract class ContainerModeEnum {
 
     const R = 'R';
     const RW = 'RW';
+    const RWM = 'RWM';
 
 }

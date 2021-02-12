@@ -93,7 +93,7 @@ class ContainerModel {
     }
 
     public function update(UpdateContainerTransformed $trans, Container $container): Message {
-        $hasContainer = $this->hasContainer($container->getId());
+        $hasContainer = $this->hasContainerRWM($container->getId());
         if (empty($hasContainer)) {
             return new Message(ErrorConstants::ERROR_CONTAINER_NOT_EXISTS_FOR_USER, Response::HTTP_NOT_FOUND);
         }
@@ -114,7 +114,7 @@ class ContainerModel {
     }
 
     public function delete(Container $container): Message {
-        $hasContainer = $this->hasContainer($container->getId());
+        $hasContainer = $this->hasContainerRWM($container->getId());
         if (empty($hasContainer)) {
             return new Message(ErrorConstants::ERROR_CONTAINER_NOT_EXISTS_FOR_USER, Response::HTTP_NOT_FOUND);
         }
@@ -129,6 +129,10 @@ class ContainerModel {
 
     public function hasContainerRW(int $containerId) {
         return $this->userRepository->isContainerForLoggedUserByContainerIdRW($this->usr->getId(), $containerId);
+    }
+
+    public function hasContainerRWM(int $containerId) {
+        return $this->userRepository->isContainerForLoggedUserByContainerIdRWM($this->usr->getId(), $containerId);
     }
 
     public function getContainerModifications(int $containerId) {

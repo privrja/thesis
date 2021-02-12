@@ -151,8 +151,7 @@ class SmilesHelper {
             $text = [$text[1]];
         }
         $stack = array_merge($stack, $text);
-        $stackLength += $textLength;
-        return $stackLength;
+        return $stackLength + $textLength;
     }
 
 }

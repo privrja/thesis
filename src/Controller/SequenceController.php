@@ -136,7 +136,4 @@ class SequenceController extends AbstractController {
         return ResponseHelper::jsonResponse($modelMessage);
     }
 
-
-
-
 }

@@ -12,6 +12,7 @@ use App\Structure\NewRegistrationTransformed;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 use Psr\Log\LoggerInterface;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -62,6 +63,23 @@ class SecurityController extends AbstractController {
             return ResponseHelper::jsonResponse(new Message(ErrorConstants::ERROR_SOMETHING_GO_WRONG, Response::HTTP_INTERNAL_SERVER_ERROR));
         }
         return ResponseHelper::jsonResponse(Message::createCreated());
+    }
+
+    /**
+     * Registration of new user
+     * @Route("/rest/user", name="user", methods={"GET"})
+     * @IsGranted("ROLE_USER")
+     * @param UserRepository $userRepository
+     * @return JsonResponse
+     *
+     * @SWG\Post(
+     *     tags={"Auth"},
+     *     @SWG\Response(response="200", description="List od users"),
+     *     @SWG\Response(response="401", description="Bad auth")
+     * )
+     */
+    public function index(UserRepository $userRepository) {
+        return new JsonResponse($userRepository->findAll());
     }
 
 }

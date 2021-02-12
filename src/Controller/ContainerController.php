@@ -6,10 +6,13 @@ use App\Base\RequestHelper;
 use App\Base\ResponseHelper;
 use App\Constant\EntityColumnsEnum;
 use App\Entity\Container;
+use App\Entity\User;
 use App\Enum\ContainerVisibilityEnum;
 use App\Model\ContainerModel;
 use App\Repository\ContainerRepository;
 use App\Repository\UserRepository;
+use App\Structure\CollaboratorStructure;
+use App\Structure\CollaboratorTransformed;
 use App\Structure\ConcreateContainer;
 use App\Structure\NewContainerStructure;
 use App\Structure\NewContainerTransformed;
@@ -218,6 +221,80 @@ class ContainerController extends AbstractController {
         }
         $model = new ContainerModel($entityManager, $this->getDoctrine(), $security->getUser(), $logger);
         $modelMessage = $model->update($trans, $container);
+        return ResponseHelper::jsonResponse($modelMessage);
+    }
+
+    /**
+     * Add new user to container
+     * @Route("/rest/container/{containerId}/collaborator/{userId}", name="collaborator_new", methods={"POST"})
+     * @Entity("container", expr="repository.find(containerId)")
+     * @Entity("collaborator", expr="repository.find(userId)")
+     * @IsGranted("ROLE_USER")
+     * @param Container $container
+     * @param User $collaborator
+     * @param Request $request
+     * @param EntityManagerInterface $entityManager
+     * @param Security $security
+     * @param LoggerInterface $logger
+     * @return JsonResponse
+     *
+     * @SWG\Post(
+     *     tags={"Collaborator"},
+     *     security={
+     *         {"ApiKeyAuth":{}}
+     *     },
+     *     @SWG\Parameter(
+     *          name="body",
+     *          in="body",
+     *          type="string",
+     *          required=true,
+     *          description="",
+     *          @SWG\Schema(type="string",
+     *              example=""),
+     *      ),
+     *     @SWG\Response(response="201", description="Create new container."),
+     *     @SWG\Response(response="400", description="Return when input is wrong."),
+     *     @SWG\Response(response="401", description="Return when user is not logged in."),
+     *     @SWG\Response(response="403", description="Return when user doesn't have enought permissions.")
+     * )
+     */
+    public function addNewCollaborator(Container $container, User $collaborator, Request $request, EntityManagerInterface $entityManager, Security $security, LoggerInterface $logger) {
+        /** @var CollaboratorTransformed $trans */
+        $trans = RequestHelper::evaluateRequest($request, new CollaboratorStructure(), $logger);
+        if ($trans instanceof JsonResponse) {
+            return $trans;
+        }
+        $model = new ContainerModel($entityManager, $this->getDoctrine(), $security->getUser(), $logger);
+        $modelMessage = $model->createNewCollaborator($collaborator, $container, $trans);
+        return ResponseHelper::jsonResponse($modelMessage);
+    }
+
+    /**
+     * Remove collaborator from container.
+     * @Route("/rest/container/{containerId}/collaborator/{userId}", name="collaborator_delete", methods={"DELETE"})
+     * @IsGranted("ROLE_USER")
+     * @Entity("container", expr="repository.find(containerId)")
+     * @Entity("collaborator", expr="repository.find(userId)")
+     * @param Container $container
+     * @param User $collaborator
+     * @param EntityManagerInterface $entityManager
+     * @param Security $security
+     * @param LoggerInterface $logger
+     * @return JsonResponse
+     *
+     * @SWG\Delete(
+     *     tags={"Collaborator"},
+     *     security={
+     *         {"ApiKeyAuth":{}}
+     *     },
+     *     @SWG\Response(response="204", description="Sucessfully removed collaborator."),
+     *     @SWG\Response(response="401", description="Return when user is not logged in."),
+     *     @SWG\Response(response="404", description="Return when container is not found.")
+     * )
+     */
+    public function deleteCollaborator(Container $container, User $collaborator, EntityManagerInterface $entityManager, Security $security, LoggerInterface $logger) {
+        $model = new ContainerModel($entityManager, $this->getDoctrine(), $security->getUser(), $logger);
+        $modelMessage = $model->deleteCollaborator($collaborator, $container);
         return ResponseHelper::jsonResponse($modelMessage);
     }
 

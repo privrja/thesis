@@ -17,6 +17,7 @@ use App\Entity\User;
 use App\Enum\ContainerModeEnum;
 use App\Exception\IllegalStateException;
 use App\Smiles\Graph;
+use App\Structure\CollaboratorTransformed;
 use App\Structure\FamilyTransformed;
 use App\Structure\ModificationTransformed;
 use App\Structure\NewContainerTransformed;
@@ -39,6 +40,7 @@ class ContainerModel {
     private $userRepository;
     private $containerRepository;
     private $blockRepository;
+    private $u2cRepository;
 
     /**
      * ContainerModel constructor.
@@ -55,12 +57,13 @@ class ContainerModel {
         $this->userRepository = $doctrine->getRepository(User::class);
         $this->containerRepository = $doctrine->getRepository(Container::class);
         $this->blockRepository = $doctrine->getRepository(Block::class);
+        $this->u2cRepository = $doctrine->getRepository(U2c::class);
     }
 
     public function concreteContainer(Container $container) {
         $hasContainer = $this->hasContainer($container->getId());
         if (empty($hasContainer)) {
-            return new Message(ErrorConstants::ERROR_CONTAINER_NOT_EXISTS_FOR_USER, Response::HTTP_FORBIDDEN);
+            return new Message(ErrorConstants::ERROR_CONTAINER_INSUFIENT_RIGHTS, Response::HTTP_FORBIDDEN);
         }
         return Message::createOkMessage();
     }
@@ -86,7 +89,7 @@ class ContainerModel {
         $u2c = new U2c();
         $u2c->setUser($this->usr);
         $u2c->setContainer($container);
-        $u2c->setMode(ContainerModeEnum::RW);
+        $u2c->setMode(ContainerModeEnum::RWM);
         $this->entityManager->persist($u2c);
         $this->entityManager->flush();
         return Message::createCreated();
@@ -95,7 +98,7 @@ class ContainerModel {
     public function update(UpdateContainerTransformed $trans, Container $container): Message {
         $hasContainer = $this->hasContainerRWM($container->getId());
         if (empty($hasContainer)) {
-            return new Message(ErrorConstants::ERROR_CONTAINER_NOT_EXISTS_FOR_USER, Response::HTTP_FORBIDDEN);
+            return new Message(ErrorConstants::ERROR_CONTAINER_INSUFIENT_RIGHTS, Response::HTTP_FORBIDDEN);
         }
         return $this->updateContainerProperties($trans, $container);
     }
@@ -116,7 +119,7 @@ class ContainerModel {
     public function delete(Container $container): Message {
         $hasContainer = $this->hasContainerRWM($container->getId());
         if (empty($hasContainer)) {
-            return new Message(ErrorConstants::ERROR_CONTAINER_NOT_EXISTS_FOR_USER, Response::HTTP_FORBIDDEN);
+            return new Message(ErrorConstants::ERROR_CONTAINER_INSUFIENT_RIGHTS, Response::HTTP_FORBIDDEN);
         }
         $this->entityManager->remove($container);
         $this->entityManager->flush();
@@ -259,7 +262,7 @@ class ContainerModel {
             case SequenceEnum::BRANCHED:
             case SequenceEnum::BRANCH_CYCLIC:
                 $sequence->setBModification($trans->getBModification());
-                /** No break for purpose */
+            /** No break for purpose */
             case SequenceEnum::LINEAR:
             case SequenceEnum::LINEAR_POLYKETIDE:
                 $sequence->setNModification($trans->getNModification());
@@ -420,6 +423,42 @@ class ContainerModel {
             return new Message(ErrorConstants::ERROR_CONTAINER_INSUFIENT_RIGHTS, Response::HTTP_FORBIDDEN);
         }
         $this->entityManager->remove($sequence);
+        $this->entityManager->flush();
+        return Message::createNoContent();
+    }
+
+    public function createNewCollaborator(User $collaborator, Container $container, CollaboratorTransformed $trans) {
+        $hasContainerRWM = $this->hasContainerRWM($container->getId());
+        if (empty($hasContainerRWM)) {
+            return new Message(ErrorConstants::ERROR_CONTAINER_INSUFIENT_RIGHTS, Response::HTTP_FORBIDDEN);
+        }
+        $u2c = $this->u2cRepository->findOneBy(['user' => $collaborator->getId(), 'container' => $container->getId()]);
+        if ($u2c !== null) {
+            return new Message(ErrorConstants::ERROR_USER_ALREADY_IN_CONTAINER);
+        }
+
+        $u2c = new U2c();
+        $u2c->setContainer($container);
+        $u2c->setUser($collaborator);
+        $u2c->setMode($trans->getMode());
+        $this->entityManager->persist($u2c);
+        $this->entityManager->flush();
+        return Message::createCreated();
+    }
+
+    public function deleteCollaborator(User $collaborator, Container $container): Message {
+        $hasContainerRWM = $this->hasContainerRWM($container->getId());
+        if (empty($hasContainerRWM)) {
+            return new Message(ErrorConstants::ERROR_CONTAINER_INSUFIENT_RIGHTS, Response::HTTP_FORBIDDEN);
+        }
+        $u2c = $this->u2cRepository->findOneBy(['user' => $collaborator->getId(), 'container' => $container->getId()]);
+        if ($u2c->getMode() === ContainerModeEnum::RWM) {
+            $lastRWM = $this->u2cRepository->count(['container' => $container->getId(), 'mode' => ContainerModeEnum::RWM]);
+            if ($lastRWM < 2) {
+                return new Message(ErrorConstants::ERROR_CANT_DELETE_LAST_RWM_USER);
+            }
+        }
+        $this->entityManager->remove($u2c);
         $this->entityManager->flush();
         return Message::createNoContent();
     }

@@ -13,4 +13,15 @@ abstract class ContainerModeEnum {
     const RW = 'RW';
     const RWM = 'RWM';
 
+    public static function isOneOf(string $value): bool {
+        switch ($value) {
+            case self::R:
+            case self::RW:
+            case self::RWM:
+                return true;
+            default:
+                return false;
+        }
+    }
+
 }

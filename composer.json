@@ -67,7 +67,16 @@
     "post-update-cmd": [
       "@auto-scripts"
     ],
-    "test": "php ./vendor/symfony/phpunit-bridge/bin/simple-phpunit"
+    "prepare:database": [
+      "php bin/console doctrine:database:drop --force",
+      "php bin/console doctrine:database:create",
+      "php bin/console doctrine:mig:mig -n",
+      "php bin/console doctrine:fixtures:load -n"
+    ],
+    "test": [
+      "composer prepare:database",
+      "php ./vendor/symfony/phpunit-bridge/bin/simple-phpunit"
+    ]
   },
   "conflict": {
     "symfony/symfony": "*"

@@ -118,7 +118,7 @@ class ContainerTest extends LoginTest {
 
     public function testDeleteContainerBad2() {
         $client = self::loginClient();
-        $client->request('DELETE', '/rest/container/5');
+        $client->request('DELETE', '/rest/container/3');
         $this->assertEquals(403, $client->getResponse()->getStatusCode());
     }
 

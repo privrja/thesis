@@ -83,6 +83,12 @@ class AppFixtures extends Fixture
         $u2c->setMode(ContainerModeEnum::RWM);
         $manager->persist($u2c);
 
+        $u2c = new U2c();
+        $u2c->setContainer($container);
+        $u2c->setUser($user);
+        $u2c->setMode(ContainerModeEnum::RW);
+        $manager->persist($u2c);
+
         /* Main database data for main visible container */
         $container = new Container();
         $container->setContainerName("Public Container");

@@ -17,5 +17,8 @@ class ErrorConstants {
     const ERROR_FORMULA_OR_SMILES = 'Formula or SMILES need to be filled';
     const ERROR_CONTAINER_INSUFIENT_RIGHTS = 'You don\'t have enough permissions';
     const ERROR_SEQUENCE_BAD_TYPE = 'Bad sequence type';
+    const ERROR_USER_ALREADY_IN_CONTAINER = 'User already in container';
+    const ERROR_CANT_DELETE_LAST_RWM_USER = 'Can\'t remove last RWM user from container';
+    const ERROR_MODE_FORMAT = 'Mode has not supported format! Supported format is R/RW/RWM';
 
 }

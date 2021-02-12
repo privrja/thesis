@@ -156,8 +156,8 @@ final class SequenceTest extends TestCase {
         $ile->setAcronym('Ile');
         $helper = new SequenceHelper('[Phe]-[Pro]-[Ile]', SequenceEnum::LINEAR, [
             0 => $ile,
-            2 => $pro,
-            4 => $phe,
+            1 => $pro,
+            2 => $phe,
         ]);
         $res = $helper->sequenceBlocksStructure();
         $this->assertEquals('Phe', $res[0]->getBlock()->getAcronym());
@@ -171,6 +171,54 @@ final class SequenceTest extends TestCase {
         $this->assertEquals('Pro', $res[0]->getNextBlock()->getAcronym());
         $this->assertEquals('Ile', $res[1]->getNextBlock()->getAcronym());
         $this->assertEquals(null, $res[2]->getNextBlock());
+    }
+
+    public function testSequenceBranchFirst() {
+        $thr = new Block();
+        $thr->setAcronym('Thr');
+        $pro = new Block();
+        $pro->setAcronym('Pro');
+        $his = new Block();
+        $his->setAcronym('His');
+        $gly = new Block();
+        $gly->setAcronym('Gly');
+        $gln = new Block();
+        $gln->setAcronym('Gln');
+        $tyr = new Block();
+        $tyr->setAcronym('Tyr');
+        $helper = new SequenceHelper('\([Thr]-[Pro]\)[His]-[Gly]-[Gln]-[Tyr]-[Thr]', SequenceEnum::BRANCH_CYCLIC, [
+            0 => $thr,
+            1 => $pro,
+            2 => $his,
+            3 => $gly,
+            4 => $gln,
+            5 => $tyr,
+            6 => $thr,
+        ]);
+        $res = $helper->sequenceBlocksStructure();
+        $this->assertEquals('Thr', $res[0]->getBlock()->getAcronym());
+        $this->assertEquals('Pro', $res[1]->getBlock()->getAcronym());
+        $this->assertEquals('His', $res[2]->getBlock()->getAcronym());
+        $this->assertEquals('Gly', $res[3]->getBlock()->getAcronym());
+        $this->assertEquals('Gln', $res[4]->getBlock()->getAcronym());
+        $this->assertEquals('Tyr', $res[5]->getBlock()->getAcronym());
+        $this->assertEquals('Thr', $res[6]->getBlock()->getAcronym());
+
+        $this->assertEquals(false, $res[0]->getIsBranch());
+        $this->assertEquals(true, $res[1]->getIsBranch());
+        $this->assertEquals(false, $res[2]->getIsBranch());
+        $this->assertEquals(false, $res[3]->getIsBranch());
+        $this->assertEquals(false, $res[4]->getIsBranch());
+        $this->assertEquals(false, $res[5]->getIsBranch());
+        $this->assertEquals(false, $res[6]->getIsBranch());
+
+        $this->assertEquals('His', $res[0]->getNextBlock()->getAcronym());
+        $this->assertEquals(null, $res[1]->getNextBlock());
+        $this->assertEquals('Gly', $res[2]->getNextBlock()->getAcronym());
+        $this->assertEquals('Gln', $res[3]->getNextBlock()->getAcronym());
+        $this->assertEquals('Tyr', $res[4]->getNextBlock()->getAcronym());
+        $this->assertEquals('Thr', $res[5]->getNextBlock()->getAcronym());
+        $this->assertEquals('Thr', $res[6]->getNextBlock()->getAcronym());
     }
 
 }

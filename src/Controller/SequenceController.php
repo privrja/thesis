@@ -8,6 +8,7 @@ use App\Base\ResponseHelper;
 use App\Constant\EntityColumnsEnum;
 use App\Constant\ErrorConstants;
 use App\Entity\Container;
+use App\Entity\Sequence;
 use App\Enum\ContainerVisibilityEnum;
 use App\Model\ContainerModel;
 use App\Repository\SequenceRepository;
@@ -104,5 +105,38 @@ class SequenceController extends AbstractController {
             }
         }
     }
+
+    /**
+     * Delete sequence
+     * @Route("/rest/container/{containerId}/sequence/{sequenceId}", name="sequence_delete", methods={"DELETE"})
+     * @Entity("container", expr="repository.find(containerId)")
+     * @Entity("sequence", expr="repository.find(sequenceId)")
+     * @IsGranted("ROLE_USER")
+     * @param Container $container
+     * @param Sequence $sequence
+     * @param EntityManagerInterface $entityManager
+     * @param Security $security
+     * @param LoggerInterface $logger
+     * @return JsonResponse
+     *
+     * @SWG\Delete(
+     *     tags={"Sequence"},
+     *     security={
+     *         {"ApiKeyAuth":{}}
+     *     },
+     *     @SWG\Response(response="204", description="Sucessfully deleted sequence."),
+     *     @SWG\Response(response="401", description="Return when user is not logged in."),
+     *     @SWG\Response(response="403", description="Return when permisions is insufient."),
+     *     @SWG\Response(response="404", description="Return when container is not found.")
+     * )
+     */
+    public function deleteBlock(Container $container, Sequence $sequence, EntityManagerInterface $entityManager, Security $security, LoggerInterface $logger) {
+        $model = new ContainerModel($entityManager, $this->getDoctrine(), $security->getUser(), $logger);
+        $modelMessage = $model->deleteSequence($container, $sequence);
+        return ResponseHelper::jsonResponse($modelMessage);
+    }
+
+
+
 
 }

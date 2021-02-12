@@ -410,4 +410,14 @@ class ContainerModel {
         return Message::createNoContent();
     }
 
+    public function deleteSequence(Container $container, Sequence $sequence): Message {
+        $hasContainerRW = $this->hasContainerRW($container->getId());
+        if (empty($hasContainerRW) || $container->getId() !== $sequence->getContainer()->getId()) {
+            return new Message(ErrorConstants::ERROR_CONTAINER_INSUFIENT_RIGHTS, Response::HTTP_FORBIDDEN);
+        }
+        $this->entityManager->remove($sequence);
+        $this->entityManager->flush();
+        return Message::createNoContent();
+    }
+
 }

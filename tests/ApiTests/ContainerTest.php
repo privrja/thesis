@@ -116,9 +116,15 @@ class ContainerTest extends LoginTest {
         $this->assertEquals(404, $client->getResponse()->getStatusCode());
     }
 
-    public function testDeleteContainerSuccess() {
+    public function testDeleteContainerBad2() {
         $client = self::loginClient();
         $client->request('DELETE', '/rest/container/5');
+        $this->assertEquals(403, $client->getResponse()->getStatusCode());
+    }
+
+    public function testDeleteContainerSuccess() {
+        $client = self::loginClient();
+        $client->request('DELETE', '/rest/container/1');
         $this->assertEquals(204, $client->getResponse()->getStatusCode());
     }
 

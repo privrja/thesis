@@ -54,11 +54,15 @@ class ContainerTest extends KernelTestCase {
         $userRepository = $this->entityManager->getRepository(User::class);
         $usr = $userRepository->findOneBy([EntityColumnsEnum::USER_NICK => 'privrja']);
         $containers = $userRepository->findContainersForLoggedUser($usr->getId());
-
         /** @var Container $container */
+        $counter = 0;
         foreach ($containers as $container) {
-            self::assertSame('Testing database', $container[EntityColumnsEnum::CONTAINER_NAME]);
+            if ($container[EntityColumnsEnum::CONTAINER_NAME] !== 'Testing database' && $container[EntityColumnsEnum::CONTAINER_NAME] !== 'Public Container') {
+                self::assertFalse(true);
+            }
+            $counter++;
         }
+        self::assertSame(2, $counter);
     }
 
 }

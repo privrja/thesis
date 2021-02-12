@@ -60,7 +60,7 @@ class ContainerModel {
     public function concreteContainer(Container $container) {
         $hasContainer = $this->hasContainer($container->getId());
         if (empty($hasContainer)) {
-            return new Message(ErrorConstants::ERROR_CONTAINER_NOT_EXISTS_FOR_USER, Response::HTTP_NOT_FOUND);
+            return new Message(ErrorConstants::ERROR_CONTAINER_NOT_EXISTS_FOR_USER, Response::HTTP_FORBIDDEN);
         }
         return Message::createOkMessage();
     }
@@ -95,7 +95,7 @@ class ContainerModel {
     public function update(UpdateContainerTransformed $trans, Container $container): Message {
         $hasContainer = $this->hasContainerRWM($container->getId());
         if (empty($hasContainer)) {
-            return new Message(ErrorConstants::ERROR_CONTAINER_NOT_EXISTS_FOR_USER, Response::HTTP_NOT_FOUND);
+            return new Message(ErrorConstants::ERROR_CONTAINER_NOT_EXISTS_FOR_USER, Response::HTTP_FORBIDDEN);
         }
         return $this->updateContainerProperties($trans, $container);
     }
@@ -116,7 +116,7 @@ class ContainerModel {
     public function delete(Container $container): Message {
         $hasContainer = $this->hasContainerRWM($container->getId());
         if (empty($hasContainer)) {
-            return new Message(ErrorConstants::ERROR_CONTAINER_NOT_EXISTS_FOR_USER, Response::HTTP_NOT_FOUND);
+            return new Message(ErrorConstants::ERROR_CONTAINER_NOT_EXISTS_FOR_USER, Response::HTTP_FORBIDDEN);
         }
         $this->entityManager->remove($container);
         $this->entityManager->flush();

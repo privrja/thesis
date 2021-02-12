@@ -72,7 +72,7 @@ class SequenceController extends AbstractController {
 
     /**
      * Return sequences for logged user
-     * @Route("/rest/container/{containerId}/sequence", name="block", methods={"GET"})
+     * @Route("/rest/container/{containerId}/sequence", name="sequence", methods={"GET"})
      * @Entity("container", expr="repository.find(containerId)")
      * @param Container $container
      * @param EntityManagerInterface $entityManager

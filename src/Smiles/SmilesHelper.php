@@ -56,10 +56,10 @@ class SmilesHelper {
         $smilesFirst->smiles = $smilesInput[0]->smiles;
         $smilesFirst->sameAs = null;
         $smilesFirst->smiles = $smilesInput[0]->smiles;
-        $graph = new Graph($smilesFirst->smiles);
         try {
+            $graph = new Graph(SmilesHelper::canonicalSmiles($smilesFirst->smiles));
             $smilesFirst->unique = $graph->getUniqueSmiles();
-        } catch (IllegalStateException $e) {
+        } catch (Exception $e) {
             $smilesFirst->unique = null;
         }
 
@@ -68,10 +68,10 @@ class SmilesHelper {
             $smiles = new UniqueSmilesStructure();
             $smiles->id = $i;
             $smiles->smiles = $smilesInput[$i]->smiles;
-            $graph = new Graph($smiles->smiles);
             try {
+                $graph = new Graph(SmilesHelper::canonicalSmiles($smiles->smiles));
                 $smiles->unique = $graph->getUniqueSmiles();
-            } catch (IllegalStateException $e) {
+            } catch (Exception $e) {
                 $smiles->unique = null;
             }
             for ($j = 0; $j < $i; $j++) {
@@ -85,6 +85,74 @@ class SmilesHelper {
             array_push($res, $smiles);
         }
         return $res;
+    }
+
+    static function canonicalSmiles(string $smiles) {
+        $stack = [];
+        $stackLength = 0;
+        $arSmiles = str_split($smiles);
+        foreach ($arSmiles as $char) {
+            switch ($char) {
+                case ']':
+                    $stackLength = self::isoText($stack, $stackLength);
+                    break;
+                case '/':
+                case '\\':
+                    break;
+                case ')':
+                    $index = $stackLength - 1;
+                    if ($stack[$index] === '(') {
+                        array_pop($stack);
+                        $stackLength--;
+                    } else {
+                        array_push($stack, $char);
+                        $stackLength++;
+                    }
+                    break;
+                default:
+                    array_push($stack, $char);
+                    $stackLength++;
+                    break;
+            }
+        }
+        return join($stack);
+    }
+
+    private static function isoText(&$stack, $stackLength) {
+        $text = [];
+        $textLength = 0;
+        $char = ']';
+        $last = '';
+        while ($char !== '[') {
+            switch ($char) {
+                case '@':
+                    break;
+                case 'H':
+                    if ($last !== '@') {
+                        array_unshift($text, $char);
+                        $textLength++;
+                    }
+                    break;
+                default:
+                    array_unshift($text, $char);
+                    $textLength++;
+                    break;
+            }
+            $last = $char;
+            $char = array_pop($stack);
+            $stackLength--;
+        }
+        array_unshift($text, '[');
+        $textLength++;
+        if ($textLength === 3 && $text[1] === 'H') {
+            $text = [];
+        }
+        if ($textLength === 3 || $textLength === 4) {
+            $text = [$text[1]];
+        }
+        $stack = array_merge($stack, $text);
+        $stackLength += $textLength;
+        return $stackLength;
     }
 
 }

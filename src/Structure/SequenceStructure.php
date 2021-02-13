@@ -31,6 +31,9 @@ class SequenceStructure extends AbstractStructure {
     public $bModification;
 
     /** @var array */
+    public $family;
+
+    /** @var array */
     public $blocks;
 
     public function checkInput(): Message {
@@ -98,6 +101,7 @@ class SequenceStructure extends AbstractStructure {
         $trans->setNModification($this->nModification);
         $trans->setCModification($this->cModification);
         $trans->setBModification($this->bModification);
+        $trans->setFamily($this->family);
         $trans->setBlocks($this->blocks);
         return $trans;
     }

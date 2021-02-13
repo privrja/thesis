@@ -90,7 +90,7 @@ class Sequence implements JsonSerializable {
     private $container;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\S2f", mappedBy="sequence")
+     * @ORM\OneToMany(targetEntity="App\Entity\S2f", mappedBy="sequence", cascade={"persist", "remove"})
      */
     private $s2families;
 

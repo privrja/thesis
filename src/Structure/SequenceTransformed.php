@@ -41,6 +41,9 @@ class SequenceTransformed extends AbstractTransformed {
     private $bModification;
 
     /** @var array */
+    private $family;
+
+    /** @var array */
     private $blocks;
 
     /**
@@ -223,6 +226,20 @@ class SequenceTransformed extends AbstractTransformed {
      */
     public function setBModification($bModification): void {
         $this->bModification = $bModification;
+    }
+
+    /**
+     * @return array
+     */
+    public function getFamily(): array {
+        return $this->family;
+    }
+
+    /**
+     * @param array $family
+     */
+    public function setFamily(array $family): void {
+        $this->family = $family;
     }
 
 }

@@ -23,7 +23,7 @@ class S2f
     private $sequence;
 
     /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\SequenceFamily", inversedBy="f2sequences")
+     * @ORM\ManyToOne(targetEntity="App\Entity\SequenceFamily", inversedBy="f2sequences", cascade={"persist"})
      * @ORM\JoinColumn(nullable=false)
      */
     private $family;

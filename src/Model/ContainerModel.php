@@ -10,6 +10,7 @@ use App\Entity\Block;
 use App\Entity\BlockFamily;
 use App\Entity\Container;
 use App\Entity\Modification;
+use App\Entity\S2f;
 use App\Entity\Sequence;
 use App\Entity\SequenceFamily;
 use App\Entity\U2c;
@@ -41,6 +42,8 @@ class ContainerModel {
     private $containerRepository;
     private $blockRepository;
     private $u2cRepository;
+    private $sequenceFamilyRepository;
+    private $modificationRepository;
 
     /**
      * ContainerModel constructor.
@@ -58,6 +61,8 @@ class ContainerModel {
         $this->containerRepository = $doctrine->getRepository(Container::class);
         $this->blockRepository = $doctrine->getRepository(Block::class);
         $this->u2cRepository = $doctrine->getRepository(U2c::class);
+        $this->sequenceFamilyRepository = $doctrine->getRepository(SequenceFamily::class);
+        $this->modificationRepository = $doctrine->getRepository(Modification::class);
     }
 
     public function concreteContainer(Container $container) {
@@ -242,6 +247,30 @@ class ContainerModel {
         return $this->saveSequence($sequence, $container, $trans, Message::createCreated());
     }
 
+    function setModification($transModification, Container $container) {
+        $modification = new Modification();
+        $modification->setContainer($container);
+        $modification->setModificationName($transModification->modificationName);
+        $modification->setModificationFormula($transModification->formula);
+        $modification->setModificationMass($transModification->mass);
+        $modification->setCTerminal($transModification->cTerminal);
+        $modification->setNTerminal($transModification->nTerminal);
+        return $modification;
+    }
+
+    function setupModification($transModification, Container $container) {
+        $bMod = null;
+        if (isset($transModification->databaseId)) {
+            $bMod = $this->modificationRepository->findOneBy(['container' => $container->getId(), 'id' => $transModification->databaseId]);
+            if (!isset($bMod)) {
+                return new Message(ErrorConstants::ERROR_MODIFICATION_NOT_FOUND);
+            }
+        } else if (isset($transModification->modificationName)) {
+            $bMod = $this->setModification($transModification, $container);
+        }
+        return $bMod;
+    }
+
     function saveSequence(Sequence $sequence, Container $container, SequenceTransformed $trans, Message $message) {
         $sequence->setSequenceName($trans->getSequenceName());
         $sequence->setSequenceType($trans->getSequenceType());
@@ -261,13 +290,41 @@ class ContainerModel {
             case SequenceEnum::OTHER:
             case SequenceEnum::BRANCHED:
             case SequenceEnum::BRANCH_CYCLIC:
-                $sequence->setBModification($trans->getBModification());
+                $modification = $this->setupModification($trans->getBModification(), $container);
+                if ($modification instanceof Message) {
+                    return $modification;
+                }
+                $sequence->setBModification($modification);
             /** No break for purpose */
             case SequenceEnum::LINEAR:
             case SequenceEnum::LINEAR_POLYKETIDE:
-                $sequence->setNModification($trans->getNModification());
-                $sequence->setCModification($trans->getCModification());
+                $modification = $this->setupModification($trans->getNModification(), $container);
+                if ($modification instanceof Message) {
+                    return $modification;
+                }
+                $sequence->setNModification($modification);
+                $modification = $this->setupModification($trans->getCModification(), $container);
+                if ($modification instanceof Message) {
+                    return $modification;
+                }
+                $sequence->setCModification($modification);
                 break;
+        }
+
+        foreach ($trans->getFamily() as $family) {
+            if (is_numeric($family)) {
+                $sFamily = $this->sequenceFamilyRepository->findOneBy(['id' => $family, 'container' => $container->getId()]);
+                if (!isset($sFamily)) {
+                    return new Message(ErrorConstants::ERROR_SEQUENCE_FAMILY_NOT_FOUND);
+                }
+            } else {
+                $sFamily = new SequenceFamily();
+                $sFamily->setContainer($container);
+                $sFamily->setSequenceFamilyName($family);
+            }
+            $s2f = new S2f();
+            $s2f->setFamily($sFamily);
+            $sequence->addS2family($s2f);
         }
 
         /** @var Block[] $blockArray */

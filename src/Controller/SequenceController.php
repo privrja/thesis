@@ -91,7 +91,7 @@ class SequenceController extends AbstractController {
      */
     public function index(Container $container, EntityManagerInterface $entityManager, Security $security, LoggerInterface $logger, SequenceRepository $sequenceRepository) {
         if ($container->getVisibility() === ContainerVisibilityEnum::PUBLIC) {
-            return new JsonResponse($sequenceRepository->findBy([EntityColumnsEnum::CONTAINER => $container->getId()]), Response::HTTP_OK);
+            return new JsonResponse($sequenceRepository->findSequences($container->getId()), Response::HTTP_OK);
         } else {
             if ($security->getUser() !== null) {
                 $containerModel = new ContainerModel($entityManager, $this->getDoctrine(), $security->getUser(), $logger);
@@ -130,7 +130,7 @@ class SequenceController extends AbstractController {
      *     @SWG\Response(response="404", description="Return when container is not found.")
      * )
      */
-    public function deleteBlock(Container $container, Sequence $sequence, EntityManagerInterface $entityManager, Security $security, LoggerInterface $logger) {
+    public function deleteSequence(Container $container, Sequence $sequence, EntityManagerInterface $entityManager, Security $security, LoggerInterface $logger) {
         $model = new ContainerModel($entityManager, $this->getDoctrine(), $security->getUser(), $logger);
         $modelMessage = $model->deleteSequence($container, $sequence);
         return ResponseHelper::jsonResponse($modelMessage);

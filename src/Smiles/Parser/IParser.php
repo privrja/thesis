@@ -9,7 +9,7 @@ interface IParser {
      * @param string $strText
      * @return Accept|Reject
      */
-    public function parse($strText);
+    public function parse(string $strText);
 
     /**
      * Get instance of Reject

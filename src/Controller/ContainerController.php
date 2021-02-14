@@ -5,11 +5,13 @@ namespace App\Controller;
 use App\Base\RequestHelper;
 use App\Base\ResponseHelper;
 use App\Constant\EntityColumnsEnum;
+use App\CycloBranch\ModificationCycloBranch;
 use App\Entity\Container;
 use App\Entity\User;
 use App\Enum\ContainerVisibilityEnum;
 use App\Model\ContainerModel;
 use App\Repository\ContainerRepository;
+use App\Repository\ModificationRepository;
 use App\Repository\UserRepository;
 use App\Structure\CollaboratorStructure;
 use App\Structure\CollaboratorTransformed;
@@ -296,6 +298,19 @@ class ContainerController extends AbstractController {
         $model = new ContainerModel($entityManager, $this->getDoctrine(), $security->getUser(), $logger);
         $modelMessage = $model->deleteCollaborator($collaborator, $container);
         return ResponseHelper::jsonResponse($modelMessage);
+    }
+
+    /**
+     * @Route("/rest/container/{containerId}/modification/export", name="export", methods={"GET"})
+     * @IsGranted("ROLE_USER")
+     * @Entity("container", expr="repository.find(containerId)")
+     * @param Container $container
+     * @param ModificationRepository $repository
+     * @return Response
+     */
+    public function export(Container $container, ModificationRepository $repository) {
+        $export = new ModificationCycloBranch($repository, $container->getId());
+        return $export->export();
     }
 
 }

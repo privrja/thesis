@@ -8,6 +8,7 @@ use App\Base\ResponseHelper;
 use App\Constant\ErrorConstants;
 use App\Entity\User;
 use App\Repository\UserRepository;
+use App\Structure\NewRegistrationStructure;
 use App\Structure\NewRegistrationTransformed;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;

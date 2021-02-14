@@ -4,7 +4,7 @@ namespace App\Base;
 
 use App\Entity\B2s;
 use App\Entity\Block;
-use App\Structure\SequenceEnum;
+use App\Enum\SequenceEnum;
 use InvalidArgumentException;
 
 class SequenceHelper {

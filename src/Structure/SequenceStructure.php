@@ -5,6 +5,7 @@ namespace App\Structure;
 use App\Base\FormulaHelper;
 use App\Base\Message;
 use App\Constant\ErrorConstants;
+use App\Enum\SequenceEnum;
 use App\Exception\IllegalStateException;
 use App\Smiles\Enum\LossesEnum;
 use App\Smiles\Graph;

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Structure;
+namespace App\Enum;
 
 class SequenceEnum {
 

@@ -1,12 +1,9 @@
 <?php
 
-namespace App\Controller;
+namespace App\Structure;
 
 use App\Base\Message;
 use App\Constant\ErrorConstants;
-use App\Structure\AbstractStructure;
-use App\Structure\AbstractTransformed;
-use App\Structure\NewRegistrationTransformed;
 
 class NewRegistrationStructure extends AbstractStructure {
 

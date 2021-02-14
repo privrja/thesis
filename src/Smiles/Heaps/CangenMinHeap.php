@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Smiles;
+namespace App\Smiles\Heaps;
 
+use App\Smiles\CangenStructure;
 use SplMinHeap;
 
 class CangenMinHeap extends SplMinHeap {

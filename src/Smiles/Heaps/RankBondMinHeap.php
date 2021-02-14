@@ -1,8 +1,9 @@
 <?php
 
-namespace App\Smiles;
+namespace App\Smiles\Heaps;
 
 use App\Smiles\Enum\BondTypeEnum;
+use App\Smiles\NextNode;
 use SplMinHeap;
 
 class RankBondMinHeap extends SplMinHeap {

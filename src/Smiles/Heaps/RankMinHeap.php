@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Smiles;
+namespace App\Smiles\Heaps;
 
+use App\Smiles\NextNode;
 use SplMinHeap;
 
 class RankMinHeap extends SplMinHeap {

@@ -96,7 +96,6 @@ final class SequenceTest extends TestCase {
         $this->assertEquals('Phe', $res[3]->getNextBlock()->getAcronym());
         $this->assertEquals(null, $res[4]->getNextBlock());
         $this->assertEquals('Pro', $res[5]->getNextBlock()->getAcronym());
-
         $this->assertEquals('Ace', $res[3]->getBranchReference()->getAcronym());
     }
 

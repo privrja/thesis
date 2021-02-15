@@ -1,6 +1,6 @@
 <?php
 
-namespace Bbdgnc\Base;
+namespace App\Base;
 
 use App\Exception\ReadOnlyOneTimeException;
 

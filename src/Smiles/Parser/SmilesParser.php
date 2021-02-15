@@ -7,7 +7,7 @@ use App\Smiles\Digit;
 use App\Smiles\Enum\BondTypeEnum;
 use App\Smiles\Exception\RejectException;
 use App\Smiles\Graph;
-use Bbdgnc\Base\OneTimeReadable;
+use App\Base\OneTimeReadable;
 
 class SmilesParser implements IParser {
 

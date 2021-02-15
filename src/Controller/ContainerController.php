@@ -2,9 +2,11 @@
 
 namespace App\Controller;
 
+use App\Base\Message;
 use App\Base\RequestHelper;
 use App\Base\ResponseHelper;
 use App\Constant\EntityColumnsEnum;
+use App\Constant\ErrorConstants;
 use App\CycloBranch\BlockCycloBranch;
 use App\CycloBranch\ModificationCycloBranch;
 use App\CycloBranch\SequenceCycloBranch;
@@ -307,15 +309,18 @@ class ContainerController extends AbstractController {
     /**
      * Export modifications for CycloBranch
      * @Route("/rest/container/{containerId}/modification/export", name="modification_export", methods={"GET"})
-     * @IsGranted("ROLE_USER")
      * @Entity("container", expr="repository.find(containerId)")
      * @param Container $container
      * @param ModificationRepository $repository
      * @return Response
      */
     public function modificationExport(Container $container, ModificationRepository $repository) {
-        $export = new ModificationCycloBranch($repository, $container->getId());
-        return $export->export();
+        if ($container->getVisibility() === ContainerVisibilityEnum::PUBLIC || $this->isGranted("ROLE_USER")) {
+            $export = new ModificationCycloBranch($repository, $container->getId());
+            return $export->export();
+        } else {
+            return new JsonResponse(new Message(ErrorConstants::ERROR_CONTAINER_INSUFIENT_RIGHTS));
+        }
     }
 
     /**
@@ -328,8 +333,12 @@ class ContainerController extends AbstractController {
      * @return Response
      */
     public function blockExport(Container $container, BlockRepository $repository) {
-        $export = new BlockCycloBranch($repository, $container->getId());
-        return $export->export();
+        if ($container->getVisibility() === ContainerVisibilityEnum::PUBLIC || $this->isGranted("ROLE_USER")) {
+            $export = new BlockCycloBranch($repository, $container->getId());
+            return $export->export();
+        } else {
+            return new JsonResponse(new Message(ErrorConstants::ERROR_CONTAINER_INSUFIENT_RIGHTS));
+        }
     }
 
     /**
@@ -342,8 +351,12 @@ class ContainerController extends AbstractController {
      * @return Response
      */
     public function sequenceExport(Container $container, SequenceRepository $repository) {
-        $export = new SequenceCycloBranch($repository, $container->getId());
-        return $export->export();
+        if ($container->getVisibility() === ContainerVisibilityEnum::PUBLIC || $this->isGranted("ROLE_USER")) {
+            $export = new SequenceCycloBranch($repository, $container->getId());
+            return $export->export();
+        } else {
+            return new JsonResponse(new Message(ErrorConstants::ERROR_CONTAINER_INSUFIENT_RIGHTS));
+        }
     }
 
 }

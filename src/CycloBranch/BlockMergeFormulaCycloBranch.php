@@ -2,7 +2,7 @@
 
 namespace App\CycloBranch;
 
-class BlockWithoutFormulaCycloBranch extends BlockCycloBranch {
+class BlockMergeFormulaCycloBranch extends BlockCycloBranch {
 
     /**
      * @see AbstractCycloBranch::download()

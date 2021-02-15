@@ -2,6 +2,8 @@
 
 namespace App\CycloBranch;
 
+use App\Base\ReferenceHelper;
+use App\Entity\Block;
 use App\Exception\IllegalStateException;
 use App\Smiles\Parser\Accept;
 use App\Smiles\Parser\IParser;
@@ -26,6 +28,7 @@ class BlockCycloBranch extends AbstractCycloBranch {
      * @see AbstractCycloBranch::parse()
      */
     public function parse(string $line) {
+        // TODO
         $arItems = $this->validateLine($line, false);
         if ($arItems === false) {
             return self::reject();
@@ -89,23 +92,20 @@ class BlockCycloBranch extends AbstractCycloBranch {
      * @see AbstractCycloBranch::download()
      */
     public function download() {
-//        $start = 0;
-//        $arResult = $this->database->findMergeBlocks($start);
-//        while (!empty($arResult)) {
-//            foreach ($arResult as $formula) {
-//                $strData = "";
-//                $blockCount = sizeof($formula);
-//                $strData = $this->setNames($strData, $formula, $blockCount);
-//                $strData = $this->setAcronyms($strData, $formula, $blockCount);
-//                $strData .= $formula[0][BlockTO::RESIDUE] . "\t";
-//                $strData .= $formula[0][BlockTO::MASS] . "\t";
-//                $strData .= $formula[0][BlockTO::LOSSES] . "\t";
-//                $strData = $this->setReferences($strData, $formula, $blockCount);
-//                file_put_contents(self::FILE_NAME, $strData, FILE_APPEND);
-//            }
-//            $start += CommonConstants::PAGING;
-//            $arResult = $this->database->findMergeBlocks($start);
-//        }
+        $this->data = '';
+        /** @var Block[] $arResult */
+        $arResult = $this->repository->findBy(['container' => $this->containerId]);
+        if (!empty($arResult)) {
+            foreach ($arResult as $block) {
+                $this->data .= $block->getBlockName() . "\t"
+                    . $block->getAcronym() . "\t"
+                    . $block->getResidue() . "\t"
+                    . $block->getBlockMass() . "\t"
+                    . $block->getLosses() . "\t"
+                    . ReferenceHelper::reference($block->getSource(), $block->getIdentifier(), $block->getUsmiles())
+                    . PHP_EOL;
+            }
+        }
     }
 
     /**
@@ -113,39 +113,6 @@ class BlockCycloBranch extends AbstractCycloBranch {
      */
     public static function reject() {
         return new Reject('Not match blocks in right format');
-    }
-
-    private function setNames($strData, $formula, $blockCount) {
-//        return $this->setData($strData, $formula, $blockCount, BlockTO::NAME);
-    }
-
-    private function setAcronyms(string $strData, $formula, int $blockCount) {
-//        return $this->setData($strData, $formula, $blockCount, BlockTO::ACRONYM);
-    }
-
-    private function setData(string $strData, $formula, int $blockCount, string $type) {
-        $index = 0;
-        $strData .= $formula[$index][$type];
-        for ($index = 1; $index < $blockCount; ++$index) {
-            $strData .= '/' . $formula[$index][$type];
-        }
-        return $strData . "\t";
-    }
-
-    private function setReferences(string $strData, $formula, int $blockCount) {
-        $index = 0;
-        $strData .= ReferenceHelper::reference($formula[$index]['database'], $formula[$index]['identifier'], $formula[$index]['smiles']);
-        for ($index = 1; $index < $blockCount; ++$index) {
-            $strData .= '/' . ReferenceHelper::reference($formula[$index]['database'], $formula[$index]['identifier'], $formula[$index]['smiles']);
-        }
-        return $strData . PHP_EOL;
-    }
-
-    /**
-     * @see AbstractCycloBranch::getLineLength()
-     */
-    protected function getLineLength() {
-        return self::LENGTH;
     }
 
 }

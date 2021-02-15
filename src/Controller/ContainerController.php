@@ -5,13 +5,17 @@ namespace App\Controller;
 use App\Base\RequestHelper;
 use App\Base\ResponseHelper;
 use App\Constant\EntityColumnsEnum;
+use App\CycloBranch\BlockCycloBranch;
 use App\CycloBranch\ModificationCycloBranch;
+use App\CycloBranch\SequenceCycloBranch;
 use App\Entity\Container;
 use App\Entity\User;
 use App\Enum\ContainerVisibilityEnum;
 use App\Model\ContainerModel;
+use App\Repository\BlockRepository;
 use App\Repository\ContainerRepository;
 use App\Repository\ModificationRepository;
+use App\Repository\SequenceRepository;
 use App\Repository\UserRepository;
 use App\Structure\CollaboratorStructure;
 use App\Structure\CollaboratorTransformed;
@@ -301,15 +305,44 @@ class ContainerController extends AbstractController {
     }
 
     /**
-     * @Route("/rest/container/{containerId}/modification/export", name="export", methods={"GET"})
+     * Export modifications for CycloBranch
+     * @Route("/rest/container/{containerId}/modification/export", name="modification_export", methods={"GET"})
      * @IsGranted("ROLE_USER")
      * @Entity("container", expr="repository.find(containerId)")
      * @param Container $container
      * @param ModificationRepository $repository
      * @return Response
      */
-    public function export(Container $container, ModificationRepository $repository) {
+    public function modificationExport(Container $container, ModificationRepository $repository) {
         $export = new ModificationCycloBranch($repository, $container->getId());
+        return $export->export();
+    }
+
+    /**
+     * Export blocks for CycloBranch
+     * @Route("/rest/container/{containerId}/block/export", name="block_export", methods={"GET"})
+     * @IsGranted("ROLE_USER")
+     * @Entity("container", expr="repository.find(containerId)")
+     * @param Container $container
+     * @param BlockRepository $repository
+     * @return Response
+     */
+    public function blockExport(Container $container, BlockRepository $repository) {
+        $export = new BlockCycloBranch($repository, $container->getId());
+        return $export->export();
+    }
+
+    /**
+     * Export blocks for CycloBranch
+     * @Route("/rest/container/{containerId}/sequence/export", name="sequence_export", methods={"GET"})
+     * @IsGranted("ROLE_USER")
+     * @Entity("container", expr="repository.find(containerId)")
+     * @param Container $container
+     * @param SequenceRepository $repository
+     * @return Response
+     */
+    public function sequenceExport(Container $container, SequenceRepository $repository) {
+        $export = new SequenceCycloBranch($repository, $container->getId());
         return $export->export();
     }
 

@@ -23,6 +23,7 @@ class ModificationCycloBranch extends AbstractCycloBranch {
      * @see AbstractCycloBranch::parse()
      */
     public function parse(string $line) {
+        // TODO
         $arItems = $this->validateLine($line);
         if ($arItems === false) {
             return self::reject();
@@ -55,27 +56,13 @@ class ModificationCycloBranch extends AbstractCycloBranch {
         $arResult = $this->repository->findBy(['container' => $this->containerId]);
         if (!empty($arResult)) {
             foreach ($arResult as $modification) {
-                $this->data = $modification->getModificationName() . "\t";
+                $this->data .= $modification->getModificationName() . "\t";
                 $this->data .= $modification->getModificationFormula() . "\t";
                 $this->data .= $modification->getModificationMass() . "\t";
                 $this->data .= $modification->getNTerminal() . "\t";
                 $this->data .= $modification->getCTerminal() . PHP_EOL;
             }
         }
-    }
-
-    /**
-     * @see AbstractCycloBranch::getFileName()
-     */
-    protected function getFileName() {
-        return self::FILE_NAME;
-    }
-
-    /**
-     * @see AbstractCycloBranch::getLineLength()
-     */
-    protected function getLineLength() {
-        return self::LENGTH;
     }
 
 }

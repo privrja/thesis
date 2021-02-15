@@ -13,6 +13,8 @@ use Symfony\Component\HttpFoundation\Response;
  */
 abstract class AbstractCycloBranch implements ICycloBranch, IParser {
 
+    public const TABULATOR = "\t";
+
     /** @var ServiceEntityRepository */
     protected $repository;
 
@@ -97,18 +99,6 @@ abstract class AbstractCycloBranch implements ICycloBranch, IParser {
 //        $this->database->insertMore($arTos);
 //        $this->database->endTransaction();
     }
-
-    /**
-     * Get name of a file to download
-     * @return string
-     */
-    protected abstract function getFileName();
-
-    /**
-     * Get count of item on a line
-     * @return int
-     */
-    protected abstract function getLineLength();
 
     protected function validateLine($line, $allSet = true) {
         $arItems = preg_split('/\t/', $line);

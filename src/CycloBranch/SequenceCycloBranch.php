@@ -2,10 +2,11 @@
 
 namespace App\CycloBranch;
 
+use App\Base\ReferenceHelper;
+use App\Entity\Sequence;
 use App\Enum\SequenceEnum;
 use App\Smiles\Parser\Accept;
 use App\Smiles\Parser\Reject;
-use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 
 class SequenceCycloBranch extends AbstractCycloBranch {
 
@@ -28,6 +29,7 @@ class SequenceCycloBranch extends AbstractCycloBranch {
      * @see AbstractCycloBranch::parse()
      */
     public function parse(string $line) {
+        // TODO
         $arResult = $this->validateLine($line, false);
         if ($arResult === false) {
             return self::reject();
@@ -95,6 +97,7 @@ class SequenceCycloBranch extends AbstractCycloBranch {
      * @see AbstractCycloBranch::save()
      */
     protected function save(array $arTos) {
+        // TODO
 //        $referenceDatabase = $arTos[SequenceTO::TABLE_NAME]->database;
 //        if ($referenceDatabase === ServerEnum::PUBCHEM || $referenceDatabase === ServerEnum::CHEBI) {
 //            $finder = FinderFactory::getFinder($referenceDatabase);
@@ -156,25 +159,22 @@ class SequenceCycloBranch extends AbstractCycloBranch {
      * @see AbstractCycloBranch::download()
      */
     public function download() {
-//        $start = 0;
-//        $arResult = $this->database->findSequenceWithModificationNamesPaging($start, new Query());
-//        while (!empty($arResult)) {
-//            foreach ($arResult as $sequence) {
-//                $strData = SequenceTypeEnum::$values[$sequence[SequenceTO::TYPE]] . "\t";
-//                $strData .= $sequence[SequenceTO::NAME] . "\t";
-//                $strData .= $sequence[SequenceTO::FORMULA] . "\t";
-//                $strData .= $sequence[SequenceTO::MASS] . "\t";
-//                $strData .= $sequence[SequenceTO::SEQUENCE] . "\t";
-//                $strData .= $sequence['nname'] . "\t";
-//                $strData .= $sequence['cname'] . "\t";
-//                $strData .= $sequence['bname'] . "\t";
-//                $strData .= ReferenceHelper::reference($sequence['database'], $sequence['identifier'], $sequence[SequenceTO::SMILES]);
-//                $strData .= PHP_EOL;
-//                file_put_contents(self::FILE_NAME, $strData, FILE_APPEND);
-//            }
-//            $start += CommonConstants::PAGING;
-//            $arResult = $this->database->findSequenceWithModificationNamesPaging($start, new Query());
-//        }
+        $this->data = '';
+        /** @var Sequence[] $arResult */
+        $arResult = $this->repository->findBy(['container' => $this->containerId]);
+        if (!empty($arResult)) {
+            foreach ($arResult as $sequence) {
+                $this->data .= $sequence->getSequenceName() . self::TABULATOR
+                    . $sequence->getSequenceFormula() . self::TABULATOR
+                    . $sequence->getSequenceMass() . self::TABULATOR
+                    . $sequence->getSequence() . self::TABULATOR
+                    . (($sequence->getNModification() !== null) ? $sequence->getNModification()->getModificationName() : '') . self::TABULATOR
+                    . (($sequence->getCModification() !== null) ? $sequence->getCModification()->getModificationName() : '') . self::TABULATOR
+                    . (($sequence->getBModification() !== null) ? $sequence->getBModification()->getModificationName() : '') . self::TABULATOR
+                    . ReferenceHelper::reference($sequence->getSource(), $sequence->getIdentifier(), $sequence->getSequenceSmiles())
+                    . PHP_EOL;
+            }
+        }
     }
 
     /**

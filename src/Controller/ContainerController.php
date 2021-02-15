@@ -326,7 +326,6 @@ class ContainerController extends AbstractController {
     /**
      * Export blocks for CycloBranch
      * @Route("/rest/container/{containerId}/block/export", name="block_export", methods={"GET"})
-     * @IsGranted("ROLE_USER")
      * @Entity("container", expr="repository.find(containerId)")
      * @param Container $container
      * @param BlockRepository $repository
@@ -344,7 +343,6 @@ class ContainerController extends AbstractController {
     /**
      * Export blocks for CycloBranch
      * @Route("/rest/container/{containerId}/sequence/export", name="sequence_export", methods={"GET"})
-     * @IsGranted("ROLE_USER")
      * @Entity("container", expr="repository.find(containerId)")
      * @param Container $container
      * @param SequenceRepository $repository

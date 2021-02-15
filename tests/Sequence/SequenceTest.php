@@ -4,7 +4,7 @@ namespace App\Tests\Sequence;
 
 use App\Base\SequenceHelper;
 use App\Entity\Block;
-use App\Structure\SequenceEnum;
+use App\Enum\SequenceEnum;
 use PHPUnit\Framework\TestCase;
 
 final class SequenceTest extends TestCase {

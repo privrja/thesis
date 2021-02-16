@@ -493,7 +493,6 @@ class ContainerModel {
         if ($u2c !== null) {
             return new Message(ErrorConstants::ERROR_USER_ALREADY_IN_CONTAINER);
         }
-
         $u2c = new U2c();
         $u2c->setContainer($container);
         $u2c->setUser($collaborator);
@@ -504,20 +503,39 @@ class ContainerModel {
     }
 
     public function deleteCollaborator(User $collaborator, Container $container): Message {
-        $hasContainerRWM = $this->hasContainerRWM($container->getId());
-        if (empty($hasContainerRWM)) {
-            return new Message(ErrorConstants::ERROR_CONTAINER_INSUFIENT_RIGHTS, Response::HTTP_FORBIDDEN);
-        }
-        $u2c = $this->u2cRepository->findOneBy(['user' => $collaborator->getId(), 'container' => $container->getId()]);
-        if ($u2c->getMode() === ContainerModeEnum::RWM) {
-            $lastRWM = $this->u2cRepository->count(['container' => $container->getId(), 'mode' => ContainerModeEnum::RWM]);
-            if ($lastRWM < 2) {
-                return new Message(ErrorConstants::ERROR_CANT_DELETE_LAST_RWM_USER);
-            }
+        $u2c = $this->collaboratorCheck($container, $collaborator);
+        if ($u2c instanceof Message) {
+            return $u2c;
         }
         $this->entityManager->remove($u2c);
         $this->entityManager->flush();
         return Message::createNoContent();
     }
+
+    public function updateCollaborator(User $collaborator, Container $container, CollaboratorTransformed $trans) {
+        $u2c = $this->collaboratorCheck($container, $collaborator);
+        if ($u2c instanceof Message) {
+            return $u2c;
+        }
+        $u2c->setMode($trans->getMode());
+        $this->entityManager->persist($u2c);
+        $this->entityManager->flush();
+        return Message::createNoContent();
+    }
+
+   private function collaboratorCheck(Container $container, User $collaborator) {
+       $hasContainerRWM = $this->hasContainerRWM($container->getId());
+       if (empty($hasContainerRWM)) {
+           return new Message(ErrorConstants::ERROR_CONTAINER_INSUFIENT_RIGHTS, Response::HTTP_FORBIDDEN);
+       }
+       $u2c = $this->u2cRepository->findOneBy(['user' => $collaborator->getId(), 'container' => $container->getId()]);
+       if ($u2c->getMode() === ContainerModeEnum::RWM) {
+           $lastRWM = $this->u2cRepository->count(['container' => $container->getId(), 'mode' => ContainerModeEnum::RWM]);
+           if ($lastRWM < 2) {
+               return new Message(ErrorConstants::ERROR_CANT_DELETE_LAST_RWM_USER);
+           }
+       }
+       return $u2c;
+   }
 
 }

@@ -307,6 +307,41 @@ class ContainerController extends AbstractController {
     }
 
     /**
+     * Edit collaborator from in container.
+     * @Route("/rest/container/{containerId}/collaborator/{userId}", name="collaborator_update", methods={"PUT"})
+     * @IsGranted("ROLE_USER")
+     * @Entity("container", expr="repository.find(containerId)")
+     * @Entity("collaborator", expr="repository.find(userId)")
+     * @param Container $container
+     * @param User $collaborator
+     * @param Request $request
+     * @param EntityManagerInterface $entityManager
+     * @param Security $security
+     * @param LoggerInterface $logger
+     * @return JsonResponse
+     *
+     * @SWG\Delete(
+     *     tags={"Collaborator"},
+     *     security={
+     *         {"ApiKeyAuth":{}}
+     *     },
+     *     @SWG\Response(response="204", description="Sucessfully removed collaborator."),
+     *     @SWG\Response(response="401", description="Return when user is not logged in."),
+     *     @SWG\Response(response="404", description="Return when container is not found.")
+     * )
+     */
+    public function updateCollaborator(Container $container, User $collaborator, Request $request, EntityManagerInterface $entityManager, Security $security, LoggerInterface $logger) {
+        /** @var CollaboratorTransformed $trans */
+        $trans = RequestHelper::evaluateRequest($request, new CollaboratorStructure(), $logger);
+        if ($trans instanceof JsonResponse) {
+            return $trans;
+        }
+        $model = new ContainerModel($entityManager, $this->getDoctrine(), $security->getUser(), $logger);
+        $modelMessage = $model->updateCollaborator($collaborator, $container, $trans);
+        return ResponseHelper::jsonResponse($modelMessage);
+    }
+
+    /**
      * Export modifications for CycloBranch
      * @Route("/rest/container/{containerId}/modification/export", name="modification_export", methods={"GET"})
      * @Entity("container", expr="repository.find(containerId)")

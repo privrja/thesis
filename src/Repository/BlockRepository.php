@@ -24,7 +24,8 @@ class BlockRepository extends ServiceEntityRepository {
             select
 	            group_concat(distinct src.block_name order by src.block_name separator \'/\') as block_name,
 	            group_concat(distinct src.acronym order by src.block_name separator \'/\') as acronym,
-                group_concat(distinct coalesce(src.block_mass, \'\') order by src.block_name separator \'/\') as block_mass,
+                src.residue,
+                coalesce(src.block_mass, \'\') as block_mass,
                 group_concat(distinct coalesce(src.losses, \'\') order by src.block_name separator \'/\') as losses,
 	            group_concat(distinct
 		            case when src.source is not null then
@@ -43,7 +44,7 @@ class BlockRepository extends ServiceEntityRepository {
 
         $stmt = $conn->prepare($sql);
         $stmt->execute(array('containerId' => $containerId));
-        return $stmt->fetch();
+        return $stmt->fetchAll();
     }
 
 

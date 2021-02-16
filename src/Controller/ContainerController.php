@@ -8,6 +8,7 @@ use App\Base\ResponseHelper;
 use App\Constant\EntityColumnsEnum;
 use App\Constant\ErrorConstants;
 use App\CycloBranch\BlockCycloBranch;
+use App\CycloBranch\BlockMergeFormulaCycloBranch;
 use App\CycloBranch\ModificationCycloBranch;
 use App\CycloBranch\SequenceCycloBranch;
 use App\Entity\Container;
@@ -386,6 +387,23 @@ class ContainerController extends AbstractController {
     public function sequenceExport(Container $container, SequenceRepository $repository) {
         if ($container->getVisibility() === ContainerVisibilityEnum::PUBLIC || $this->isGranted("ROLE_USER")) {
             $export = new SequenceCycloBranch($repository, $container->getId());
+            return $export->export();
+        } else {
+            return new JsonResponse(new Message(ErrorConstants::ERROR_CONTAINER_INSUFIENT_RIGHTS));
+        }
+    }
+
+    /**
+     * Export blocks for CycloBranch
+     * @Route("/rest/container/{containerId}/block/export/merge", name="block_merge__export", methods={"GET"})
+     * @Entity("container", expr="repository.find(containerId)")
+     * @param Container $container
+     * @param BlockRepository $repository
+     * @return Response
+     */
+    public function blockMergeExport(Container $container, BlockRepository $repository) {
+        if ($container->getVisibility() === ContainerVisibilityEnum::PUBLIC || $this->isGranted("ROLE_USER")) {
+            $export = new BlockMergeFormulaCycloBranch($repository, $container->getId());
             return $export->export();
         } else {
             return new JsonResponse(new Message(ErrorConstants::ERROR_CONTAINER_INSUFIENT_RIGHTS));

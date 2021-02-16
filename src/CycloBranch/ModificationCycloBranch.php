@@ -56,11 +56,11 @@ class ModificationCycloBranch extends AbstractCycloBranch {
         $arResult = $this->repository->findBy(['container' => $this->containerId]);
         if (!empty($arResult)) {
             foreach ($arResult as $modification) {
-                $this->data .= $modification->getModificationName() . "\t";
-                $this->data .= $modification->getModificationFormula() . "\t";
-                $this->data .= $modification->getModificationMass() . "\t";
-                $this->data .= $modification->getNTerminal() . "\t";
-                $this->data .= $modification->getCTerminal() . PHP_EOL;
+                $this->data .= $modification->getModificationName() . "\t"
+                    . $modification->getModificationFormula() . "\t"
+                    . $modification->getModificationMass() . "\t"
+                    . $modification->getNTerminal() . "\t"
+                    . $modification->getCTerminal() . PHP_EOL;
             }
         }
     }

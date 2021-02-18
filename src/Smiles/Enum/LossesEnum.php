@@ -12,7 +12,7 @@ class LossesEnum {
 
     const H2 = 2;
 
-    public static function toLosses(string $losses) {
+    public static function toLosses(?string $losses) {
         switch ($losses) {
             case 'H20':
                 return self::H2O;

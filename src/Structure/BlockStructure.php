@@ -9,26 +9,42 @@ use App\Enum\ServerEnum;
 use App\Exception\IllegalStateException;
 use App\Smiles\Enum\LossesEnum;
 use App\Smiles\Graph;
+use JsonSerializable;
 
-class BlockStructure extends AbstractStructure {
+class BlockStructure extends AbstractStructure implements JsonSerializable {
 
+    /** @var string */
     public $blockName;
+
+    /** @var string */
     public $acronym;
+
+    /** @var string|null */
     public $formula;
+
+    /** @var float|null */
     public $mass;
+
+    /** @var string|null */
     public $losses;
+
+    /** @var string|null */
     public $smiles;
+
+    /** @var int|null */
     public $source;
+
+    /** @var string|null */
     public $identifier;
 
     public function checkInput(): Message {
         if (empty($this->blockName) || empty($this->acronym)) {
             return new Message(ErrorConstants::ERROR_EMPTY_PARAMS);
         }
-        if (!ServerEnum::isOneOf($this->source)) {
+        if (isset($this->source) && !ServerEnum::isOneOf($this->source)) {
             return new Message(ErrorConstants::ERROR_SERVER_IDENTIFIER);
         }
-        if ((!empty($this->source) && empty($this->identifier)) || empty($this->source) && !empty($this->identifier)) {
+        if ((isset($this->source) && empty($this->identifier)) || !isset($this->source) && !empty($this->identifier)) {
             return new Message(ErrorConstants::ERROR_SERVER_IDENTIFIER_PROBLEM);
         }
         if (empty($this->formula) && empty($this->smiles)) {
@@ -80,6 +96,13 @@ class BlockStructure extends AbstractStructure {
             }
         }
         return $trans;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function jsonSerialize() {
+        return ['blockName' => $this->blockName, 'acronym' => $this->acronym, 'formula' => $this->formula, 'mass' => $this->mass, 'losses' => $this->losses, 'smiles' => $this->smiles, 'source' => $this->source, 'identifier' => $this->identifier];
     }
 
 }

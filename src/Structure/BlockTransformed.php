@@ -2,7 +2,9 @@
 
 namespace App\Structure;
 
-class BlockTransformed extends AbstractTransformed {
+use JsonSerializable;
+
+class BlockTransformed extends AbstractTransformed implements JsonSerializable {
 
     /** @var string */
     private $blockName;
@@ -157,4 +159,10 @@ class BlockTransformed extends AbstractTransformed {
         $this->identifier = $identifier;
     }
 
+    /**
+     * @inheritDoc
+     */
+    public function jsonSerialize() {
+        return ['blockName' => $this->blockName, 'acronym' => $this->acronym, 'formula' => $this->formula, 'mass' => $this->mass, 'losses' => $this->losses, 'smiles' => $this->smiles, 'source' => $this->source, 'identifier' => $this->identifier];
+    }
 }

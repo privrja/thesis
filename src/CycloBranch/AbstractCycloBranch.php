@@ -2,7 +2,9 @@
 
 namespace App\CycloBranch;
 
+use App\Entity\Container;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\HeaderUtils;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -34,10 +36,14 @@ abstract class AbstractCycloBranch implements ICycloBranch {
     }
 
     /**
-     * @param string $filePath
+     * @param Container $container
+     * @param EntityManagerInterface $entityManager
+     * @param array $okStack
+     * @param array $errorStack
+     * @return array
      * @see ICycloBranch::import()
      */
-    public abstract function import();
+    abstract public function import(Container $container, EntityManagerInterface $entityManager, array $okStack, array $errorStack): array;
 
     /**
      * Exporting data to a file

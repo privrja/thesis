@@ -4,6 +4,9 @@ namespace App\CycloBranch;
 
 use App\Base\ReferenceHelper;
 use App\Entity\Block;
+use App\Entity\Container;
+use App\Structure\BlockTransformed;
+use Doctrine\ORM\EntityManagerInterface;
 
 class BlockCycloBranch extends AbstractCycloBranch {
 
@@ -31,8 +34,30 @@ class BlockCycloBranch extends AbstractCycloBranch {
     /**
      * @inheritDoc
      */
-    public function import() {
-        // TODO: Implement import() method.
+    public function import(Container $container, EntityManagerInterface $entityManager, array $okStack, array $errorStack): array {
+        /** @var BlockTransformed $item */
+        $blockRepository = $entityManager->getRepository(Block::class);
+        foreach ($okStack as $item) {
+            $res = $blockRepository->findOneBy(['container' => $container->getId(), 'acronym' => $item->getAcronym()]);
+            if ($res) {
+                array_push($errorStack, $item);
+                continue;
+            }
+            $block = new Block();
+            $block->setContainer($container);
+            $block->setBlockName($item->getBlockName());
+            $block->setAcronym($item->getAcronym());
+            $block->setResidue($item->getFormula());
+            $block->setBlockMass($item->getMass());
+            $block->setLosses($item->getLosses());
+            $block->setSource($item->getSource());
+            $block->setIdentifier($item->getIdentifier());
+            $block->setBlockSmiles($item->getSmiles());
+            $block->setUsmiles($item->getUSmiles());
+            $entityManager->persist($block);
+        }
+        $entityManager->flush();
+        return $errorStack;
     }
-
 }
+

@@ -7,6 +7,7 @@ use App\Base\RequestHelper;
 use App\Base\ResponseHelper;
 use App\Constant\EntityColumnsEnum;
 use App\Constant\ErrorConstants;
+use App\CycloBranch\AbstractCycloBranch;
 use App\CycloBranch\BlockCycloBranch;
 use App\CycloBranch\BlockMergeFormulaCycloBranch;
 use App\CycloBranch\ModificationCycloBranch;
@@ -20,14 +21,19 @@ use App\Repository\ContainerRepository;
 use App\Repository\ModificationRepository;
 use App\Repository\SequenceRepository;
 use App\Repository\UserRepository;
+use App\Structure\AbstractStructure;
+use App\Structure\BlockStructure;
 use App\Structure\CollaboratorStructure;
 use App\Structure\CollaboratorTransformed;
 use App\Structure\ConcreateContainer;
+use App\Structure\ModificationStructure;
 use App\Structure\NewContainerStructure;
 use App\Structure\NewContainerTransformed;
 use App\Structure\UpdateContainerStructure;
 use App\Structure\UpdateContainerTransformed;
 use Doctrine\ORM\EntityManagerInterface;
+use JsonMapper;
+use JsonMapper_Exception;
 use Psr\Log\LoggerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
@@ -448,6 +454,65 @@ class ContainerController extends AbstractController {
         }
     }
 
+    /**
+     * Import modifications from CycloBranch
+     * @Route("/rest/container/{containerId}/modification/import", name="modification_import", methods={"POST"})
+     * @Entity("container", expr="repository.find(containerId)")
+     * @IsGranted("ROLE_USER")
+     * @param Container $container
+     * @param Request $request
+     * @param ModificationRepository $repository
+     * @param EntityManagerInterface $entityManager
+     * @param Security $security
+     * @param LoggerInterface $logger
+     * @return Response
+     */
+    public function modificationImport(Container $container, Request $request, ModificationRepository $repository, EntityManagerInterface $entityManager, Security $security, LoggerInterface $logger) {
+        return $this->import($container, $request, new ModificationCycloBranch($repository, $container->getId()), ModificationStructure::class, $entityManager, $security, $logger);
+    }
 
+    /**
+     * Import blocks from CycloBranch
+     * @Route("/rest/container/{containerId}/block/import", name="block_import", methods={"POST"})
+     * @Entity("container", expr="repository.find(containerId)")
+     * @IsGranted("ROLE_USER")
+     * @param Container $container
+     * @param Request $request
+     * @param ModificationRepository $repository
+     * @param EntityManagerInterface $entityManager
+     * @param Security $security
+     * @param LoggerInterface $logger
+     * @return Response
+     */
+    public function blockImport(Container $container, Request $request, ModificationRepository $repository, EntityManagerInterface $entityManager, Security $security, LoggerInterface $logger) {
+        return $this->import($container, $request, new BlockCycloBranch($repository, $container->getId()), BlockStructure::class, $entityManager, $security, $logger);
+    }
+
+    private function import(Container $container, Request $request, AbstractCycloBranch $import, $className, EntityManagerInterface $entityManager, Security $security, LoggerInterface $logger) {
+        $model = new ContainerModel($entityManager, $this->getDoctrine(), $security->getUser(), $logger);
+        if ($model->hasContainerRW($container->getId())) {
+            $mapper = new JsonMapper();
+            $errorStack = [];
+            $okStack = [];
+            try {
+                /** @var AbstractStructure[] $arItems */
+                $arItems = $mapper->mapArray(json_decode($request->getContent()), [], $className);
+                foreach ($arItems as $importItem) {
+                    $result = $importItem->checkInput();
+                    if (!$result->result) {
+                        array_push($errorStack, $importItem);
+                    } else {
+                        array_push($okStack, $importItem->transform());
+                    }
+                }
+            } catch (JsonMapper_Exception $e) {
+                return new JsonResponse(ErrorConstants::ERROR_JSON_FORMAT . $e->getMessage());
+            }
+            $errorStack = $import->import($container, $entityManager, $okStack, $errorStack);
+            return new JsonResponse($errorStack, Response::HTTP_OK);
+        } else {
+            return new JsonResponse(new Message(ErrorConstants::ERROR_CONTAINER_INSUFIENT_RIGHTS));
+        }
+    }
 
 }

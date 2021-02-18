@@ -2,17 +2,12 @@
 
 namespace App\CycloBranch;
 
+use App\Entity\Container;
 use App\Entity\Modification;
-use App\Smiles\Parser\Reject;
+use App\Structure\ModificationTransformed;
+use Doctrine\ORM\EntityManagerInterface;
 
 class ModificationCycloBranch extends AbstractCycloBranch {
-
-    /**
-     * @see AbstractCycloBranch::reject()
-     */
-    public static function reject() {
-        return new Reject('Not match modification in right format');
-    }
 
     /**
      * @see AbstractCycloBranch::download()
@@ -36,8 +31,20 @@ class ModificationCycloBranch extends AbstractCycloBranch {
     /**
      * @inheritDoc
      */
-    public function import() {
-        // TODO: Implement import() method.
+    public function import(Container $container, EntityManagerInterface $entityManager, array $okStack, array $errorStack): array {
+        /** @var ModificationTransformed $item */
+        foreach ($okStack as $item) {
+            $modification = new Modification();
+            $modification->setContainer($container);
+            $modification->setModificationName($item->getModificationName());
+            $modification->setModificationFormula($item->getFormula());
+            $modification->setModificationMass($item->getMass());
+            $modification->setNTerminal($item->isNTerminal());
+            $modification->setCTerminal($item->isCTerminal());
+            $entityManager->persist($modification);
+        }
+        $entityManager->flush();
+        return $errorStack;
     }
 
 }

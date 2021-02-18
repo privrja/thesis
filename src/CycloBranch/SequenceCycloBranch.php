@@ -3,7 +3,9 @@
 namespace App\CycloBranch;
 
 use App\Base\ReferenceHelper;
+use App\Entity\Container;
 use App\Entity\Sequence;
+use Doctrine\ORM\EntityManagerInterface;
 
 class SequenceCycloBranch extends AbstractCycloBranch {
 
@@ -34,8 +36,7 @@ class SequenceCycloBranch extends AbstractCycloBranch {
     /**
      * @inheritDoc
      */
-    public function import() {
+    public function import(Container $container, EntityManagerInterface $entityManager, array $okStack, array $errorStack): array {
         // TODO: Implement import() method.
     }
-
 }

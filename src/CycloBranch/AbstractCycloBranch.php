@@ -73,7 +73,7 @@ abstract class AbstractCycloBranch implements ICycloBranch, IParser {
     /**
      * Exporting data to a file
      */
-    public abstract function download();
+    public abstract function download(): string;
 
     /**
      * @see ICycloBranch::export()

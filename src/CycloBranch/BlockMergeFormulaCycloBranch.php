@@ -2,14 +2,12 @@
 
 namespace App\CycloBranch;
 
-use Monolog\Logger;
-
 class BlockMergeFormulaCycloBranch extends BlockCycloBranch {
 
     /**
      * @see AbstractCycloBranch::download()
      */
-    public function download() {
+    public function download(): string {
         $this->data = '';
         /** @var Object[] $arResult */
         $arResult = $this->repository->findMergeByFormula($this->containerId);
@@ -24,6 +22,7 @@ class BlockMergeFormulaCycloBranch extends BlockCycloBranch {
                     . PHP_EOL;
             }
         }
+        return $this->data;
     }
 
 }

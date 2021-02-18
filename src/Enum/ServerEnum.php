@@ -10,7 +10,6 @@ class ServerEnum {
     const NORINE = 2;
     const PDB = 3;
     const CHEBI = 4;
-//    const MASS_SPEC_BLOCKS = 5;
 
     /** @var array mapping int code to string */
     public static $values = [
@@ -19,7 +18,6 @@ class ServerEnum {
         self::NORINE => "Norine",
         self::PDB => "PDB",
         self::CHEBI => "ChEBI",
-//        self::MASS_SPEC_BLOCKS => 'MassSpecBlocks'
     ];
 
     public static $backValues = [

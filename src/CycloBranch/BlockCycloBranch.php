@@ -91,7 +91,7 @@ class BlockCycloBranch extends AbstractCycloBranch {
     /**
      * @see AbstractCycloBranch::download()
      */
-    public function download() {
+    public function download(): string {
         $this->data = '';
         /** @var Block[] $arResult */
         $arResult = $this->repository->findBy(['container' => $this->containerId]);
@@ -106,6 +106,7 @@ class BlockCycloBranch extends AbstractCycloBranch {
                     . PHP_EOL;
             }
         }
+        return $this->data;
     }
 
     /**

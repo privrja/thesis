@@ -50,7 +50,7 @@ class ModificationCycloBranch extends AbstractCycloBranch {
     /**
      * @see AbstractCycloBranch::download()
      */
-    public function download() {
+    public function download(): string {
         $this->data = '';
         /** @var Modification[] $arResult */
         $arResult = $this->repository->findBy(['container' => $this->containerId]);
@@ -59,10 +59,11 @@ class ModificationCycloBranch extends AbstractCycloBranch {
                 $this->data .= $modification->getModificationName() . "\t"
                     . $modification->getModificationFormula() . "\t"
                     . $modification->getModificationMass() . "\t"
-                    . $modification->getNTerminal() . "\t"
-                    . $modification->getCTerminal() . PHP_EOL;
+                    . ($modification->getNTerminal() ? '1' : '0') . "\t"
+                    . ($modification->getCTerminal() ? '1' : '0') . PHP_EOL;
             }
         }
+        return $this->data;
     }
 
 }

@@ -35,9 +35,12 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Security;
 use Swagger\Annotations as SWG;
+use ZipStream\Option\Archive;
+use ZipStream\ZipStream;
 
 /**
  * Class ContainerController
@@ -409,5 +412,42 @@ class ContainerController extends AbstractController {
             return new JsonResponse(new Message(ErrorConstants::ERROR_CONTAINER_INSUFIENT_RIGHTS));
         }
     }
+
+    /**
+     * Export all for CycloBranch in zip file
+     * @Route("/rest/container/{containerId}/export", name="all_merge__export", methods={"GET"})
+     * @Entity("container", expr="repository.find(containerId)")
+     * @param Container $container
+     * @param BlockRepository $blockRepository
+     * @param SequenceRepository $sequenceRepository
+     * @param ModificationRepository $modificationRepository
+     * @return Response
+     */
+    public function allExport(Container $container, BlockRepository $blockRepository, SequenceRepository $sequenceRepository, ModificationRepository $modificationRepository) {
+        if ($container->getVisibility() === ContainerVisibilityEnum::PUBLIC || $this->isGranted("ROLE_USER")) {
+            return new StreamedResponse(function () use ($container, $blockRepository, $sequenceRepository, $modificationRepository) {
+                $options = new Archive();
+                $options->setSendHttpHeaders(true);
+                $zip = new ZipStream('archive.zip', $options);
+
+                $export = new ModificationCycloBranch($modificationRepository, $container->getId());
+                $zip->addFile('modifications.txt', $export->download());
+
+                $export = new BlockCycloBranch($blockRepository, $container->getId());
+                $zip->addFile('blocks.txt', $export->download());
+
+                $export = new BlockMergeFormulaCycloBranch($blockRepository, $container->getId());
+                $zip->addFile('blocks_merge.txt', $export->download());
+
+                $export = new SequenceCycloBranch($sequenceRepository, $container->getId());
+                $zip->addFile('sequences.txt', $export->download());
+                $zip->finish();
+            });
+        } else {
+            return new JsonResponse(new Message(ErrorConstants::ERROR_CONTAINER_INSUFIENT_RIGHTS));
+        }
+    }
+
+
 
 }

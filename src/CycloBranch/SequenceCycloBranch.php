@@ -158,13 +158,14 @@ class SequenceCycloBranch extends AbstractCycloBranch {
     /**
      * @see AbstractCycloBranch::download()
      */
-    public function download() {
+    public function download(): string {
         $this->data = '';
         /** @var Sequence[] $arResult */
         $arResult = $this->repository->findBy(['container' => $this->containerId]);
         if (!empty($arResult)) {
             foreach ($arResult as $sequence) {
-                $this->data .= $sequence->getSequenceName() . self::TABULATOR
+                $this->data .= $sequence->getSequenceType() . self::TABULATOR
+                    . $sequence->getSequenceName() . self::TABULATOR
                     . $sequence->getSequenceFormula() . self::TABULATOR
                     . $sequence->getSequenceMass() . self::TABULATOR
                     . $sequence->getSequence() . self::TABULATOR
@@ -175,6 +176,7 @@ class SequenceCycloBranch extends AbstractCycloBranch {
                     . PHP_EOL;
             }
         }
+        return $this->data;
     }
 
     /**

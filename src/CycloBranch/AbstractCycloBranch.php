@@ -2,7 +2,6 @@
 
 namespace App\CycloBranch;
 
-use App\Smiles\Parser\IParser;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Symfony\Component\HttpFoundation\HeaderUtils;
 use Symfony\Component\HttpFoundation\Response;
@@ -11,7 +10,7 @@ use Symfony\Component\HttpFoundation\Response;
  * Class AbstractCycloBranch
  * Abstract class for import/export data from CycloBranch
  */
-abstract class AbstractCycloBranch implements ICycloBranch, IParser {
+abstract class AbstractCycloBranch implements ICycloBranch {
 
     public const TABULATOR = "\t";
 
@@ -38,37 +37,7 @@ abstract class AbstractCycloBranch implements ICycloBranch, IParser {
      * @param string $filePath
      * @see ICycloBranch::import()
      */
-    public final function import(string $filePath) {
-//        ini_set('max_execution_time', 120);
-//
-//        $handle = fopen($filePath, 'r');
-//        if (!$handle) {
-//            return;
-//        }
-//        while (($line = fgets($handle)) !== false) {
-//            $arBlocksResult = $this->parse($line);
-//            if ($arBlocksResult->isAccepted()) {
-//                $this->save($arBlocksResult->getResult());
-//            } else {
-//                Logger::log(LoggerEnum::WARNING, "Line not parsed correctly" . PHP_EOL . $line . $arBlocksResult->getErrorMessage());
-//            }
-//        }
-//        fclose($handle);
-//        unlink($filePath);
-//        ini_set('max_execution_time', 30);
-    }
-
-    /**
-     * Parse one line of an uploaded file
-     * @param string $strText line of file
-     * @see IParser::parse()
-     */
-    public abstract function parse(string $strText);
-
-    /**
-     * @see IParser::reject()
-     */
-    public abstract static function reject();
+    public abstract function import();
 
     /**
      * Exporting data to a file
@@ -88,32 +57,6 @@ abstract class AbstractCycloBranch implements ICycloBranch, IParser {
         );
         $response->headers->set('Content-Disposition', $disposition);
         return $response;
-    }
-
-    /**
-     * Save data to database
-     * @param array $arTos
-     */
-    protected function save(array $arTos) {
-//        $this->database->startTransaction();
-//        $this->database->insertMore($arTos);
-//        $this->database->endTransaction();
-    }
-
-    protected function validateLine($line, $allSet = true) {
-        $arItems = preg_split('/\t/', $line);
-        if (empty($arItems) || sizeof($arItems) !== $this->getLineLength()) {
-            return false;
-        }
-
-        if ($allSet) {
-            for ($index = 0; $index < $this->getLineLength(); ++$index) {
-                if ($arItems[$index] === "") {
-                    return false;
-                }
-            }
-        }
-        return $arItems;
     }
 
 }

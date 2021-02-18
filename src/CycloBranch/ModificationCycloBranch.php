@@ -3,42 +3,9 @@
 namespace App\CycloBranch;
 
 use App\Entity\Modification;
-use App\Smiles\Parser\BooleanParser;
 use App\Smiles\Parser\Reject;
 
 class ModificationCycloBranch extends AbstractCycloBranch {
-
-    const FILE_NAME = './uploads/modifications.txt';
-
-    const NAME = 0;
-    const FORMULA = 1;
-    const MASS = 2;
-    const N_TERMINAL = 3;
-    const C_TERMINAL = 4;
-    const LENGTH = 5;
-
-    /**
-     * @param string $line
-     * @return Reject
-     * @see AbstractCycloBranch::parse()
-     */
-    public function parse(string $line) {
-        // TODO
-        $arItems = $this->validateLine($line);
-        if ($arItems === false) {
-            return self::reject();
-        }
-
-        $booleanParser = new BooleanParser();
-        $booleanNTerminalResult = $booleanParser->parse($arItems[self::N_TERMINAL]);
-        $booleanCTerminalResult = $booleanParser->parse($arItems[self::C_TERMINAL]);
-        if (!$booleanCTerminalResult->isAccepted() || !$booleanNTerminalResult->isAccepted()) {
-            return self::reject();
-        }
-
-//        $modification = new ModificationTO($arItems[self::NAME], $arItems[self::FORMULA], $arItems[self::MASS], $booleanCTerminalResult->getResult(), $booleanNTerminalResult->getResult());
-//        return new Accept([$modification->asEntity()], '');
-    }
 
     /**
      * @see AbstractCycloBranch::reject()
@@ -64,6 +31,13 @@ class ModificationCycloBranch extends AbstractCycloBranch {
             }
         }
         return $this->data;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function import() {
+        // TODO: Implement import() method.
     }
 
 }

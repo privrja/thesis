@@ -208,39 +208,49 @@ class BlockController extends AbstractController {
      * )
      */
     public function smiles(Container $container, Request $request, EntityManagerInterface $entityManager, Security $security, LoggerInterface $logger, BlockRepository $blockRepository) {
-        $containerModel = new ContainerModel($entityManager, $this->getDoctrine(), $security->getUser(), $logger);
-        if (($security->getUser() !== null && $containerModel->hasContainer($container->getId())) || ($container->getVisibility() === ContainerVisibilityEnum::PUBLIC)) {
-            $smilesInput = SmilesHelper::checkInputJson($request);
-            if ($smilesInput instanceof JsonResponse) {
-                return $smilesInput;
-            }
-            $length = count($smilesInput);
-            $nextCheck = SmilesHelper::checkNext($smilesInput, $length);
-            if ($nextCheck instanceof JsonResponse) {
-                return $nextCheck;
-            }
-            $smiles = SmilesHelper::unique($smilesInput, $length);
-            /** @var UniqueSmilesStructure $smile */
-            foreach ($smiles as $smile) {
-                $block = $blockRepository->findOneBy(['container' => $container->getId(), 'usmiles' => $smile->unique]);
-                if ($block === null) {
-                    $smile->block = null;
-                    continue;
+        if ($container->getVisibility() === ContainerVisibilityEnum::PUBLIC) {
+            return $this->smilesNext($container, $request, $blockRepository);
+        } else {
+            if ($security->getUser() !== null) {
+                $containerModel = new ContainerModel($entityManager, $this->getDoctrine(), $security->getUser(), $logger);
+                if ($containerModel->hasContainer($container->getId())) {
+                    return $this->smilesNext($container, $request, $blockRepository);
                 }
-                $blockSmiles = new BlockSmiles();
-                $blockSmiles->databaseId = $block->getId();
-                $blockSmiles->structureName = $block->getBlockName();
-                $blockSmiles->formula = $block->getResidue();
-                $blockSmiles->mass = $block->getBlockMass();
-                $blockSmiles->smiles = $block->getBlockSmiles();
-                $blockSmiles->database = $block->getSource();
-                $blockSmiles->identifier = $block->getIdentifier();
-                $smile->acronym = $block->getAcronym();
-                $smile->block = $blockSmiles;
             }
-            return new JsonResponse($smiles);
         }
-        return ResponseHelper::jsonResponse(new Message(ErrorConstants::ERROR_CONTAINER_NOT_EXISTS_FOR_USER, Response::HTTP_NOT_FOUND));
+        return ResponseHelper::jsonResponse(new Message(ErrorConstants::ERROR_CONTAINER_INSUFIENT_RIGHTS, Response::HTTP_FORBIDDEN));
+    }
+
+    function smilesNext(Container $container, Request $request, BlockRepository $blockRepository) {
+        $smilesInput = SmilesHelper::checkInputJson($request);
+        if ($smilesInput instanceof JsonResponse) {
+            return $smilesInput;
+        }
+        $length = count($smilesInput);
+        $nextCheck = SmilesHelper::checkNext($smilesInput, $length);
+        if ($nextCheck instanceof JsonResponse) {
+            return $nextCheck;
+        }
+        $smiles = SmilesHelper::unique($smilesInput, $length);
+        /** @var UniqueSmilesStructure $smile */
+        foreach ($smiles as $smile) {
+            $block = $blockRepository->findOneBy(['container' => $container->getId(), 'usmiles' => $smile->unique]);
+            if ($block === null) {
+                $smile->block = null;
+                continue;
+            }
+            $blockSmiles = new BlockSmiles();
+            $blockSmiles->databaseId = $block->getId();
+            $blockSmiles->structureName = $block->getBlockName();
+            $blockSmiles->formula = $block->getResidue();
+            $blockSmiles->mass = $block->getBlockMass();
+            $blockSmiles->smiles = $block->getBlockSmiles();
+            $blockSmiles->database = $block->getSource();
+            $blockSmiles->identifier = $block->getIdentifier();
+            $smile->acronym = $block->getAcronym();
+            $smile->block = $blockSmiles;
+        }
+        return new JsonResponse($smiles);
     }
 
 }

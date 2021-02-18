@@ -102,7 +102,7 @@ class BlockStructure extends AbstractStructure implements JsonSerializable {
      * @inheritDoc
      */
     public function jsonSerialize() {
-        return ['blockName' => $this->blockName, 'acronym' => $this->acronym, 'formula' => $this->formula, 'mass' => $this->mass, 'losses' => $this->losses, 'smiles' => $this->smiles, 'source' => $this->source, 'identifier' => $this->identifier];
+        return ['blockName' => $this->blockName, 'acronym' => $this->acronym, 'formula' => $this->formula, 'mass' => $this->mass, 'losses' => $this->losses === null ? '' : $this->losses, 'smiles' => $this->smiles, 'source' => $this->source, 'identifier' => $this->identifier];
     }
 
 }

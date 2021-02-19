@@ -2,7 +2,9 @@
 
 namespace App\Structure;
 
-class SequenceTransformed extends AbstractTransformed {
+use JsonSerializable;
+
+class SequenceTransformed extends AbstractTransformed implements JsonSerializable {
 
     /** @var string */
     private $sequenceName;
@@ -240,6 +242,26 @@ class SequenceTransformed extends AbstractTransformed {
      */
     public function setFamily(array $family): void {
         $this->family = $family;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function jsonSerialize() {
+        $res = ['sequenceType' => $this->sequenceType,
+            'sequenceName' => $this->sequenceName,
+            'formula' => $this->formula,
+            'mass' => $this->mass,
+            'sequence' => $this->sequence,
+            'nModification' => $this->nModification,
+            'cModification' => $this->cModification,
+            'bModification' => $this->bModification,
+            'source' => $this->source,
+            'identifier' => $this->identifier];
+        if (!empty($this->error)) {
+            $res['error'] = $this->error;
+        }
+        return $res;
     }
 
 }

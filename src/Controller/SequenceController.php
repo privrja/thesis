@@ -5,7 +5,6 @@ namespace App\Controller;
 use App\Base\Message;
 use App\Base\RequestHelper;
 use App\Base\ResponseHelper;
-use App\Constant\EntityColumnsEnum;
 use App\Constant\ErrorConstants;
 use App\Entity\Container;
 use App\Entity\Sequence;
@@ -96,7 +95,7 @@ class SequenceController extends AbstractController {
             if ($security->getUser() !== null) {
                 $containerModel = new ContainerModel($entityManager, $this->getDoctrine(), $security->getUser(), $logger);
                 if ($containerModel->hasContainer($container->getId())) {
-                    return new JsonResponse($sequenceRepository->findBy([EntityColumnsEnum::CONTAINER => $container->getId()]), Response::HTTP_OK);
+                    return new JsonResponse($sequenceRepository->findSequences($container->getId()), Response::HTTP_OK);
                 } else {
                     return ResponseHelper::jsonResponse(new Message(ErrorConstants::ERROR_CONTAINER_NOT_EXISTS_FOR_USER, Response::HTTP_NOT_FOUND));
                 }

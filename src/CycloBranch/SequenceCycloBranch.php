@@ -4,7 +4,9 @@ namespace App\CycloBranch;
 
 use App\Base\ReferenceHelper;
 use App\Entity\Container;
+use App\Entity\Modification;
 use App\Entity\Sequence;
+use App\Structure\SequenceTransformed;
 use Doctrine\ORM\EntityManagerInterface;
 
 class SequenceCycloBranch extends AbstractCycloBranch {
@@ -37,10 +39,62 @@ class SequenceCycloBranch extends AbstractCycloBranch {
      * @inheritDoc
      */
     public function import(Container $container, EntityManagerInterface $entityManager, array $okStack, array $errorStack): array {
+        /** @var SequenceTransformed $item */
         foreach ($okStack as $item) {
-            var_dump($item);
-        }
+            $res = $this->repository->findOneBy(['container' => $container->getId(), 'sequenceName' => $item->getSequenceName()]);
+            if ($res) {
+                $item->error = 'ERROR: Same name';
+                array_push($errorStack, $item);
+                continue;
+            }
+            $sequence = new Sequence();
+            $sequence->setContainer($container);
+            $sequence->setSequenceName($item->getSequenceName());
+            $sequence->setSequenceType($item->getSequenceType());
+            $sequence->setSequenceFormula($item->getFormula());
+            $sequence->setSequenceMass($item->getMass());
+            $sequence->setSequence($item->getSequence());
+            $sequence->setSequenceSmiles($item->getUsmiles());
+            $sequence->setSource($item->getSource());
+            $sequence->setIdentifier($item->getIdentifier());
 
+            $modificationRepository = $entityManager->getRepository(Modification::class);
+            if (!empty($item->getNModification())) {
+                /** @var Modification $res */
+                $res = $modificationRepository->findOneBy(['container' => $container->getId(), 'modificationName' => $item->getNModification()]);
+                if (isset($res)) {
+                    $sequence->setNModification($res);
+                } else {
+                    $item->error = 'ERROR: Not found N modification';
+                    array_push($errorStack, $item);
+                    continue;
+                }
+            }
+            if (!empty($item->getCModification())) {
+                $res = $modificationRepository->findOneBy(['container' => $container->getId(), 'modificationName' => $item->getCModification()]);
+                if (isset($res)) {
+                    $sequence->setCModification($res);
+                } else {
+                    $item->error = 'ERROR: Not found C modification';
+                    array_push($errorStack, $item);
+                    continue;
+                }
+            }
+            if (!empty($item->getBModification())) {
+                $res = $modificationRepository->findOneBy(['container' => $container->getId(), 'modificationName' => $item->getBModification()]);
+                if (isset($res)) {
+                    $sequence->setBModification($res);
+                } else {
+                    $item->error = 'ERROR: Not found B modification';
+                    array_push($errorStack, $item);
+                    continue;
+                }
+            }
+            // TODO blocks
+            $entityManager->persist($sequence);
+        }
+        $entityManager->flush();
         return $errorStack;
     }
+
 }

@@ -9,8 +9,9 @@ use App\Enum\SequenceEnum;
 use App\Exception\IllegalStateException;
 use App\Smiles\Enum\LossesEnum;
 use App\Smiles\Graph;
+use JsonSerializable;
 
-class SequenceStructure extends AbstractStructure {
+class SequenceStructure extends AbstractStructure implements JsonSerializable {
 
     public $sequenceName;
     public $formula;
@@ -104,8 +105,36 @@ class SequenceStructure extends AbstractStructure {
         $trans->setNModification($this->nModification);
         $trans->setCModification($this->cModification);
         $trans->setBModification($this->bModification);
-        $trans->setFamily($this->family);
-        $trans->setBlocks($this->blocks);
+        if ($this->family === null) {
+            $trans->setFamily([]);
+        } else {
+            $trans->setFamily($this->family);
+        }
+        if ($this->blocks === null) {
+            $trans->setBlocks([]);
+        } else {
+            $trans->setBlocks($this->blocks);
+        }
         return $trans;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function jsonSerialize() {
+        $res = ['sequenceType' => $this->sequenceType,
+            'sequenceName' => $this->sequenceName,
+            'formula' => $this->formula,
+            'mass' => $this->mass,
+            'sequence' => $this->sequence,
+            'nModification' => $this->nModification,
+            'cModification' => $this->cModification,
+            'bModification' => $this->bModification,
+            'source' => $this->source,
+            'identifier' => $this->identifier];
+        if (!empty($this->error)) {
+            $res['error'] = $this->error;
+        }
+        return $res;
     }
 }

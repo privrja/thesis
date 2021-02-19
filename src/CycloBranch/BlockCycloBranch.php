@@ -36,9 +36,9 @@ class BlockCycloBranch extends AbstractCycloBranch {
      */
     public function import(Container $container, EntityManagerInterface $entityManager, array $okStack, array $errorStack): array {
         /** @var BlockTransformed $item */
-        $blockRepository = $entityManager->getRepository(Block::class);
+//        $blockRepository = $entityManager->getRepository(Block::class);
         foreach ($okStack as $item) {
-            $res = $blockRepository->findOneBy(['container' => $container->getId(), 'acronym' => $item->getAcronym()]);
+            $res = $this->repository->findOneBy(['container' => $container->getId(), 'acronym' => $item->getAcronym()]);
             if ($res) {
                 array_push($errorStack, $item);
                 continue;

@@ -485,24 +485,24 @@ class ContainerController extends AbstractController {
      * @param LoggerInterface $logger
      * @return Response
      */
-    public function blockImport(Container $container, Request $request, ModificationRepository $repository, EntityManagerInterface $entityManager, Security $security, LoggerInterface $logger) {
+    public function blockImport(Container $container, Request $request, BlockRepository $repository, EntityManagerInterface $entityManager, Security $security, LoggerInterface $logger) {
         return $this->import($container, $request, new BlockCycloBranch($repository, $container->getId()), BlockStructure::class, $entityManager, $security, $logger);
     }
 
     /**
      * Import sequences from CycloBranch
-     * @Route("/rest/container/{containerId}/sequence/import", name="block_import", methods={"POST"})
+     * @Route("/rest/container/{containerId}/sequence/import", name="sequence_import", methods={"POST"})
      * @Entity("container", expr="repository.find(containerId)")
      * @IsGranted("ROLE_USER")
      * @param Container $container
      * @param Request $request
-     * @param ModificationRepository $repository
+     * @param SequenceRepository $repository
      * @param EntityManagerInterface $entityManager
      * @param Security $security
      * @param LoggerInterface $logger
      * @return Response
      */
-    public function sequenceImport(Container $container, Request $request, ModificationRepository $repository, EntityManagerInterface $entityManager, Security $security, LoggerInterface $logger) {
+    public function sequenceImport(Container $container, Request $request, SequenceRepository $repository, EntityManagerInterface $entityManager, Security $security, LoggerInterface $logger) {
         return $this->import($container, $request, new SequenceCycloBranch($repository, $container->getId()), SequenceStructure::class, $entityManager, $security, $logger);
     }
 
@@ -518,13 +518,14 @@ class ContainerController extends AbstractController {
                 foreach ($arItems as $importItem) {
                     $result = $importItem->checkInput();
                     if (!$result->result) {
+                        $importItem->error = 'ERROR: ' . $result->messageText;
                         array_push($errorStack, $importItem);
                     } else {
                         array_push($okStack, $importItem->transform());
                     }
                 }
             } catch (JsonMapper_Exception $e) {
-                return new JsonResponse(ErrorConstants::ERROR_JSON_FORMAT . $e->getMessage());
+                return new JsonResponse(ErrorConstants::ERROR_JSON_FORMAT);
             }
             $errorStack = $import->import($container, $entityManager, $okStack, $errorStack);
             return new JsonResponse($errorStack, Response::HTTP_OK);

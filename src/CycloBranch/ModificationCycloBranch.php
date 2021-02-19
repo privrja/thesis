@@ -34,6 +34,12 @@ class ModificationCycloBranch extends AbstractCycloBranch {
     public function import(Container $container, EntityManagerInterface $entityManager, array $okStack, array $errorStack): array {
         /** @var ModificationTransformed $item */
         foreach ($okStack as $item) {
+            $res = $this->repository->findOneBy(['container' => $container->getId(), 'modificationName' => $item->getModificationName()]);
+            if ($res) {
+                $item->error = 'ERROR: Same name';
+                array_push($errorStack, $item);
+                continue;
+            }
             $modification = new Modification();
             $modification->setContainer($container);
             $modification->setModificationName($item->getModificationName());

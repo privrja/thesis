@@ -3,9 +3,11 @@
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\Mapping\UniqueConstraint;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\ModificationRepository")
+ * @ORM\Table(uniqueConstraints={@UniqueConstraint(name="UX_MODIFICATION_NAME", columns={"modification_name", "container_id"})})
  */
 class Modification {
     /**

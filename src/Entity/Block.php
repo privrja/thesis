@@ -6,13 +6,12 @@ use App\Constant\EntityColumnsEnum;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use Doctrine\ORM\Mapping\Index;
 use Doctrine\ORM\Mapping\UniqueConstraint;
 use JsonSerializable;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\BlockRepository")
- * @ORM\Table(indexes={@Index(name="IDX_BLOCK_ID", columns={"id"})}, uniqueConstraints={@UniqueConstraint(name="UX_ACRONYM", columns={"acronym", "container_id"})})
+ * @ORM\Table(uniqueConstraints={@UniqueConstraint(name="UX_BLOCK_ACRONYM", columns={"acronym", "container_id"})})
  */
 class Block implements JsonSerializable {
     /**

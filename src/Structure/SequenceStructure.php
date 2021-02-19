@@ -13,14 +13,31 @@ use JsonSerializable;
 
 class SequenceStructure extends AbstractStructure implements JsonSerializable {
 
+    /** @var string */
     public $sequenceName;
+
+    /** @var string|null */
     public $formula;
+
+    /** @var float|null */
     public $mass;
+
+    /** @var string|null */
     public $smiles;
+
+    /** @var int|null */
     public $source;
+
+    /** @var string|null */
     public $identifier;
+
+    /** @var string */
     public $sequence;
+
+    /** @var string */
     public $sequenceType;
+
+    /** @var string|null */
     public $decays;
 
     /** @var mixed|null */
@@ -48,7 +65,7 @@ class SequenceStructure extends AbstractStructure implements JsonSerializable {
         if (empty($this->formula) && empty($this->smiles)) {
             return new Message(ErrorConstants::ERROR_EMPTY_PARAMS);
         }
-        if (!isset($this->source) || empty($this->identifier)) {
+        if ((isset($this->source) && empty($this->identifier)) || !isset($this->source) && !empty($this->identifier)) {
             return new Message(ErrorConstants::ERROR_SERVER_IDENTIFIER_PROBLEM);
         }
         if (isset($this->blocks)) {

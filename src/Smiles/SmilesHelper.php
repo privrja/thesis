@@ -146,9 +146,11 @@ class SmilesHelper {
         $textLength++;
         if ($textLength === 3 && $text[1] === 'H') {
             $text = [];
+            $textLength = 0;
         }
         if ($textLength === 3 || $textLength === 4) {
             $text = [$text[1]];
+            $textLength = 1;
         }
         $stack = array_merge($stack, $text);
         return $stackLength + $textLength;

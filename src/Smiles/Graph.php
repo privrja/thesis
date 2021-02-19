@@ -13,6 +13,8 @@ use App\Smiles\Heaps\RankBondMinHeap;
 use App\Smiles\Heaps\RankMinHeap;
 use App\Smiles\Parser\SmilesParser;
 use Error;
+use ErrorException;
+use Exception;
 use InvalidArgumentException;
 use SplMinHeap;
 use SplQueue;
@@ -88,7 +90,17 @@ class Graph {
         $smilesParser = new SmilesParser($this);
         $result = $smilesParser->parse($strText);
         if (!$result->isAccepted()) {
-            throw new InvalidArgumentException('Graph can\'t be build');
+            $this->arNodes = [];
+            $this->uniqueSmiles = "";
+            $this->isCyclic = false;
+            $this->isSecondPass = false;
+            $this->openNumbersSort = null;
+            $strText = SmilesHelper::canonicalSmiles(SmilesBuilder::removeUnnecessaryParentheses($this->smiles));
+            $smilesParser = new SmilesParser($this);
+            $result = $smilesParser->parse($strText);
+            if (!$result->isAccepted()) {
+                throw new InvalidArgumentException('Graph can\'t be build');
+            }
         }
     }
 
@@ -125,6 +137,8 @@ class Graph {
             $this->cangen();
             $this->genes();
         } catch (Error $e) {
+            throw new IllegalStateException($e->getMessage());
+        } catch (Exception $e) {
             throw new IllegalStateException($e->getMessage());
         }
         return $this->uniqueSmiles;

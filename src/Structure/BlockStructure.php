@@ -44,7 +44,7 @@ class BlockStructure extends AbstractStructure implements JsonSerializable {
         if (isset($this->source) && !ServerEnum::isOneOf($this->source)) {
             return new Message(ErrorConstants::ERROR_SERVER_IDENTIFIER);
         }
-        if ((isset($this->source) && empty($this->identifier)) || !isset($this->source) && !empty($this->identifier)) {
+        if (!isset($this->source) && !empty($this->identifier)) {
             return new Message(ErrorConstants::ERROR_SERVER_IDENTIFIER_PROBLEM);
         }
         if (empty($this->formula) && empty($this->smiles)) {

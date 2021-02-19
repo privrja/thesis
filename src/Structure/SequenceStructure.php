@@ -9,6 +9,7 @@ use App\Enum\SequenceEnum;
 use App\Exception\IllegalStateException;
 use App\Smiles\Enum\LossesEnum;
 use App\Smiles\Graph;
+use InvalidArgumentException;
 use JsonSerializable;
 
 class SequenceStructure extends AbstractStructure implements JsonSerializable {
@@ -65,7 +66,7 @@ class SequenceStructure extends AbstractStructure implements JsonSerializable {
         if (empty($this->formula) && empty($this->smiles)) {
             return new Message(ErrorConstants::ERROR_EMPTY_PARAMS);
         }
-        if ((isset($this->source) && empty($this->identifier)) || !isset($this->source) && !empty($this->identifier)) {
+        if (!isset($this->source) && !empty($this->identifier)) {
             return new Message(ErrorConstants::ERROR_SERVER_IDENTIFIER_PROBLEM);
         }
         if (isset($this->blocks)) {
@@ -84,32 +85,49 @@ class SequenceStructure extends AbstractStructure implements JsonSerializable {
         $trans->setSequenceType($this->sequenceType);
         $trans->setSequence($this->sequence);
         if (!empty($this->smiles)) {
-            $graph = new Graph($this->smiles);
-            if (empty($this->formula)) {
-                $trans->setFormula($graph->getFormula(LossesEnum::NONE));
-            } else {
-                $trans->setFormula($this->formula);
-            }
-            if (empty($this->mass)) {
-                try {
-                    $trans->setMass(FormulaHelper::computeMass($trans->getFormula()));
-                } catch (IllegalStateException $e) {
-                    /* Empty on purpose - mass can be null */
-                }
-            } else {
-                $trans->setMass($this->mass);
-            }
+            $graph = null;
             try {
-                $trans->setUSmiles($graph->getUniqueSmiles());
-            } catch (IllegalStateException $e) {
+                $graph = new Graph($this->smiles);
+                if (empty($this->formula)) {
+                    $trans->setFormula($graph->getFormula(LossesEnum::NONE));
+                } else {
+                    $trans->setFormula($this->formula);
+                }
+                if (empty($this->mass)) {
+                    try {
+                        $trans->setMass(FormulaHelper::computeMass($trans->getFormula()));
+                    } catch (IllegalStateException $e) {
+                        /* Empty on purpose - mass can be null */
+                    }
+                } else {
+                    $trans->setMass($this->mass);
+                }
+                try {
+                    $trans->setUSmiles($graph->getUniqueSmiles());
+                } catch (IllegalStateException $e) {
+                    $trans->setUSmiles($this->smiles);
+                }
+            } catch (InvalidArgumentException $exception) {
                 $trans->setUSmiles($this->smiles);
+                $trans->setFormula($this->formula);
+                if (empty($this->mass)) {
+                    try {
+                        $trans->setMass(FormulaHelper::computeMass($this->formula));
+                    } catch
+                    (IllegalStateException $e) {
+                        /* Empty on purpose - mass can be null */
+                    }
+                } else {
+                    $trans->setMass($this->mass);
+                }
             }
         } else {
             $trans->setFormula($this->formula);
             if (empty($this->mass)) {
                 try {
                     $trans->setMass(FormulaHelper::computeMass($this->formula));
-                } catch (IllegalStateException $e) {
+                } catch
+                (IllegalStateException $e) {
                     /* Empty on purpose - mass can be null */
                 }
             } else {

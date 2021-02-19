@@ -46,7 +46,7 @@ class Sequence implements JsonSerializable {
     private $sequenceMass;
 
     /**
-     * @ORM\Column(type="string", length=500, nullable=true)
+     * @ORM\Column(type="string", length=4000, nullable=true)
      */
     private $sequenceSmiles;
 

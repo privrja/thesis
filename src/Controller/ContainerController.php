@@ -29,6 +29,7 @@ use App\Structure\ConcreateContainer;
 use App\Structure\ModificationStructure;
 use App\Structure\NewContainerStructure;
 use App\Structure\NewContainerTransformed;
+use App\Structure\SequenceStructure;
 use App\Structure\UpdateContainerStructure;
 use App\Structure\UpdateContainerTransformed;
 use Doctrine\ORM\EntityManagerInterface;
@@ -486,6 +487,23 @@ class ContainerController extends AbstractController {
      */
     public function blockImport(Container $container, Request $request, ModificationRepository $repository, EntityManagerInterface $entityManager, Security $security, LoggerInterface $logger) {
         return $this->import($container, $request, new BlockCycloBranch($repository, $container->getId()), BlockStructure::class, $entityManager, $security, $logger);
+    }
+
+    /**
+     * Import sequences from CycloBranch
+     * @Route("/rest/container/{containerId}/sequence/import", name="block_import", methods={"POST"})
+     * @Entity("container", expr="repository.find(containerId)")
+     * @IsGranted("ROLE_USER")
+     * @param Container $container
+     * @param Request $request
+     * @param ModificationRepository $repository
+     * @param EntityManagerInterface $entityManager
+     * @param Security $security
+     * @param LoggerInterface $logger
+     * @return Response
+     */
+    public function sequenceImport(Container $container, Request $request, ModificationRepository $repository, EntityManagerInterface $entityManager, Security $security, LoggerInterface $logger) {
+        return $this->import($container, $request, new SequenceCycloBranch($repository, $container->getId()), SequenceStructure::class, $entityManager, $security, $logger);
     }
 
     private function import(Container $container, Request $request, AbstractCycloBranch $import, $className, EntityManagerInterface $entityManager, Security $security, LoggerInterface $logger) {

@@ -37,6 +37,10 @@ class SequenceCycloBranch extends AbstractCycloBranch {
      * @inheritDoc
      */
     public function import(Container $container, EntityManagerInterface $entityManager, array $okStack, array $errorStack): array {
-        // TODO: Implement import() method.
+        foreach ($okStack as $item) {
+            var_dump($item);
+        }
+
+        return $errorStack;
     }
 }

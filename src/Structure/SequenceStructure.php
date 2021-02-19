@@ -50,9 +50,11 @@ class SequenceStructure extends AbstractStructure {
         if (!isset($this->source) || empty($this->identifier)) {
             return new Message(ErrorConstants::ERROR_SERVER_IDENTIFIER_PROBLEM);
         }
-        foreach ($this->blocks as $block) {
-            if (!isset($block->databaseId) && !isset($block->sameAs) && (empty($block->blockName) || empty($block->acronym) || (empty($block->formula) && empty($block->smiles)))) {
-                return new Message(ErrorConstants::ERROR_EMPTY_PARAMS);
+        if (isset($this->blocks)) {
+            foreach ($this->blocks as $block) {
+                if (!isset($block->databaseId) && !isset($block->sameAs) && (empty($block->blockName) || empty($block->acronym) || (empty($block->formula) && empty($block->smiles)))) {
+                    return new Message(ErrorConstants::ERROR_EMPTY_PARAMS);
+                }
             }
         }
         return Message::createOkMessage();

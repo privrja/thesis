@@ -3,9 +3,12 @@
 namespace App\CycloBranch;
 
 use App\Base\ReferenceHelper;
+use App\Base\SequenceHelper;
+use App\Entity\Block;
 use App\Entity\Container;
 use App\Entity\Modification;
 use App\Entity\Sequence;
+use App\Enum\SequenceEnum;
 use App\Structure\SequenceTransformed;
 use Doctrine\ORM\EntityManagerInterface;
 
@@ -90,7 +93,16 @@ class SequenceCycloBranch extends AbstractCycloBranch {
                     continue;
                 }
             }
-            // TODO blocks
+            $sequenceHelper = new SequenceHelper($sequence->getSequence(), SequenceEnum::$backValues[$sequence->getSequenceType()], []);
+            $b2s = $sequenceHelper->findBlocks($container, $entityManager->getRepository(Block::class));
+            if (empty($b2s)) {
+                $item->error = 'ERROR: Not all blocks used sequence is in container';
+                array_push($errorStack, $item);
+                continue;
+            }
+            foreach ($b2s as $connection) {
+                $sequence->addB2($connection);
+            }
             $entityManager->persist($sequence);
         }
         $entityManager->flush();

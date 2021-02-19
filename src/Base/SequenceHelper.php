@@ -4,7 +4,9 @@ namespace App\Base;
 
 use App\Entity\B2s;
 use App\Entity\Block;
+use App\Entity\Container;
 use App\Enum\SequenceEnum;
+use App\Repository\BlockRepository;
 use InvalidArgumentException;
 
 class SequenceHelper {
@@ -27,6 +29,7 @@ class SequenceHelper {
     private $branch = false;
     private $branchIndexStart = 0;
     private $branchIndexEnd = 0;
+    private $mapAcronym = [];
 
     /**
      * SequenceHelper constructor.
@@ -39,6 +42,56 @@ class SequenceHelper {
         $this->sequenceType = $sequenceType;
         $this->blocks = $blocks;
         $this->length = strlen($sequence);
+    }
+
+    function getBlock(COntainer $container, BlockRepository $blockRepository, string $acronym) {
+        if (!isset($this->mapAcronym[$acronym])) {
+            $block = $blockRepository->findOneBy(['container' => $container->getId(), 'acronym' => $acronym]);
+            $this->mapAcronym[$acronym] = $block;
+            return $block;
+        } else {
+            return $this->mapAcronym[$acronym];
+        }
+    }
+
+    /**
+     * @param Container $container
+     * @param BlockRepository $blockRepository
+     * @return B2s[]
+     */
+    function findBlocks(Container $container, BlockRepository $blockRepository): array {
+        /** @var B2s[] $res */
+        $res = [];
+        $len = 0;
+        while ($this->nextBlock()) {
+            $b2s = new B2s();
+            $block = $this->getBlock($container, $blockRepository, $this->acronym);
+            if (!isset($block)) {
+                return [];
+            }
+            $b2s->setBlock($block);
+            $b2s->setIsBranch($this->branch);
+            $branchNextAcronym = $this->branchNext(true);
+            if (isset($branchNextAcronym)) {
+                $branchNext = $this->getBlock($container, $blockRepository, $branchNextAcronym);
+                if (!isset($branchNext)) {
+                    return [];
+                }
+                $b2s->setBranchReference($branchNext);
+            }
+            $nextAcronym = $this->findNextAcronym();
+            if (isset($nextAcronym)) {
+                $next = $this->getBlock($container, $blockRepository, $nextAcronym);
+                if (!isset($next)) {
+                    return [];
+                }
+                $b2s->setNextBlock($next);
+            }
+            array_push($res, $b2s);
+            $len++;
+        }
+        $this->addCyclicReference($res, $len);
+        return $res;
     }
 
     /**
@@ -79,6 +132,14 @@ class SequenceHelper {
     }
 
     private function findNext() {
+        $next = $this->findNextAcronym();
+        if (!isset($next)) {
+            return null;
+        }
+        return $this->findBlock($next);
+    }
+
+    private function findNextAcronym() {
         if ($this->branch === false) {
             $start = strpos($this->sequence, '[', $this->branchIndexEnd);
             if ($start === false) {
@@ -88,7 +149,7 @@ class SequenceHelper {
             if ($start === false) {
                 return null;
             }
-            return $this->findBlock(substr($this->sequence, $start + 1, $end - $start - 1));
+            return substr($this->sequence, $start + 1, $end - $start - 1);
         } else {
             return null;
         }
@@ -110,6 +171,17 @@ class SequenceHelper {
         return true;
     }
 
+    private function findNextBranch(bool $onlyAcronym = false) {
+        $branch = $this->findNextBranchAcronym();
+        if (!isset($branch)) {
+            return null;
+        }
+        if ($onlyAcronym) {
+            return $branch;
+        }
+        return $this->findBlock($branch);
+    }
+
     private function findNextBranchAcronym() {
         $nextIndexStart = $this->indexEnd + 2;
         if ($nextIndexStart >= $this->length || substr($this->sequence, $nextIndexStart, 1) == ")") {
@@ -119,15 +191,15 @@ class SequenceHelper {
             if ($nextIndexEnd === null) {
                 return null;
             }
-            return $this->findBlock(substr($this->sequence, $nextIndexStart + 1, $nextIndexEnd - $nextIndexStart - 1));
+            return substr($this->sequence, $nextIndexStart + 1, $nextIndexEnd - $nextIndexStart - 1);
         }
     }
 
-    private function branchNext() {
+    private function branchNext(bool $onlyAcronym = false) {
         if ($this->possibleBranch() === false) {
             return null;
         }
-        return $this->findNextBranchAcronym();
+        return $this->findNextBranch($onlyAcronym);
     }
 
     private function findBlock(string $acronym) {

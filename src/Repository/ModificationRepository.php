@@ -12,10 +12,9 @@ use Doctrine\Persistence\ManagerRegistry;
  * @method Modification[]    findAll()
  * @method Modification[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class ModificationRepository extends ServiceEntityRepository
-{
-    public function __construct(ManagerRegistry $registry)
-    {
+class ModificationRepository extends ServiceEntityRepository {
+
+    public function __construct(ManagerRegistry $registry) {
         parent::__construct($registry, Modification::class);
     }
 

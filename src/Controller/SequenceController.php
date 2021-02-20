@@ -11,6 +11,7 @@ use App\Entity\Sequence;
 use App\Enum\ContainerVisibilityEnum;
 use App\Model\ContainerModel;
 use App\Repository\SequenceRepository;
+use App\Structure\SequenceExport;
 use App\Structure\SequenceStructure;
 use App\Structure\SequenceTransformed;
 use Doctrine\ORM\EntityManagerInterface;
@@ -85,7 +86,7 @@ class SequenceController extends AbstractController {
      *     tags={"Sequence"},
      *     @SWG\Response(response="200", description="Return list of blocks in container."),
      *     @SWG\Response(response="401", description="Return when user has not acces to container."),
-     *     @SWG\Response(response="404", description="Return when container not found."),
+     *     @SWG\Response(response="404", description="Return when sequence not found."),
      * )
      */
     public function index(Container $container, EntityManagerInterface $entityManager, Security $security, LoggerInterface $logger, SequenceRepository $sequenceRepository) {
@@ -97,7 +98,7 @@ class SequenceController extends AbstractController {
                 if ($containerModel->hasContainer($container->getId())) {
                     return new JsonResponse($sequenceRepository->findSequences($container->getId()), Response::HTTP_OK);
                 } else {
-                    return ResponseHelper::jsonResponse(new Message(ErrorConstants::ERROR_CONTAINER_NOT_EXISTS_FOR_USER, Response::HTTP_NOT_FOUND));
+                    return ResponseHelper::jsonResponse(new Message(ErrorConstants::ERROR_CONTAINER_INSUFIENT_RIGHTS, Response::HTTP_FORBIDDEN));
                 }
             } else {
                 return ResponseHelper::jsonResponse(new Message(ErrorConstants::ERROR_CONTAINER_NOT_EXISTS_FOR_USER, Response::HTTP_UNAUTHORIZED));
@@ -126,13 +127,77 @@ class SequenceController extends AbstractController {
      *     @SWG\Response(response="204", description="Sucessfully deleted sequence."),
      *     @SWG\Response(response="401", description="Return when user is not logged in."),
      *     @SWG\Response(response="403", description="Return when permisions is insufient."),
-     *     @SWG\Response(response="404", description="Return when container is not found.")
+     *     @SWG\Response(response="404", description="Return when sequence is not found.")
      * )
      */
     public function deleteSequence(Container $container, Sequence $sequence, EntityManagerInterface $entityManager, Security $security, LoggerInterface $logger) {
         $model = new ContainerModel($entityManager, $this->getDoctrine(), $security->getUser(), $logger);
         $modelMessage = $model->deleteSequence($container, $sequence);
         return ResponseHelper::jsonResponse($modelMessage);
+    }
+
+    /**
+     * Get sequence
+     * @Route("/rest/container/{containerId}/sequence/{sequenceId}", name="sequence_detail", methods={"GET"})
+     * @Entity("container", expr="repository.find(containerId)")
+     * @Entity("sequence", expr="repository.find(sequenceId)")
+     * @IsGranted("ROLE_USER")
+     * @param Container $container
+     * @param Sequence $sequence
+     * @param EntityManagerInterface $entityManager
+     * @param Security $security
+     * @param LoggerInterface $logger
+     * @return JsonResponse
+     *
+     * @SWG\Delete(
+     *     tags={"Sequence"},
+     *     security={
+     *         {"ApiKeyAuth":{}}
+     *     },
+     *     @SWG\Response(response="200", description="Sucessfully found sequence."),
+     *     @SWG\Response(response="401", description="Return when user is not logged in."),
+     *     @SWG\Response(response="403", description="Return when permisions is insufient."),
+     *     @SWG\Response(response="404", description="Return when sequence is not found.")
+     * )
+     */
+    public function detailSequence(Container $container, Sequence $sequence, EntityManagerInterface $entityManager, Security $security, LoggerInterface $logger) {
+        if ($container->getVisibility() === ContainerVisibilityEnum::PUBLIC) {
+            return new JsonResponse($this->getSequenceData($sequence), Response::HTTP_OK);
+        } else {
+            if ($security->getUser() !== null) {
+                $containerModel = new ContainerModel($entityManager, $this->getDoctrine(), $security->getUser(), $logger);
+                if ($containerModel->hasContainer($container->getId()) && $container->getId() === $sequence->getContainer()->getId()) {
+                    return new JsonResponse($this->getSequenceData($sequence), Response::HTTP_OK);
+                } else {
+                    return ResponseHelper::jsonResponse(new Message(ErrorConstants::ERROR_CONTAINER_INSUFIENT_RIGHTS, Response::HTTP_FORBIDDEN));
+                }
+            } else {
+                return ResponseHelper::jsonResponse(new Message(ErrorConstants::ERROR_CONTAINER_INSUFIENT_RIGHTS, Response::HTTP_UNAUTHORIZED));
+            }
+        }
+    }
+
+    private function getSequenceData(Sequence $sequence) {
+        $sequenceExport = new SequenceExport();
+        $sequenceExport->sequenceName = $sequence->getSequenceName();
+        $sequenceExport->sequenceType = $sequence->getSequenceType();
+        $sequenceExport->sequence = $sequence->getSequence();
+        $sequenceExport->smiles = $sequence->getSequenceSmiles();
+        $sequenceExport->formula = $sequence->getSequenceFormula();
+        $sequenceExport->mass = $sequence->getSequenceMass();
+        $sequenceExport->decays = $sequence->getDecays();
+        $sequenceExport->source = $sequence->getSource();
+        $sequenceExport->identifier = $sequence->getIdentifier();
+        $sequenceExport->nModification = $sequence->getNModification();
+        $sequenceExport->cModification = $sequence->getCModification();
+        $sequenceExport->bModification = $sequence->getBModification();
+        foreach ($sequence->getS2families() as $s2f) {
+            array_push($sequenceExport->family, $s2f->getFamily());
+        }
+        foreach ($sequence->getB2s() as $b2s) {
+            array_push($sequenceExport->blocks, $b2s->getBlock());
+        }
+        return $sequenceExport;
     }
 
 }

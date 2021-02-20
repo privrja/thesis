@@ -10,10 +10,11 @@ use App\Entity\User;
 use App\Enum\ContainerModeEnum;
 use App\Enum\ContainerVisibilityEnum;
 use Doctrine\Bundle\FixturesBundle\Fixture;
+use Doctrine\Bundle\FixturesBundle\FixtureGroupInterface;
 use Doctrine\Persistence\ObjectManager;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
-class AppFixtures extends Fixture
+class ProdFixtures extends Fixture implements FixtureGroupInterface
 {
     private $passwordEncoder;
 
@@ -47,14 +48,8 @@ class AppFixtures extends Fixture
 
         $u2c = new U2c();
         $u2c->setContainer($container);
-        $u2c->setUser($user);
-        $u2c->setMode(ContainerModeEnum::RWM);
-        $manager->persist($u2c);
-
-        $u2c = new U2c();
-        $u2c->setContainer($container);
         $u2c->setUser($userP);
-        $u2c->setMode(ContainerModeEnum::RW);
+        $u2c->setMode(ContainerModeEnum::RWM);
         $manager->persist($u2c);
 
         $acids = new BaseAminoAcids($container);
@@ -63,7 +58,6 @@ class AppFixtures extends Fixture
             $manager->persist($block);
         }
         $this->saveModifications($container, $manager);
-
         $manager->flush();
     }
 
@@ -93,6 +87,7 @@ class AppFixtures extends Fixture
         $modification->setModificationMass(43.0421991657);
         $modification->setNTerminal(false);
         $modification->setCTerminal(true);
+        $manager->persist($modification);
 
         $modification = new Modification();
         $modification->setContainer($container);
@@ -104,4 +99,10 @@ class AppFixtures extends Fixture
         $manager->persist($modification);
     }
 
+    /**
+     * @inheritDoc
+     */
+    public static function getGroups(): array {
+        return ['prod'];
+    }
 }

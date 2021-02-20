@@ -10,10 +10,11 @@ use App\Entity\User;
 use App\Enum\ContainerModeEnum;
 use App\Enum\ContainerVisibilityEnum;
 use Doctrine\Bundle\FixturesBundle\Fixture;
+use Doctrine\Bundle\FixturesBundle\FixtureGroupInterface;
 use Doctrine\Persistence\ObjectManager;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
-class AppFixtures extends Fixture
+class AppFixtures extends Fixture implements FixtureGroupInterface
 {
     private $passwordEncoder;
 
@@ -133,6 +134,13 @@ class AppFixtures extends Fixture
         $modification->setNTerminal(false);
         $modification->setCTerminal(true);
         $manager->persist($modification);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public static function getGroups(): array {
+        return ['dev'];
     }
 
 }

@@ -28,7 +28,7 @@ class ContainerTest extends LoginTest {
 
     public function testGetSpecificContainer() {
         $client = self::loginClient();
-        $client->request('GET', '/rest/container/2');
+        $client->request('GET', '/rest/container/3');
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
         $this->assertStringContainsString('"containerName":"Palma Free"', $client->getResponse()->getContent());
         $this->assertStringContainsString('"visibility":"PUBLIC"', $client->getResponse()->getContent());
@@ -84,9 +84,9 @@ class ContainerTest extends LoginTest {
 
     public function testUpdateContainerSuccessBothArguments() {
         $client = self::loginClient();
-        $client->request('PUT', '/rest/container/2', [], [], [], json_encode(['containerName' => 'Pluma Private', 'visibility' => 'PRIVATE']));
+        $client->request('PUT', '/rest/container/3', [], [], [], json_encode(['containerName' => 'Pluma Private', 'visibility' => 'PRIVATE']));
         $this->assertEquals(204, $client->getResponse()->getStatusCode());
-        $client->request('GET', '/rest/container/2');
+        $client->request('GET', '/rest/container/3');
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
         $this->assertStringContainsString('"containerName":"Pluma Private"', $client->getResponse()->getContent());
         $this->assertStringContainsString('"visibility":"PRIVATE"', $client->getResponse()->getContent());
@@ -94,18 +94,18 @@ class ContainerTest extends LoginTest {
 
     public function testUpdateContainerSuccessVisibility() {
         $client = self::loginClient();
-        $client->request('PUT', '/rest/container/2', [], [], [], json_encode(['visibility' => 'PUBLIC']));
+        $client->request('PUT', '/rest/container/3', [], [], [], json_encode(['visibility' => 'PUBLIC']));
         $this->assertEquals(204, $client->getResponse()->getStatusCode());
-        $client->request('GET', '/rest/container/2');
+        $client->request('GET', '/rest/container/3');
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
         $this->assertStringContainsString('"visibility":"PUBLIC"', $client->getResponse()->getContent());
     }
 
     public function testUpdateContainerSuccessContainerName() {
         $client = self::loginClient();
-        $client->request('PUT', '/rest/container/2', [], [], [], json_encode(['containerName' => 'Palma Free']));
+        $client->request('PUT', '/rest/container/3', [], [], [], json_encode(['containerName' => 'Palma Free']));
         $this->assertEquals(204, $client->getResponse()->getStatusCode());
-        $client->request('GET', '/rest/container/2');
+        $client->request('GET', '/rest/container/3');
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
         $this->assertStringContainsString('"containerName":"Palma Free"', $client->getResponse()->getContent());
     }
@@ -118,13 +118,13 @@ class ContainerTest extends LoginTest {
 
     public function testDeleteContainerBad2() {
         $client = self::loginClient();
-        $client->request('DELETE', '/rest/container/3');
+        $client->request('DELETE', '/rest/container/4');
         $this->assertEquals(403, $client->getResponse()->getStatusCode());
     }
 
     public function testDeleteContainerSuccess() {
         $client = self::loginClient();
-        $client->request('DELETE', '/rest/container/1');
+        $client->request('DELETE', '/rest/container/3');
         $this->assertEquals(204, $client->getResponse()->getStatusCode());
     }
 

@@ -44,7 +44,7 @@ class ContainerTest extends KernelTestCase {
             }
             ++$cnt;
         }
-        self::assertSame(2, $cnt);
+        self::assertSame(1, $cnt);
     }
 
     /**

@@ -39,14 +39,6 @@ class AppFixtures extends Fixture
         $user->setPassword($this->passwordEncoder->encodePassword($user, 'kokos'));
         $manager->persist($user);
 
-        $user = new User();
-        $user->setNick("kokos");
-        $user->setMail("kokos@palma.cz");
-        $user->setRoles(["ROLE_USER"]);
-        $user->setPassword($this->passwordEncoder->encodePassword($user, 'the_new_password'));
-        $user->setApiToken("12345");
-        $manager->persist($user);
-
         /* Main database data for main visible container */
         $container = new Container();
         $container->setContainerName("Public Container");
@@ -72,46 +64,6 @@ class AppFixtures extends Fixture
         }
         $this->saveModifications($container, $manager);
 
-        /* Add containers for user kokos and privrja */
-        $container = new Container();
-        $container->setContainerName("Palma");
-        $container->setVisibility(ContainerVisibilityEnum::PRIVATE);
-        $manager->persist($container);
-
-        $u2c = new U2c();
-        $u2c->setContainer($container);
-        $u2c->setUser($user);
-        $u2c->setMode(ContainerModeEnum::RWM);
-        $manager->persist($u2c);
-
-        $container = new Container();
-        $container->setContainerName("Palma Free");
-        $container->setVisibility(ContainerVisibilityEnum::PUBLIC);
-        $manager->persist($container);
-
-        $u2c = new U2c();
-        $u2c->setContainer($container);
-        $u2c->setUser($user);
-        $u2c->setMode(ContainerModeEnum::RWM);
-        $manager->persist($u2c);
-
-        $container = new Container();
-        $container->setContainerName("Testing database");
-        $container->setVisibility(ContainerVisibilityEnum::PRIVATE);
-        $manager->persist($container);
-        $this->saveModifications($container, $manager);
-
-        $u2c = new U2c();
-        $u2c->setContainer($container);
-        $u2c->setUser($userP);
-        $u2c->setMode(ContainerModeEnum::RWM);
-        $manager->persist($u2c);
-
-        $u2c = new U2c();
-        $u2c->setContainer($container);
-        $u2c->setUser($user);
-        $u2c->setMode(ContainerModeEnum::RW);
-        $manager->persist($u2c);
         $manager->flush();
     }
 
@@ -132,6 +84,23 @@ class AppFixtures extends Fixture
         $modification->setModificationMass(-0.9840155848);
         $modification->setNTerminal(false);
         $modification->setCTerminal(true);
+        $manager->persist($modification);
+
+        $modification = new Modification();
+        $modification->setContainer($container);
+        $modification->setModificationName('Ethanolamine');
+        $modification->setModificationFormula('H5C2N');
+        $modification->setModificationMass(43.0421991657);
+        $modification->setNTerminal(false);
+        $modification->setCTerminal(true);
+
+        $modification = new Modification();
+        $modification->setContainer($container);
+        $modification->setModificationName('Formyl');
+        $modification->setModificationFormula('CO');
+        $modification->setModificationMass(27.9949146221);
+        $modification->setNTerminal(true);
+        $modification->setCTerminal(false);
         $manager->persist($modification);
     }
 

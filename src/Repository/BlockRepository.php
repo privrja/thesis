@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\Block;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -16,6 +17,18 @@ class BlockRepository extends ServiceEntityRepository {
 
     public function __construct(ManagerRegistry $registry) {
         parent::__construct($registry, Block::class);
+    }
+
+    public function findBlocks($containerId) {
+        return $this->createQueryBuilder('blc')
+            ->select('blc.id, blc.blockName, blc.acronym, blc.residue as formula, blc.blockMass as mass, blc.blockSmiles as smiles, blc.usmiles as uniqueSmiles, blc.losses, blc.source, blc.identifier, group_concat(fam.blockFamilyName) as family')
+            ->leftJoin('blc.b2families', 'b2f')
+            ->leftJoin('b2f.family', 'fam', Join::WITH, 'fam.container = blc.container')
+            ->where('blc.container = :containerId')
+            ->setParameter('containerId', $containerId)
+            ->groupBy('blc.id, blc.blockName, blc.acronym, blc.residue, blc.blockMass, blc.blockSmiles, blc.usmiles, blc.losses, blc.source, blc.identifier')
+            ->getQuery()
+            ->getArrayResult();
     }
 
     function findMergeByFormula(int $containerId) {

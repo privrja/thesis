@@ -5,7 +5,6 @@ namespace App\Controller;
 use App\Base\Message;
 use App\Base\RequestHelper;
 use App\Base\ResponseHelper;
-use App\Constant\EntityColumnsEnum;
 use App\Constant\ErrorConstants;
 use App\Entity\Block;
 use App\Entity\Container;
@@ -51,12 +50,12 @@ class BlockController extends AbstractController {
      */
     public function index(Container $container, EntityManagerInterface $entityManager, Security $security, LoggerInterface $logger, BlockRepository $blockRepository) {
         if ($container->getVisibility() === ContainerVisibilityEnum::PUBLIC) {
-            return new JsonResponse($blockRepository->findBy([EntityColumnsEnum::CONTAINER => $container->getId()]), Response::HTTP_OK);
+            return new JsonResponse($blockRepository->findBlocks($container->getId()), Response::HTTP_OK);
         } else {
             if ($security->getUser() !== null) {
                 $containerModel = new ContainerModel($entityManager, $this->getDoctrine(), $security->getUser(), $logger);
                 if ($containerModel->hasContainer($container->getId())) {
-                    return new JsonResponse($blockRepository->findBy([EntityColumnsEnum::CONTAINER => $container->getId()]), Response::HTTP_OK);
+                    return new JsonResponse($blockRepository->findBlocks($container->getId()), Response::HTTP_OK);
                 } else {
                     return ResponseHelper::jsonResponse(new Message(ErrorConstants::ERROR_CONTAINER_NOT_EXISTS_FOR_USER, Response::HTTP_NOT_FOUND));
                 }

@@ -42,7 +42,7 @@ class ProdFixtures extends Fixture implements FixtureGroupInterface
 
         /* Main database data for main visible container */
         $container = new Container();
-        $container->setContainerName("Public Container");
+        $container->setContainerName("Nonribosomal Peptides and Siderophores");
         $container->setVisibility(ContainerVisibilityEnum::PUBLIC);
         $manager->persist($container);
 

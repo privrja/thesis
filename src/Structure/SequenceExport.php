@@ -2,7 +2,6 @@
 
 namespace App\Structure;
 
-use App\Entity\Block;
 use App\Entity\Modification;
 use App\Entity\SequenceFamily;
 use JsonSerializable;
@@ -48,14 +47,29 @@ class SequenceExport implements JsonSerializable {
     /** @var Modification */
     public $bModification;
 
-    /** @var Block[] */
-    public $blocks;
+    /** @var BlockExport[] */
+    public $blocks = [];
 
     /**
      * @inheritDoc
      */
     public function jsonSerialize() {
-        // TODO: Implement jsonSerialize() method.
+        return [
+            'sequenceName' => $this->sequenceName,
+            'sequenceType' => $this->sequenceType,
+            'sequence' => $this->sequence,
+            'smiles' => $this->smiles,
+            'formula' => $this->formula,
+            'mass' => $this->mass,
+            'decays' => $this->decays,
+            'source' => $this->source,
+            'identifier' => $this->identifier,
+            'family' => $this->family,
+            'nModification' => $this->nModification,
+            'cModification' => $this->cModification,
+            'bModification' => $this->bModification,
+            'blocks' => $this->blocks
+            ];
     }
 
 }

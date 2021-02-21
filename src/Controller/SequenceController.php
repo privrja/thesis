@@ -11,6 +11,7 @@ use App\Entity\Sequence;
 use App\Enum\ContainerVisibilityEnum;
 use App\Model\ContainerModel;
 use App\Repository\SequenceRepository;
+use App\Structure\BlockExport;
 use App\Structure\SequenceExport;
 use App\Structure\SequenceStructure;
 use App\Structure\SequenceTransformed;
@@ -138,7 +139,7 @@ class SequenceController extends AbstractController {
 
     /**
      * Get sequence
-     * @Route("/rest/container/{containerId}/sequence/{sequenceId}", name="sequence_detail", methods={"GET"})
+     * @Route("/rest/container/{containerId}/sequence/{sequenceId}", name="sequence_detail", methods={"GET"}, requirements={"sequenceId"="\d+"})
      * @Entity("container", expr="repository.find(containerId)")
      * @Entity("sequence", expr="repository.find(sequenceId)")
      * @IsGranted("ROLE_USER")
@@ -194,8 +195,30 @@ class SequenceController extends AbstractController {
         foreach ($sequence->getS2families() as $s2f) {
             array_push($sequenceExport->family, $s2f->getFamily());
         }
+        $length = 0;
         foreach ($sequence->getB2s() as $b2s) {
-            array_push($sequenceExport->blocks, $b2s->getBlock());
+            $block = $b2s->getBlock();
+            $blockExport = new BlockExport();
+            $blockExport->id = $block->getId();
+            $blockExport->blockName = $block->getBlockName();
+            $blockExport->acronym = $block->getAcronym();
+            $blockExport->formula = $block->getResidue();
+            $blockExport->mass = $block->getBlockMass();
+            $blockExport->smiles = $block->getBlockSmiles();
+            $blockExport->uniqueSmiles = $block->getUsmiles();
+            $blockExport->source = $block->getSource();
+            $blockExport->identifier = $block->getIdentifier();
+            $blockExport->losses = $block->getLosses();
+            array_push($sequenceExport->blocks, $blockExport);
+            $length++;
+        }
+        for ($i = 1; $i < $length; $i++) {
+            for ($j = 0 ; $j < $i; $j++) {
+                if ($sequenceExport->blocks[$i]->id === $sequenceExport->blocks[$j]->id) {
+                    $sequenceExport->blocks[$i]->sameAs = $j;
+                    break;
+                }
+            }
         }
         return $sequenceExport;
     }

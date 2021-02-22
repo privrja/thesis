@@ -57,7 +57,7 @@ jobs:
         mysql -h 127.0.0.1 --port 3306 -u root -pqHTavO1ajSOnQzUdi3ef -e "ALTER USER 'root'@'%' IDENTIFIED WITH mysql_native_password BY 'qHTavO1ajSOnQzUdi3ef';"
         php bin/console doctrine:database:create -n
         php bin/console doctrine:mig:mig -n
-        php bin/console doctrine:fixtures:load -n
+        php bin/console doctrine:fixtures:load --group=dev -n
         
     - name: Run Tests
       run: vendor/symfony/phpunit-bridge/bin/simple-phpunit

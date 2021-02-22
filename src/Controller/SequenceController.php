@@ -142,7 +142,6 @@ class SequenceController extends AbstractController {
      * @Route("/rest/container/{containerId}/sequence/{sequenceId}", name="sequence_detail", methods={"GET"}, requirements={"sequenceId"="\d+"})
      * @Entity("container", expr="repository.find(containerId)")
      * @Entity("sequence", expr="repository.find(sequenceId)")
-     * @IsGranted("ROLE_USER")
      * @param Container $container
      * @param Sequence $sequence
      * @param EntityManagerInterface $entityManager
@@ -165,7 +164,7 @@ class SequenceController extends AbstractController {
         if ($container->getVisibility() === ContainerVisibilityEnum::PUBLIC) {
             return new JsonResponse($this->getSequenceData($sequence), Response::HTTP_OK);
         } else {
-            if ($security->getUser() !== null) {
+            if ($security->getUser() !== null && $this->isGranted("ROLE_USER")) {
                 $containerModel = new ContainerModel($entityManager, $this->getDoctrine(), $security->getUser(), $logger);
                 if ($containerModel->hasContainer($container->getId()) && $container->getId() === $sequence->getContainer()->getId()) {
                     return new JsonResponse($this->getSequenceData($sequence), Response::HTTP_OK);

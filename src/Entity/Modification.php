@@ -4,12 +4,13 @@ namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\UniqueConstraint;
+use JsonSerializable;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\ModificationRepository")
  * @ORM\Table(uniqueConstraints={@UniqueConstraint(name="UX_MODIFICATION_NAME", columns={"modification_name", "container_id"})})
  */
-class Modification {
+class Modification implements JsonSerializable {
     /**
      * @ORM\Id()
      * @ORM\GeneratedValue()
@@ -112,4 +113,17 @@ class Modification {
         return $this;
     }
 
+    /**
+     * @inheritDoc
+     */
+    public function jsonSerialize() {
+        return [
+            'id' => $this->id,
+            'modificationName' => $this->modificationName,
+            'formula' => $this->modificationFormula,
+            'mass' => $this->modificationMass,
+            'nTerminal' => $this->nTerminal,
+            'cTerminal' => $this->cTerminal
+        ];
+    }
 }

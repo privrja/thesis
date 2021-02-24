@@ -138,6 +138,51 @@ class SequenceController extends AbstractController {
     }
 
     /**
+     * Edit sequence
+     * @Route("/rest/container/{containerId}/sequence/{sequenceId}", name="sequence_edit", methods={"PUT"})
+     * @IsGranted("ROLE_USER")
+     * @Entity("container", expr="repository.find(containerId)")
+     * @Entity("sequence", expr="repository.find(sequenceId)")
+     * @param Container $container
+     * @param Sequence $sequence
+     * @param Request $request
+     * @param EntityManagerInterface $entityManager
+     * @param Security $security
+     * @param LoggerInterface $logger
+     * @return JsonResponse
+     *
+     * @SWG\Post(
+     *     tags={"Sequence"},
+     *     security={
+     *         {"ApiKeyAuth":{}}
+     *     },
+     *     @SWG\Parameter(
+     *          name="body",
+     *          in="body",
+     *          type="string",
+     *          required=true,
+     *          description="",
+     *          @SWG\Schema(type="string",
+     *              example="4545"),
+     *      ),
+     *     @SWG\Response(response="201", description="Edit sequence success."),
+     *     @SWG\Response(response="400", description="Return when input is wrong."),
+     *     @SWG\Response(response="401", description="Return when user is not logged in."),
+     *     @SWG\Response(response="403", description="Return when permisions is insufient.")
+     * )
+     */
+    public function editSequence(Container $container, Sequence $sequence, Request $request, EntityManagerInterface $entityManager, Security $security, LoggerInterface $logger) {
+        /** @var SequenceTransformed $trans */
+        $trans = RequestHelper::evaluateRequest($request, new SequenceStructure(), $logger);
+        if ($trans instanceof JsonResponse) {
+            return $trans;
+        }
+        $model = new ContainerModel($entityManager, $this->getDoctrine(), $security->getUser(), $logger);
+        $modelMessage = $model->editSequence($container, $trans, $sequence);
+        return ResponseHelper::jsonResponse($modelMessage);
+    }
+
+    /**
      * Get sequence
      * @Route("/rest/container/{containerId}/sequence/{sequenceId}", name="sequence_detail", methods={"GET"}, requirements={"sequenceId"="\d+"})
      * @Entity("container", expr="repository.find(containerId)")

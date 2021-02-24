@@ -247,6 +247,16 @@ class ContainerModel {
         return $this->saveSequence($sequence, $container, $trans, Message::createCreated());
     }
 
+    public function editSequence(Container $container, SequenceTransformed $trans, Sequence $sequence): Message {
+        $hasContainerRW = $this->hasContainerRW($container->getId());
+        if (empty($hasContainerRW)) {
+            return new Message(ErrorConstants::ERROR_CONTAINER_INSUFIENT_RIGHTS, Response::HTTP_FORBIDDEN);
+        }
+        $sequence->emptyB2s();
+        $sequence->emptyS2Family();
+        return $this->saveSequence($sequence, $container, $trans, Message::createNoContent());
+    }
+
     function setModification($transModification, Container $container) {
         $modification = new Modification();
         $modification->setContainer($container);

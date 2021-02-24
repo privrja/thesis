@@ -287,8 +287,15 @@ class Sequence implements JsonSerializable {
                 $s2family->setSequence(null);
             }
         }
-
         return $this;
+    }
+
+    public function emptyS2Family() {
+        $this->s2families = new ArrayCollection();
+    }
+
+    public function emptyB2s() {
+        $this->b2s = new ArrayCollection();
     }
 
     /**

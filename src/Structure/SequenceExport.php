@@ -18,6 +18,9 @@ class SequenceExport implements JsonSerializable {
     public $sequence;
 
     /** @var string */
+    public $sequenceOriginal;
+
+    /** @var string */
     public $smiles;
 
     /** @var string */
@@ -58,6 +61,7 @@ class SequenceExport implements JsonSerializable {
             'sequenceName' => $this->sequenceName,
             'sequenceType' => $this->sequenceType,
             'sequence' => $this->sequence,
+            'sequenceOriginal' => $this->sequenceOriginal,
             'smiles' => $this->smiles,
             'formula' => $this->formula,
             'mass' => $this->mass,

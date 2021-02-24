@@ -7,8 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * @ORM\Entity(repositoryClass="App\Repository\B2sRepository")
  */
-class B2s
-{
+class B2s {
     /**
      * @ORM\Id()
      * @ORM\GeneratedValue()
@@ -40,72 +39,81 @@ class B2s
     private $isBranch;
 
     /**
+     * @ORM\Column(type="integer")
+     */
+    private $blockOriginalId;
+
+    /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Block", cascade={"persist"})
      */
     private $branchReference;
 
-    public function getId(): ?int
-    {
+    public function getId(): ?int {
         return $this->id;
     }
 
-    public function getSequence(): ?Sequence
-    {
+    public function getSequence(): ?Sequence {
         return $this->sequence;
     }
 
-    public function setSequence(?Sequence $sequence): self
-    {
+    public function setSequence(?Sequence $sequence): self {
         $this->sequence = $sequence;
 
         return $this;
     }
 
-    public function getBlock(): ?Block
-    {
+    public function getBlock(): ?Block {
         return $this->block;
     }
 
-    public function setBlock(?Block $block): self
-    {
+    public function setBlock(?Block $block): self {
         $this->block = $block;
 
         return $this;
     }
 
-    public function getNextBlock(): ?Block
-    {
+    public function getNextBlock(): ?Block {
         return $this->nextBlock;
     }
 
-    public function setNextBlock(?Block $nextBlock): self
-    {
+    public function setNextBlock(?Block $nextBlock): self {
         $this->nextBlock = $nextBlock;
 
         return $this;
     }
 
-    public function getIsBranch(): ?bool
-    {
+    public function getIsBranch(): ?bool {
         return $this->isBranch;
     }
 
-    public function setIsBranch(bool $isBranch): self
-    {
+    public function setIsBranch(bool $isBranch): self {
         $this->isBranch = $isBranch;
 
         return $this;
     }
 
-    public function getBranchReference(): ?Block
-    {
+    public function getBranchReference(): ?Block {
         return $this->branchReference;
     }
 
-    public function setBranchReference(?Block $branchReference): self
-    {
+    public function setBranchReference(?Block $branchReference): self {
         $this->branchReference = $branchReference;
 
         return $this;
     }
+
+    /**
+     * @return mixed
+     */
+    public function getBlockOriginalId() {
+        return $this->blockOriginalId;
+    }
+
+    /**
+     * @param mixed $blockOriginalId
+     */
+    public function setBlockOriginalId($blockOriginalId): void {
+        $this->blockOriginalId = $blockOriginalId;
+    }
+
 }

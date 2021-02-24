@@ -23,6 +23,12 @@ class SequenceHelper {
     /** @var int */
     private $length;
 
+    /*** @var string */
+    private $originalSequence;
+
+    /** @var int */
+    private $original;
+
     private $indexStart = 0;
     private $indexEnd = 0;
     private $acronym = '';
@@ -30,6 +36,8 @@ class SequenceHelper {
     private $branchIndexStart = 0;
     private $branchIndexEnd = 0;
     private $mapAcronym = [];
+    private $originalIndexStart = 0;
+    private $originalIndexEnd = 0;
 
     /**
      * SequenceHelper constructor.
@@ -44,7 +52,7 @@ class SequenceHelper {
         $this->length = strlen($sequence);
     }
 
-    function getBlock(COntainer $container, BlockRepository $blockRepository, string $acronym) {
+    function getBlock(Container $container, BlockRepository $blockRepository, string $acronym) {
         if (!isset($this->mapAcronym[$acronym])) {
             $block = $blockRepository->findOneBy(['container' => $container->getId(), 'acronym' => $acronym]);
             $this->mapAcronym[$acronym] = $block;
@@ -95,16 +103,19 @@ class SequenceHelper {
     }
 
     /**
+     * @param string $originalSequence
      * @return B2s[]
      */
-    public function sequenceBlocksStructure(): array {
+    public function sequenceBlocksStructure(string $originalSequence): array {
         /** @var B2s[] $res */
         $res = [];
         $len = 0;
-        while ($this->nextBlock()) {
+        $this->originalSequence = $originalSequence;
+        while ($this->nextBlock() && $this->nextOriginal()) {
             $b2s = new B2s();
             $block = $this->findBlock($this->acronym);
             $b2s->setBlock($block);
+            $b2s->setBlockOriginalId($this->original);
             $b2s->setIsBranch($this->branch);
             $b2s->setBranchReference($this->branchNext());
             $b2s->setNextBlock($this->findNext());
@@ -168,6 +179,21 @@ class SequenceHelper {
         $this->indexEnd = $index;
         $this->acronym = substr($this->sequence, $this->indexStart + 1, $this->indexEnd - $this->indexStart - 1);
         $this->branch = $this->findBranch();
+        return true;
+    }
+
+    private function nextOriginal() {
+        $index = strpos($this->originalSequence, '[', $this->originalIndexEnd);
+        if ($index === false) {
+            return false;
+        }
+        $this->originalIndexStart = $index;
+        $index = strpos($this->originalSequence, ']', $this->originalIndexStart);
+        if ($index === false) {
+            return false;
+        }
+        $this->originalIndexEnd = $index;
+        $this->original = substr($this->originalSequence, $this->originalIndexStart + 1, $this->originalIndexEnd - $this->originalIndexStart - 1);
         return true;
     }
 

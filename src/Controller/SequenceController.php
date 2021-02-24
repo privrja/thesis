@@ -182,6 +182,7 @@ class SequenceController extends AbstractController {
         $sequenceExport->sequenceName = $sequence->getSequenceName();
         $sequenceExport->sequenceType = $sequence->getSequenceType();
         $sequenceExport->sequence = $sequence->getSequence();
+        $sequenceExport->sequenceOriginal = $sequence->getSequenceOriginal();
         $sequenceExport->smiles = $sequence->getSequenceSmiles();
         $sequenceExport->formula = $sequence->getSequenceFormula();
         $sequenceExport->mass = $sequence->getSequenceMass();
@@ -199,6 +200,7 @@ class SequenceController extends AbstractController {
             $block = $b2s->getBlock();
             $blockExport = new BlockExport();
             $blockExport->id = $block->getId();
+            $blockExport->originalId = $b2s->getBlockOriginalId();
             $blockExport->blockName = $block->getBlockName();
             $blockExport->acronym = $block->getAcronym();
             $blockExport->formula = $block->getResidue();

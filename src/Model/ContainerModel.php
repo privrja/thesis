@@ -281,7 +281,7 @@ class ContainerModel {
         $sequence->setSequenceMass($trans->getMass());
         $sequence->setSequenceSmiles($trans->getUsmiles());
         $sequence->setSequence($trans->getSequence());
-
+        $sequence->setSequenceOriginal($trans->getSequenceOriginal());
         switch (SequenceEnum::$backValues[$trans->getSequenceType()]) {
             case SequenceEnum::CYCLIC:
             case SequenceEnum::CYCLIC_POLYKETIDE:
@@ -332,8 +332,9 @@ class ContainerModel {
         foreach ($trans->getBlocks() as $block) {
             array_push($blockArray, $this->setBlock($block, $container));
         }
+
         $sequenceHelper = new SequenceHelper($trans->getSequence(), SequenceEnum::$backValues[$trans->getSequenceType()], $blockArray);
-        $b2s = $sequenceHelper->sequenceBlocksStructure();
+        $b2s = $sequenceHelper->sequenceBlocksStructure($trans->getSequenceOriginal());
         foreach ($b2s as $connection) {
             $sequence->addB2($connection);
         }

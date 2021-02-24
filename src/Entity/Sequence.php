@@ -36,6 +36,11 @@ class Sequence implements JsonSerializable {
     private $sequence;
 
     /**
+     * @ORM\Column(type="string", length=500)
+     */
+    private $sequenceOriginal;
+
+    /**
      * @ORM\Column(type="string", length=255)
      */
     private $sequenceFormula;
@@ -293,6 +298,20 @@ class Sequence implements JsonSerializable {
      */
     public function setSequence(?string $sequence): void {
         $this->sequence = $sequence;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getSequenceOriginal() {
+        return $this->sequenceOriginal;
+    }
+
+    /**
+     * @param string $sequenceOriginal
+     */
+    public function setSequenceOriginal($sequenceOriginal): void {
+        $this->sequenceOriginal = $sequenceOriginal;
     }
 
     /**

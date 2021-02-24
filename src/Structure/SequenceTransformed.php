@@ -13,6 +13,9 @@ class SequenceTransformed extends AbstractTransformed implements JsonSerializabl
     private $sequence;
 
     /** @var string */
+    private $sequenceOriginal;
+
+    /** @var string */
     private $sequenceType;
 
     /** @var string */
@@ -242,6 +245,20 @@ class SequenceTransformed extends AbstractTransformed implements JsonSerializabl
      */
     public function setFamily(array $family): void {
         $this->family = $family;
+    }
+
+    /**
+     * @return string
+     */
+    public function getSequenceOriginal(): string {
+        return $this->sequenceOriginal;
+    }
+
+    /**
+     * @param string $sequenceOriginal
+     */
+    public function setSequenceOriginal(string $sequenceOriginal): void {
+        $this->sequenceOriginal = $sequenceOriginal;
     }
 
     /**

@@ -56,6 +56,11 @@ class Sequence implements JsonSerializable {
     private $sequenceSmiles;
 
     /**
+     * @ORM\Column(type="string", length=4000, nullable=true)
+     */
+    private $usmiles;
+
+    /**
      * @ORM\Column(type="smallint", nullable=true)
      */
     private $source;
@@ -315,6 +320,20 @@ class Sequence implements JsonSerializable {
     }
 
     /**
+     * @return string
+     */
+    public function getUsmiles() {
+        return $this->usmiles;
+    }
+
+    /**
+     * @param string $usmiles
+     */
+    public function setUsmiles($usmiles): void {
+        $this->usmiles = $usmiles;
+    }
+
+    /**
      * @inheritDoc
      */
     public function jsonSerialize() {
@@ -326,6 +345,7 @@ class Sequence implements JsonSerializable {
             'formula' => $this->sequenceFormula,
             'mass' => $this->sequenceMass,
             'smiles' => $this->sequenceSmiles,
+            'uniqueSmiles' => $this->usmiles,
             'source' => $this->source,
             'identifier' => $this->identifier,
             'nModification' => $this->nModification,

@@ -184,6 +184,7 @@ class SequenceController extends AbstractController {
         $sequenceExport->sequence = $sequence->getSequence();
         $sequenceExport->sequenceOriginal = $sequence->getSequenceOriginal();
         $sequenceExport->smiles = $sequence->getSequenceSmiles();
+        $sequenceExport->uniqueSmiles = $sequence->getSequenceSmiles();
         $sequenceExport->formula = $sequence->getSequenceFormula();
         $sequenceExport->mass = $sequence->getSequenceMass();
         $sequenceExport->decays = $sequence->getDecays();

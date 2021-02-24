@@ -279,7 +279,8 @@ class ContainerModel {
         $sequence->setDecays($trans->getDecays());
         $sequence->setSequenceFormula($trans->getFormula());
         $sequence->setSequenceMass($trans->getMass());
-        $sequence->setSequenceSmiles($trans->getUsmiles());
+        $sequence->setSequenceSmiles($trans->getSmiles());
+        $sequence->setUsmiles($trans->getUsmiles());
         $sequence->setSequence($trans->getSequence());
         $sequence->setSequenceOriginal($trans->getSequenceOriginal());
         switch (SequenceEnum::$backValues[$trans->getSequenceType()]) {

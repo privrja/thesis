@@ -25,6 +25,9 @@ class SequenceTransformed extends AbstractTransformed implements JsonSerializabl
     private $mass;
 
     /** @var string|null */
+    private $smiles;
+
+    /** @var string|null */
     private $usmiles;
 
     /** @var int|null */
@@ -259,6 +262,20 @@ class SequenceTransformed extends AbstractTransformed implements JsonSerializabl
      */
     public function setSequenceOriginal(string $sequenceOriginal): void {
         $this->sequenceOriginal = $sequenceOriginal;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getSmiles(): ?string {
+        return $this->smiles;
+    }
+
+    /**
+     * @param string|null $smiles
+     */
+    public function setSmiles(?string $smiles): void {
+        $this->smiles = $smiles;
     }
 
     /**

@@ -89,6 +89,7 @@ class SequenceStructure extends AbstractStructure implements JsonSerializable {
         $trans->setSequence($this->sequence);
         $trans->setSequenceOriginal($this->sequenceOriginal);
         if (!empty($this->smiles)) {
+            $trans->setSmiles($this->smiles);
             $graph = null;
             try {
                 $graph = new Graph($this->smiles);

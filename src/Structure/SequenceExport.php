@@ -53,6 +53,9 @@ class SequenceExport implements JsonSerializable {
     /** @var BlockExport[] */
     public $blocks = [];
 
+    /** @var string|null */
+    public $uniqueSmiles;
+
     /**
      * @inheritDoc
      */
@@ -63,6 +66,7 @@ class SequenceExport implements JsonSerializable {
             'sequence' => $this->sequence,
             'sequenceOriginal' => $this->sequenceOriginal,
             'smiles' => $this->smiles,
+            'uniqueSmiles' =>$this->uniqueSmiles,
             'formula' => $this->formula,
             'mass' => $this->mass,
             'decays' => $this->decays,

@@ -30,6 +30,7 @@ class AppFixtures extends Fixture implements FixtureGroupInterface
         $userP->setNick("privrja");
         $userP->setMail("privrja@gmail.com");
         $userP->setRoles(["ROLE_USER"]);
+        $userP->setConditions(true);
         $userP->setPassword($this->passwordEncoder->encodePassword($userP, 'nic'));
         $manager->persist($userP);
 
@@ -37,6 +38,7 @@ class AppFixtures extends Fixture implements FixtureGroupInterface
         $user->setNick("admin");
         $user->setMail("admin");
         $user->setRoles(["ROLE_ADMIN"]);
+        $user->setConditions(true);
         $user->setPassword($this->passwordEncoder->encodePassword($user, 'kokos'));
         $manager->persist($user);
 
@@ -44,6 +46,7 @@ class AppFixtures extends Fixture implements FixtureGroupInterface
         $user->setNick("kokos");
         $user->setMail("kokos@palma.cz");
         $user->setRoles(["ROLE_USER"]);
+        $user->setConditions(true);
         $user->setPassword($this->passwordEncoder->encodePassword($user, 'the_new_password'));
         $user->setApiToken("12345");
         $manager->persist($user);

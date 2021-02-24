@@ -30,6 +30,7 @@ class ProdFixtures extends Fixture implements FixtureGroupInterface
         $userP->setNick("privrja");
         $userP->setMail("privrja@gmail.com");
         $userP->setRoles(["ROLE_USER"]);
+        $userP->setConditions(true);
         $userP->setPassword($this->passwordEncoder->encodePassword($userP, 'nic'));
         $manager->persist($userP);
 
@@ -37,6 +38,7 @@ class ProdFixtures extends Fixture implements FixtureGroupInterface
         $user->setNick("admin");
         $user->setMail("admin");
         $user->setRoles(["ROLE_ADMIN"]);
+        $user->setConditions(true);
         $user->setPassword($this->passwordEncoder->encodePassword($user, 'kokos'));
         $manager->persist($user);
 

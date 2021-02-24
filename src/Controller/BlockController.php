@@ -186,6 +186,80 @@ class BlockController extends AbstractController {
     }
 
     /**
+     * Block detail
+     * @Route("/rest/container/{containerId}/block/{blockId}", name="block_detail", methods={"GET"}, requirements={"blockId"="\d+"})
+     * @Entity("container", expr="repository.find(containerId)")
+     * @Entity("block", expr="repository.find(blockId)")
+     * @param Container $container
+     * @param Block $block
+     * @param Request $request
+     * @param BlockRepository $blockRepository
+     * @param EntityManagerInterface $entityManager
+     * @param Security $security
+     * @param LoggerInterface $logger
+     * @return JsonResponse
+     * @SWG\Delete(
+     *     tags={"Block"},
+     *     security={
+     *         {"ApiKeyAuth":{}}
+     *     },
+     *     @SWG\Response(response="204", description="Sucessfully deleted container."),
+     *     @SWG\Response(response="401", description="Return when user is not logged in."),
+     *     @SWG\Response(response="403", description="Return when permisions is insufient."),
+     *     @SWG\Response(response="404", description="Return when container is not found.")
+     * )
+     */
+    public function detailBlock(Container $container, Block $block, BlockRepository $blockRepository, EntityManagerInterface $entityManager, Security $security, LoggerInterface $logger) {
+        if ($container->getVisibility() === ContainerVisibilityEnum::PUBLIC) {
+            return new JsonResponse($block);
+        } else if ($this->isGranted("ROLE_USER")) {
+            $containerModel = new ContainerModel($entityManager, $this->getDoctrine(), $security->getUser(), $logger);
+            if ($containerModel->hasContainer($container->getId())) {
+                return new JsonResponse($block);
+            }
+            return ResponseHelper::jsonResponse(new Message(ErrorConstants::ERROR_CONTAINER_INSUFIENT_RIGHTS, Response::HTTP_FORBIDDEN));
+        }
+        return ResponseHelper::jsonResponse(new Message(ErrorConstants::ERROR_CONTAINER_NOT_EXISTS_FOR_USER, Response::HTTP_NOT_FOUND));
+    }
+
+    /**
+     * Block usage
+     * @Route("/rest/container/{containerId}/block/{blockId}/usage", name="block_usage", methods={"GET"})
+     * @Entity("container", expr="repository.find(containerId)")
+     * @Entity("block", expr="repository.find(blockId)")
+     * @param Container $container
+     * @param Block $block
+     * @param Request $request
+     * @param BlockRepository $blockRepository
+     * @param EntityManagerInterface $entityManager
+     * @param Security $security
+     * @param LoggerInterface $logger
+     * @return JsonResponse
+     * @SWG\Delete(
+     *     tags={"Block"},
+     *     security={
+     *         {"ApiKeyAuth":{}}
+     *     },
+     *     @SWG\Response(response="204", description="Sucessfully deleted container."),
+     *     @SWG\Response(response="401", description="Return when user is not logged in."),
+     *     @SWG\Response(response="403", description="Return when permisions is insufient."),
+     *     @SWG\Response(response="404", description="Return when container is not found.")
+     * )
+     */
+    public function usageBlock(Container $container, Block $block, Request $request, BlockRepository $blockRepository, EntityManagerInterface $entityManager, Security $security, LoggerInterface $logger) {
+        if ($container->getVisibility() === ContainerVisibilityEnum::PUBLIC) {
+            return new JsonResponse($blockRepository->blockUsage($container->getId(), $block->getId(), RequestHelper::getSorting($request)));
+        } else if ($this->isGranted("ROLE_USER")) {
+            $containerModel = new ContainerModel($entityManager, $this->getDoctrine(), $security->getUser(), $logger);
+            if ($containerModel->hasContainer($container->getId())) {
+                return new JsonResponse($blockRepository->blockUsage($container->getId(), $block->getId(), RequestHelper::getSorting($request)));
+            }
+            return ResponseHelper::jsonResponse(new Message(ErrorConstants::ERROR_CONTAINER_INSUFIENT_RIGHTS, Response::HTTP_FORBIDDEN));
+        }
+        return ResponseHelper::jsonResponse(new Message(ErrorConstants::ERROR_CONTAINER_NOT_EXISTS_FOR_USER, Response::HTTP_NOT_FOUND));
+    }
+
+    /**
      * Return containers for logged user
      * @Route("/rest/container/{containerId}/smiles", name="block_unique", methods={"POST"})
      * @Entity("container", expr="repository.find(containerId)")

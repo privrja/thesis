@@ -10,7 +10,7 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20210224090817 extends AbstractMigration
+final class Version20210224175421 extends AbstractMigration
 {
     public function getDescription() : string
     {
@@ -30,7 +30,7 @@ final class Version20210224090817 extends AbstractMigration
         $this->addSql('CREATE TABLE sequence (id INT AUTO_INCREMENT NOT NULL, n_modification_id INT DEFAULT NULL, c_modification_id INT DEFAULT NULL, b_modification_id INT DEFAULT NULL, container_id INT NOT NULL, sequence_type VARCHAR(255) DEFAULT \'other\' NOT NULL, sequence_name VARCHAR(255) NOT NULL, sequence VARCHAR(500) NOT NULL, sequence_original VARCHAR(500) NOT NULL, sequence_formula VARCHAR(255) NOT NULL, sequence_mass DOUBLE PRECISION DEFAULT NULL, sequence_smiles VARCHAR(4000) DEFAULT NULL, usmiles VARCHAR(4000) DEFAULT NULL, source SMALLINT DEFAULT NULL, identifier VARCHAR(255) DEFAULT NULL, decays VARCHAR(255) DEFAULT NULL, INDEX IDX_5286D72B202EA3BB (n_modification_id), INDEX IDX_5286D72B329000A9 (c_modification_id), INDEX IDX_5286D72BB536CBEA (b_modification_id), INDEX IDX_5286D72BBC21F742 (container_id), UNIQUE INDEX UX_SEQUENCE_NAME (sequence_name, container_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_0900_as_cs` ENGINE = InnoDB');
         $this->addSql('CREATE TABLE sequence_family (id INT AUTO_INCREMENT NOT NULL, container_id INT NOT NULL, sequence_family_name VARCHAR(255) NOT NULL, INDEX IDX_C1F60532BC21F742 (container_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_0900_as_cs` ENGINE = InnoDB');
         $this->addSql('CREATE TABLE u2c (id INT AUTO_INCREMENT NOT NULL, user_id INT NOT NULL, container_id INT NOT NULL, mode VARCHAR(10) NOT NULL, INDEX IDX_94B0173AA76ED395 (user_id), INDEX IDX_94B0173ABC21F742 (container_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_0900_as_cs` ENGINE = InnoDB');
-        $this->addSql('CREATE TABLE user (id INT AUTO_INCREMENT NOT NULL, nick VARCHAR(180) NOT NULL, roles JSON NOT NULL, password VARCHAR(255) NOT NULL, mail VARCHAR(255) DEFAULT NULL, api_token VARCHAR(255) DEFAULT NULL, UNIQUE INDEX UNIQ_8D93D6497BA2F5EB (api_token), UNIQUE INDEX UX_USER_NICK (nick), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_0900_as_cs` ENGINE = InnoDB');
+        $this->addSql('CREATE TABLE user (id INT AUTO_INCREMENT NOT NULL, nick VARCHAR(180) NOT NULL, roles JSON NOT NULL, password VARCHAR(255) NOT NULL, mail VARCHAR(255) DEFAULT NULL, api_token VARCHAR(255) DEFAULT NULL, conditions TINYINT(1) DEFAULT \'0\' NOT NULL, UNIQUE INDEX UNIQ_8D93D6497BA2F5EB (api_token), UNIQUE INDEX UX_USER_NICK (nick), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_0900_as_cs` ENGINE = InnoDB');
         $this->addSql('ALTER TABLE b2f ADD CONSTRAINT FK_FDB35640E9ED820C FOREIGN KEY (block_id) REFERENCES block (id)');
         $this->addSql('ALTER TABLE b2f ADD CONSTRAINT FK_FDB35640C35E566A FOREIGN KEY (family_id) REFERENCES block_family (id)');
         $this->addSql('ALTER TABLE b2s ADD CONSTRAINT FK_906EB2AB98FB19AE FOREIGN KEY (sequence_id) REFERENCES sequence (id)');

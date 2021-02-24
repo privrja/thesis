@@ -77,6 +77,7 @@ class SequenceController extends AbstractController {
      * @Route("/rest/container/{containerId}/sequence", name="sequence", methods={"GET"})
      * @Entity("container", expr="repository.find(containerId)")
      * @param Container $container
+     * @param Request $request
      * @param EntityManagerInterface $entityManager
      * @param Security $security
      * @param LoggerInterface $logger
@@ -90,14 +91,14 @@ class SequenceController extends AbstractController {
      *     @SWG\Response(response="404", description="Return when sequence not found."),
      * )
      */
-    public function index(Container $container, EntityManagerInterface $entityManager, Security $security, LoggerInterface $logger, SequenceRepository $sequenceRepository) {
+    public function index(Container $container, Request $request, EntityManagerInterface $entityManager, Security $security, LoggerInterface $logger, SequenceRepository $sequenceRepository) {
         if ($container->getVisibility() === ContainerVisibilityEnum::PUBLIC) {
-            return new JsonResponse($sequenceRepository->findSequences($container->getId()), Response::HTTP_OK);
+            return new JsonResponse($sequenceRepository->findSequences($container->getId(), RequestHelper::getSorting($request)), Response::HTTP_OK);
         } else {
             if ($security->getUser() !== null) {
                 $containerModel = new ContainerModel($entityManager, $this->getDoctrine(), $security->getUser(), $logger);
                 if ($containerModel->hasContainer($container->getId())) {
-                    return new JsonResponse($sequenceRepository->findSequences($container->getId()), Response::HTTP_OK);
+                    return new JsonResponse($sequenceRepository->findSequences($container->getId(), RequestHelper::getSorting($request)), Response::HTTP_OK);
                 } else {
                     return ResponseHelper::jsonResponse(new Message(ErrorConstants::ERROR_CONTAINER_INSUFIENT_RIGHTS, Response::HTTP_FORBIDDEN));
                 }
@@ -109,7 +110,7 @@ class SequenceController extends AbstractController {
 
     /**
      * Delete sequence
-     * @Route("/rest/container/{containerId}/sequence/{sequenceId}", name="sequence_delete", methods={"DELETE"})
+     * @Route("/rest/container/{containerId}/sequence/{sequenceId}", name="sequence_delete", methods={"DELETE"}, requirements={"sequenceId"="\d+"})
      * @Entity("container", expr="repository.find(containerId)")
      * @Entity("sequence", expr="repository.find(sequenceId)")
      * @IsGranted("ROLE_USER")
@@ -139,7 +140,7 @@ class SequenceController extends AbstractController {
 
     /**
      * Edit sequence
-     * @Route("/rest/container/{containerId}/sequence/{sequenceId}", name="sequence_edit", methods={"PUT"})
+     * @Route("/rest/container/{containerId}/sequence/{sequenceId}", name="sequence_edit", methods={"PUT"}, requirements={"sequenceId"="\d+"})
      * @IsGranted("ROLE_USER")
      * @Entity("container", expr="repository.find(containerId)")
      * @Entity("sequence", expr="repository.find(sequenceId)")

@@ -25,6 +25,7 @@ use App\Structure\ModificationTransformed;
 use App\Structure\NewContainerTransformed;
 use App\Structure\BlockTransformed;
 use App\Structure\SequenceTransformed;
+use App\Structure\Sort;
 use App\Structure\UpdateContainerTransformed;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
@@ -73,8 +74,8 @@ class ContainerModel {
         return Message::createOkMessage();
     }
 
-    public function concreteContainerCollaborators($containerId) {
-        return $this->containerRepository->getContainerCollaborators($containerId);
+    public function concreteContainerCollaborators($containerId, Sort $sort) {
+        return $this->containerRepository->getContainerCollaborators($containerId, $sort);
     }
 
     public function createNew(NewContainerTransformed $trans): Message {
@@ -143,8 +144,8 @@ class ContainerModel {
         return $this->userRepository->isContainerForLoggedUserByContainerIdRWM($this->usr->getId(), $containerId);
     }
 
-    public function getContainerModifications(int $containerId) {
-        return $this->containerRepository->getContainerModifications($containerId);
+    public function getContainerModifications(int $containerId, Sort $sort) {
+        return $this->containerRepository->getContainerModifications($containerId, $sort);
     }
 
     public function deleteBlock(Container $container, Block $block): Message {

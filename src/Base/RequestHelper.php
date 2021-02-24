@@ -5,6 +5,7 @@ namespace App\Base;
 use App\Constant\ErrorConstants;
 use App\Structure\AbstractStructure;
 use App\Structure\AbstractTransformed;
+use App\Structure\Sort;
 use InvalidArgumentException;
 use JsonMapper;
 use JsonMapper_Exception;
@@ -30,10 +31,22 @@ class RequestHelper {
             return ResponseHelper::emplaceJsonResponse(ErrorConstants::ERROR_JSON_FORMAT);
         }
         $message = $containerData->checkInput();
-        if(!$message->result) {
+        if (!$message->result) {
             return ResponseHelper::jsonResponse($message);
         }
         return $containerData->transform();
+    }
+
+    public static function getSorting(Request $request): Sort {
+        $sort = $request->get('sort');
+        if (!isset($sort)) {
+            $sort = 'id';
+        }
+        $order = $request->get('order');
+        if (!isset($order)) {
+            $order = 'asc';
+        }
+        return new Sort($sort, $order);
     }
 
 }

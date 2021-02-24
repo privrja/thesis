@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Block;
+use App\Structure\Sort;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\Persistence\ManagerRegistry;
@@ -19,7 +20,7 @@ class BlockRepository extends ServiceEntityRepository {
         parent::__construct($registry, Block::class);
     }
 
-    public function findBlocks($containerId) {
+    public function findBlocks(int $containerId, Sort $sort) {
         return $this->createQueryBuilder('blc')
             ->select('blc.id, blc.blockName, blc.acronym, blc.residue as formula, blc.blockMass as mass, blc.blockSmiles as smiles, blc.usmiles as uniqueSmiles, blc.losses, blc.source, blc.identifier, group_concat(fam.blockFamilyName) as family')
             ->leftJoin('blc.b2families', 'b2f')
@@ -27,6 +28,7 @@ class BlockRepository extends ServiceEntityRepository {
             ->where('blc.container = :containerId')
             ->setParameter('containerId', $containerId)
             ->groupBy('blc.id, blc.blockName, blc.acronym, blc.residue, blc.blockMass, blc.blockSmiles, blc.usmiles, blc.losses, blc.source, blc.identifier')
+            ->addOrderBy('blc.' . $sort->sort, $sort->order)
             ->getQuery()
             ->getArrayResult();
     }

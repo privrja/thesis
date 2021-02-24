@@ -60,6 +60,7 @@ class ContainerController extends AbstractController {
      * @Route("/rest/container", name="container", methods={"GET"})
      * @IsGranted("ROLE_USER")
      * @param UserRepository $userRepository
+     * @param Request $request
      * @param Security $security
      * @return JsonResponse
      *
@@ -74,28 +75,27 @@ class ContainerController extends AbstractController {
      *      @SWG\SecurityScheme(type="apiKey", securityDefinition="ApiKeyAuth", in="header", name="X-AUTH-TOKEN")
      *     )
      * )
-     *
      */
-    public function index(UserRepository $userRepository, Security $security) {
-        // TODO prepare sorting and filtering options to query, maybe paging
-        return new JsonResponse($userRepository->findContainersForLoggedUser($security->getUser()->getId()));
+    public function index(UserRepository $userRepository, Request $request, Security $security) {
+        // TODO prepare filtering options to query, maybe paging
+        return new JsonResponse($userRepository->findContainersForLoggedUser($security->getUser()->getId(), RequestHelper::getSorting($request)));
     }
 
     /**
      * Return containers which is free to read
      * @Route("/rest/free/container", name="container_free", methods={"GET"})
      * @param ContainerRepository $containerRepository
+     * @param Request $request
      * @return JsonResponse
      *
      * @SWG\Get(
      *     tags={"Container"},
      *     @SWG\Response(response="200", description="Return list of public containers."),
      * )
-     *
      */
-    public function freeContainers(ContainerRepository $containerRepository) {
-        // TODO prepare sorting and filtering options to query, maybe paging
-        return new JsonResponse($containerRepository->findBy([EntityColumnsEnum::CONTAINER_VISIBILITY => ContainerVisibilityEnum::PUBLIC]));
+    public function freeContainers(ContainerRepository $containerRepository, Request $request) {
+        // TODO prepare filtering options to query, maybe paging
+        return new JsonResponse($containerRepository->findBy([EntityColumnsEnum::CONTAINER_VISIBILITY => ContainerVisibilityEnum::PUBLIC], RequestHelper::getSorting($request)->asArray()));
     }
 
     /**
@@ -104,6 +104,7 @@ class ContainerController extends AbstractController {
      * @IsGranted("ROLE_USER")
      * @Entity("container", expr="repository.find(containerId)")
      * @param Container $container
+     * @param Request $request
      * @param EntityManagerInterface $entityManager
      * @param Security $security
      * @param LoggerInterface $logger
@@ -118,15 +119,14 @@ class ContainerController extends AbstractController {
      *     @SWG\Response(response="401", description="Return when user is not logged in."),
      *     @SWG\Response(response="404", description="Return when container is not found."),
      * )
-     *
      */
-    public function containerId(Container $container, EntityManagerInterface $entityManager, Security $security, LoggerInterface $logger) {
+    public function containerId(Container $container, Request $request, EntityManagerInterface $entityManager, Security $security, LoggerInterface $logger) {
         $model = new ContainerModel($entityManager, $this->getDoctrine(), $security->getUser(), $logger);
         $modelMessage = $model->concreteContainer($container);
         if (!$modelMessage->result) {
             return ResponseHelper::jsonResponse($modelMessage);
         }
-        $ccContainer = new ConcreateContainer($container->getId(), $container->getContainerName(), $container->getVisibility(), $model->concreteContainerCollaborators($container->getId()));
+        $ccContainer = new ConcreateContainer($container->getId(), $container->getContainerName(), $container->getVisibility(), $model->concreteContainerCollaborators($container->getId(), RequestHelper::getSorting($request)));
         return new JsonResponse($ccContainer, Response::HTTP_OK);
     }
 

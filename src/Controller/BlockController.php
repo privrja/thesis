@@ -35,6 +35,7 @@ class BlockController extends AbstractController {
      * @Route("/rest/container/{containerId}/block", name="block", methods={"GET"})
      * @Entity("container", expr="repository.find(containerId)")
      * @param Container $container
+     * @param Request $request
      * @param EntityManagerInterface $entityManager
      * @param Security $security
      * @param LoggerInterface $logger
@@ -48,14 +49,14 @@ class BlockController extends AbstractController {
      *     @SWG\Response(response="404", description="Return when container not found."),
      * )
      */
-    public function index(Container $container, EntityManagerInterface $entityManager, Security $security, LoggerInterface $logger, BlockRepository $blockRepository) {
+    public function index(Container $container, Request $request, EntityManagerInterface $entityManager, Security $security, LoggerInterface $logger, BlockRepository $blockRepository) {
         if ($container->getVisibility() === ContainerVisibilityEnum::PUBLIC) {
-            return new JsonResponse($blockRepository->findBlocks($container->getId()), Response::HTTP_OK);
+            return new JsonResponse($blockRepository->findBlocks($container->getId(), RequestHelper::getSorting($request)), Response::HTTP_OK);
         } else {
             if ($security->getUser() !== null) {
                 $containerModel = new ContainerModel($entityManager, $this->getDoctrine(), $security->getUser(), $logger);
                 if ($containerModel->hasContainer($container->getId())) {
-                    return new JsonResponse($blockRepository->findBlocks($container->getId()), Response::HTTP_OK);
+                    return new JsonResponse($blockRepository->findBlocks($container->getId(), RequestHelper::getSorting($request)), Response::HTTP_OK);
                 } else {
                     return ResponseHelper::jsonResponse(new Message(ErrorConstants::ERROR_CONTAINER_NOT_EXISTS_FOR_USER, Response::HTTP_NOT_FOUND));
                 }
@@ -67,7 +68,7 @@ class BlockController extends AbstractController {
 
     /**
      * Delete block
-     * @Route("/rest/container/{containerId}/block/{blockId}", name="block_delete", methods={"DELETE"})
+     * @Route("/rest/container/{containerId}/block/{blockId}", name="block_delete", methods={"DELETE"}, requirements={"blockId"="\d+"})
      * @Entity("container", expr="repository.find(containerId)")
      * @Entity("block", expr="repository.find(blockId)")
      * @IsGranted("ROLE_USER")
@@ -97,7 +98,7 @@ class BlockController extends AbstractController {
 
     /**
      * Update container values (name, visibility)
-     * @Route("/rest/container/{containerId}/block/{blockId}", name="block_update", methods={"PUT"})
+     * @Route("/rest/container/{containerId}/block/{blockId}", name="block_update", methods={"PUT"}, requirements={"blockId"="\d+"})
      * @Entity("container", expr="repository.find(containerId)")
      * @Entity("block", expr="repository.find(blockId)")
      * @IsGranted("ROLE_USER")

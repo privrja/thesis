@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\User;
+use App\Structure\Sort;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
@@ -38,16 +39,17 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
 
     /**
      * @param String $usrId user ID of logged user
+     * @param Sort $sort
      * @return array
      */
-    public function findContainersForLoggedUser(string $usrId) {
+    public function findContainersForLoggedUser(string $usrId, Sort $sort) {
         return $this->createQueryBuilder('usr')
             ->select('cnt.id', 'cnt.containerName', 'cnt.visibility', 'u2c.mode')
             ->innerJoin('usr.u2container', 'u2c')
             ->innerJoin('u2c.container', 'cnt')
             ->andWhere('usr.id = :val')
             ->setParameter('val', $usrId)
-            ->orderBy('cnt.containerName', 'asc')
+            ->orderBy(($sort->sort === 'mode' ? 'u2c.' : 'cnt.') . $sort->sort, $sort->order)
             ->getQuery()
             ->getArrayResult();
     }

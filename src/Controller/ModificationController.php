@@ -31,12 +31,13 @@ class ModificationController extends AbstractController {
      * @Route("/rest/container/{containerId}/modification", name="modification", methods={"GET"})
      * @Entity("container", expr="repository.find(containerId)")
      * @param Container $container
+     * @param Request $request
      * @param EntityManagerInterface $entityManager
      * @param Security $security
      * @param LoggerInterface $logger
      * @return JsonResponse
      */
-    public function getModifications(Container $container, EntityManagerInterface $entityManager, Security $security, LoggerInterface $logger) {
+    public function getModifications(Container $container, Request $request, EntityManagerInterface $entityManager, Security $security, LoggerInterface $logger) {
         if ($security->isGranted('ROLE_USER')) {
             $model = new ContainerModel($entityManager, $this->getDoctrine(), $security->getUser(), $logger);
             if ($container->getVisibility() === ContainerVisibilityEnum::PRIVATE) {
@@ -45,23 +46,23 @@ class ModificationController extends AbstractController {
                     return ResponseHelper::jsonResponse(new Message(ErrorConstants::ERROR_CONTAINER_NOT_EXISTS_FOR_USER, Response::HTTP_NOT_FOUND));
                 }
             }
-            return new JsonResponse($model->getContainerModifications($container->getId()));
+            return new JsonResponse($model->getContainerModifications($container->getId(), RequestHelper::getSorting($request)));
         } else {
-            return $this->getModificationsFree($container, $entityManager, $logger);
+            return $this->getModificationsFree($container, $request, $entityManager, $logger);
         }
     }
 
-    public function getModificationsFree(Container $container, EntityManagerInterface $entityManager, LoggerInterface $logger) {
+    public function getModificationsFree(Container $container, Request $request, EntityManagerInterface $entityManager, LoggerInterface $logger) {
         if ($container->getVisibility() === ContainerVisibilityEnum::PRIVATE) {
             return ResponseHelper::jsonResponse(new Message(ErrorConstants::ERROR_CONTAINER_NOT_EXISTS_FOR_USER, Response::HTTP_NOT_FOUND));
         }
         $model = new ContainerModel($entityManager, $this->getDoctrine(), null, $logger);
-        return new JsonResponse($model->getContainerModifications($container->getId()));
+        return new JsonResponse($model->getContainerModifications($container->getId(), RequestHelper::getSorting($request)));
     }
 
     /**
      * Delete modification
-     * @Route("/rest/container/{containerId}/modification/{modificationId}", name="modification_delete", methods={"DELETE"})
+     * @Route("/rest/container/{containerId}/modification/{modificationId}", name="modification_delete", methods={"DELETE"}, requirements={"modificationId"="\d+"})
      * @Entity("container", expr="repository.find(containerId)")
      * @Entity("modification", expr="repository.find(modificationId)")
      * @IsGranted("ROLE_USER")
@@ -91,7 +92,7 @@ class ModificationController extends AbstractController {
 
     /**
      * Update modification values
-     * @Route("/rest/container/{containerId}/modification/{modificationId}", name="modification_update", methods={"PUT"})
+     * @Route("/rest/container/{containerId}/modification/{modificationId}", name="modification_update", methods={"PUT"}, requirements={"modificatinoId"="\d+"})
      * @Entity("container", expr="repository.find(containerId)")
      * @Entity("modification", expr="repository.find(modificationId)")
      * @IsGranted("ROLE_USER")

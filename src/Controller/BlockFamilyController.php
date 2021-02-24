@@ -28,6 +28,7 @@ class BlockFamilyController extends AbstractController {
      * @Route("/rest/container/{containerId}/block/family", name="block_family", methods={"GET"})
      * @Entity("container", expr="repository.find(containerId)")
      * @param Container $container
+     * @param Request $request
      * @param EntityManagerInterface $entityManager
      * @param Security $security
      * @param LoggerInterface $logger
@@ -41,8 +42,8 @@ class BlockFamilyController extends AbstractController {
      *     @SWG\Response(response="404", description="Return when container not found."),
      * )
      */
-    public function index(Container $container, EntityManagerInterface $entityManager, Security $security, LoggerInterface $logger, BlockFamilyRepository $blockFamilyRepository) {
-        return StaticController::containerGetData($container, $blockFamilyRepository, $this->getDoctrine(), $entityManager, $security->getUser(), $logger, 'findFamily');
+    public function index(Container $container, Request $request, EntityManagerInterface $entityManager, Security $security, LoggerInterface $logger, BlockFamilyRepository $blockFamilyRepository) {
+        return StaticController::containerGetData($container, $request, $blockFamilyRepository, $this->getDoctrine(), $entityManager, $security->getUser(), $logger, 'findFamily');
     }
 
     /**

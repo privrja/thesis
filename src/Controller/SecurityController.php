@@ -105,7 +105,7 @@ class SecurityController extends AbstractController {
 
     /**
      * Change
-     * @Route("/rest/user", name="register", methods={"PUT"})
+     * @Route("/rest/user", name="change", methods={"PUT"})
      * @param Request $request
      * @param EntityManagerInterface $entityManager
      * @param Security $security

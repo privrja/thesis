@@ -21,6 +21,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use Swagger\Annotations as SWG;
+use Symfony\Component\Security\Core\Security;
 
 class SecurityController extends AbstractController {
 
@@ -82,6 +83,22 @@ class SecurityController extends AbstractController {
      */
     public function index(UserRepository $userRepository) {
         return new JsonResponse($userRepository->findAll());
+    }
+
+    /**
+     * Agree with conditions
+     * @Route("/rest/condition", name="user_condition", methods={"POST"})
+     * @IsGranted("ROLE_USER")
+     * @param Security $security
+     * @param EntityManagerInterface $entityManager
+     * @return Response
+     */
+    public function conditions(Security $security, EntityManagerInterface $entityManager) {
+        $user = $security->getUser();
+        $user->setConditions(true);
+        $entityManager->persist($user);
+        $entityManager->flush();
+        return new Response(null, Response::HTTP_NO_CONTENT);
     }
 
 }

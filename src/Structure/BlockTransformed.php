@@ -163,7 +163,11 @@ class BlockTransformed extends AbstractTransformed implements JsonSerializable {
      * @inheritDoc
      */
     public function jsonSerialize() {
-        return ['blockName' => $this->blockName, 'acronym' => $this->acronym, 'formula' => $this->formula, 'mass' => $this->mass, 'losses' => $this->losses === null ? '' : $this->losses, 'smiles' => $this->smiles, 'source' => $this->source, 'identifier' => $this->identifier];
+        $res = ['blockName' => $this->blockName, 'acronym' => $this->acronym, 'formula' => $this->formula, 'mass' => $this->mass, 'losses' => $this->losses === null ? '' : $this->losses, 'smiles' => $this->smiles, 'source' => $this->source, 'identifier' => $this->identifier];
+        if (!empty($this->error)) {
+            $res['error'] = $this->error;
+        }
+        return $res;
     }
 
 }

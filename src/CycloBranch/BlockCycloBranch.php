@@ -39,7 +39,8 @@ class BlockCycloBranch extends AbstractCycloBranch {
         foreach ($okStack as $item) {
             $res = $this->repository->findOneBy(['container' => $container->getId(), 'acronym' => $item->getAcronym()]);
             if ($res) {
-                array_push($errorStack, $item);
+                $item->error = 'ERROR: Same acronym';
+                array_push($errorStack,  $item);
                 continue;
             }
             $block = new Block();

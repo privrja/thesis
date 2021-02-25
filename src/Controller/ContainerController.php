@@ -479,7 +479,6 @@ class ContainerController extends AbstractController {
      * @IsGranted("ROLE_USER")
      * @param Container $container
      * @param Request $request
-     * @param ModificationRepository $repository
      * @param EntityManagerInterface $entityManager
      * @param Security $security
      * @param LoggerInterface $logger

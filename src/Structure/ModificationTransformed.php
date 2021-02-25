@@ -2,7 +2,9 @@
 
 namespace App\Structure;
 
-class ModificationTransformed extends AbstractTransformed {
+use JsonSerializable;
+
+class ModificationTransformed extends AbstractTransformed implements JsonSerializable {
 
     /** @var string */
     private $modificationName;
@@ -87,6 +89,17 @@ class ModificationTransformed extends AbstractTransformed {
      */
     public function setCTerminal(bool $cTerminal): void {
         $this->cTerminal = $cTerminal;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function jsonSerialize() {
+        $res = ['modificationName' => $this->modificationName, 'formula' => $this->formula, 'mass' => $this->mass, 'nTerminal' => $this->nTerminal, 'cTerminal' => $this->cTerminal];
+        if (!empty($this->error)) {
+            $res['error'] = $this->error;
+        }
+        return $res;
     }
 
 }

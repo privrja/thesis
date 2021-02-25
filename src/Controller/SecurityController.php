@@ -10,6 +10,8 @@ use App\Entity\User;
 use App\Repository\UserRepository;
 use App\Structure\NewRegistrationStructure;
 use App\Structure\NewRegistrationTransformed;
+use App\Structure\PassStructure;
+use App\Structure\PassTransformed;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 use Psr\Log\LoggerInterface;
@@ -100,5 +102,42 @@ class SecurityController extends AbstractController {
         $entityManager->flush();
         return new Response(null, Response::HTTP_NO_CONTENT);
     }
+
+    /**
+     * Change
+     * @Route("/rest/user", name="register", methods={"PUT"})
+     * @param Request $request
+     * @param EntityManagerInterface $entityManager
+     * @param Security $security
+     * @param UserPasswordEncoderInterface $passwordEncoder
+     * @param LoggerInterface $logger
+     * @return JsonResponse
+     *
+     * @SWG\Post(
+     *     tags={"Auth"},
+     *     @SWG\Response(response="201", description="Password changed"),
+     *     @SWG\Response(response="500", description="Internal server Error"),
+     *     @SWG\Response(response="400", description="Name is taken")
+     * )
+     */
+    public function change(Request $request, EntityManagerInterface $entityManager, Security $security, UserPasswordEncoderInterface $passwordEncoder, LoggerInterface $logger) {
+        /** @var PassTransformed $trans */
+        $trans = RequestHelper::evaluateRequest($request, new PassStructure(), $logger);
+        if ($trans instanceof JsonResponse) {
+            return $trans;
+        }
+        /** @var User $user */
+        $user = $security->getUser();
+        try {
+            $user->setPassword($passwordEncoder->encodePassword($user, $trans->getPassword()));
+            $trans->setPassword('');
+            $entityManager->persist($user);
+            $entityManager->flush();
+        } catch (Exception $exception) {
+            return ResponseHelper::jsonResponse(new Message(ErrorConstants::ERROR_SOMETHING_GO_WRONG, Response::HTTP_INTERNAL_SERVER_ERROR));
+        }
+        return ResponseHelper::jsonResponse(Message::createNoContent());
+    }
+
 
 }

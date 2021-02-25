@@ -22,5 +22,6 @@ class ErrorConstants {
     const ERROR_MODE_FORMAT = 'Mode has not supported format! Supported format is R/RW/RWM';
     const ERROR_SEQUENCE_FAMILY_NOT_FOUND = 'Sequence family not exists';
     const ERROR_MODIFICATION_NOT_FOUND = 'Modification not found';
+    const ERROR_CONDITIONS_NOT_MET = 'Conditions not met';
 
 }

@@ -2,9 +2,9 @@
 
 namespace App\Security;
 
+use App\Base\GeneratorHelper;
 use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
-use Exception;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -118,12 +118,7 @@ class TokenAuthenticator extends AbstractGuardAuthenticator {
     }
 
     public function generateToken() {
-        try {
-            return bin2hex(random_bytes(64));
-        } catch (Exception $e) {
-            $this->logger->warning($e);
-            return rand(1000000, 999999999999);
-        }
+        return GeneratorHelper::generate(64);
     }
 
 }

@@ -3,9 +3,12 @@
 namespace App\Model;
 
 use App\Base\FormulaHelper;
+use App\Base\GeneratorHelper;
 use App\Base\Message;
+use App\Base\ResponseHelper;
 use App\Base\SequenceHelper;
 use App\Constant\ErrorConstants;
+use App\Entity\B2s;
 use App\Entity\Block;
 use App\Entity\BlockFamily;
 use App\Entity\Container;
@@ -24,6 +27,7 @@ use App\Structure\FamilyTransformed;
 use App\Structure\ModificationTransformed;
 use App\Structure\NewContainerTransformed;
 use App\Structure\BlockTransformed;
+use App\Structure\SequenceCloneExport;
 use App\Structure\SequenceTransformed;
 use App\Structure\Sort;
 use App\Structure\UpdateContainerTransformed;
@@ -31,9 +35,12 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
 use InvalidArgumentException;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 
 class ContainerModel {
+
+    const CLONE_LENGTH = 2;
 
     private $usr;
     private $doctrine;
@@ -45,6 +52,7 @@ class ContainerModel {
     private $u2cRepository;
     private $sequenceFamilyRepository;
     private $modificationRepository;
+    private $sequenceRepository;
 
     /**
      * ContainerModel constructor.
@@ -64,6 +72,7 @@ class ContainerModel {
         $this->u2cRepository = $doctrine->getRepository(U2c::class);
         $this->sequenceFamilyRepository = $doctrine->getRepository(SequenceFamily::class);
         $this->modificationRepository = $doctrine->getRepository(Modification::class);
+        $this->sequenceRepository = $doctrine->getRepository(Sequence::class);
     }
 
     public function concreteContainer(Container $container) {
@@ -549,6 +558,51 @@ class ContainerModel {
            }
        }
        return $u2c;
+   }
+
+   public function cloneSequence(Container $container, Sequence $sequence): JsonResponse {
+        if (!$this->hasContainerRW($container->getId())) {
+            return ResponseHelper::jsonResponse(new Message(ErrorConstants::ERROR_CONTAINER_INSUFIENT_RIGHTS, Response::HTTP_FORBIDDEN));
+        }
+        $postFix = GeneratorHelper::generate(self::CLONE_LENGTH);
+        while($this->sequenceRepository->findOneBy(['container' => $container->getId(), 'sequenceName' => $sequence->getSequenceName() . '-' . $postFix])) {
+            $postFix = GeneratorHelper::generate(self::CLONE_LENGTH);
+        }
+        $clone = new Sequence();
+        $clone->setContainer($sequence->getContainer());
+        $clone->setSequenceName($sequence->getSequenceName() . '-' .  $postFix);
+        $clone->setSequenceType($sequence->getSequenceType());
+        $clone->setSequence($sequence->getSequence());
+        $clone->setSequenceOriginal($sequence->getSequenceOriginal());
+        $clone->setSequenceFormula($sequence->getSequenceFormula());
+        $clone->setSequenceMass($sequence->getSequenceMass());
+        $clone->setSource($sequence->getSource());
+        $clone->setIdentifier($sequence->getIdentifier());
+        $clone->setDecays($sequence->getDecays());
+        $clone->setSequenceSmiles($sequence->getSequenceSmiles());
+        $clone->setUsmiles($sequence->getUsmiles());
+        $clone->setNModification($sequence->getNModification());
+        $clone->setCModification($sequence->getCModification());
+        $clone->setBModification($sequence->getBModification());
+        foreach ($sequence->getS2families() as $family) {
+            $cloneFamily = new S2f();
+            $cloneFamily->setFamily($family->getFamily());
+            $clone->addS2family($cloneFamily);
+        }
+        foreach ($sequence->getB2s() as $block) {
+            $cloneBlock = new B2s();
+            $cloneBlock->setBlockOriginalId($block->getBlockOriginalId());
+            $cloneBlock->setBlock($block->getBlock());
+            $cloneBlock->setNextBlock($block->getNextBlock());
+            $cloneBlock->setBranchReference($block->getBranchReference());
+            $cloneBlock->setIsBranch($block->getIsBranch());
+            $clone->addB2($cloneBlock);
+        }
+        $this->entityManager->persist($clone);
+        $this->entityManager->flush();
+        $seq = new SequenceCloneExport();
+        $seq->id = $clone->getId();
+        return new JsonResponse($seq);
    }
 
 }

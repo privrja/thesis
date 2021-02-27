@@ -2,7 +2,9 @@
 
 namespace App\Constant;
 
+use App\Entity\B2f;
 use App\Entity\Block;
+use App\Entity\BlockFamily;
 use App\Entity\Container;
 use App\Enum\ServerEnum;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -11,13 +13,16 @@ use Doctrine\Common\Collections\Collection;
 class BaseAminoAcids {
 
     private $list;
+    private $listFamily;
 
     /**
      * BaseAminoAcids constructor - prepare base amino acids as blocks
      * @param Container $container
+     * @param BlockFamily $family
      */
-    public function __construct(Container $container) {
+    public function __construct(Container $container, BlockFamily $family) {
         $this->list = new ArrayCollection();
+        $this->listFamily = new ArrayCollection();
 
         $tryptophan = new Block();
         $tryptophan->setBlockName("Tryptophan");
@@ -31,6 +36,11 @@ class BaseAminoAcids {
         $tryptophan->setContainer($container);
         $this->list->add($tryptophan);
 
+        $b2f = new B2f();
+        $b2f->setFamily($family);
+        $b2f->setBlock($tryptophan);
+        $this->listFamily->add($b2f);
+
         $glycine = new Block();
         $glycine->setBlockName("Glycine");
         $glycine->setAcronym("Gly");
@@ -42,6 +52,11 @@ class BaseAminoAcids {
         $glycine->setIdentifier("750");
         $glycine->setContainer($container);
         $this->list->add($glycine);
+
+        $b2f = new B2f();
+        $b2f->setFamily($family);
+        $b2f->setBlock($glycine);
+        $this->listFamily->add($b2f);
 
         $alanine = new Block();
         $alanine->setBlockName("Alanine");
@@ -55,6 +70,11 @@ class BaseAminoAcids {
         $alanine->setContainer($container);
         $this->list->add($alanine);
 
+        $b2f = new B2f();
+        $b2f->setFamily($family);
+        $b2f->setBlock($alanine);
+        $this->listFamily->add($b2f);
+
         $serine = new Block();
         $serine->setBlockName("Serine");
         $serine->setAcronym("Ser");
@@ -66,6 +86,11 @@ class BaseAminoAcids {
         $serine->setIdentifier("5951");
         $serine->setContainer($container);
         $this->list->add($serine);
+
+        $b2f = new B2f();
+        $b2f->setFamily($family);
+        $b2f->setBlock($serine);
+        $this->listFamily->add($b2f);
 
         $cysteine = new Block();
         $cysteine->setBlockName("Cysteine");
@@ -79,6 +104,11 @@ class BaseAminoAcids {
         $cysteine->setContainer($container);
         $this->list->add($cysteine);
 
+        $b2f = new B2f();
+        $b2f->setFamily($family);
+        $b2f->setBlock($cysteine);
+        $this->listFamily->add($b2f);
+
         $asparatic = new Block();
         $asparatic->setBlockName("Aspartic acid");
         $asparatic->setAcronym("Asp");
@@ -90,6 +120,11 @@ class BaseAminoAcids {
         $asparatic->setIdentifier("5960");
         $asparatic->setContainer($container);
         $this->list->add($asparatic);
+
+        $b2f = new B2f();
+        $b2f->setFamily($family);
+        $b2f->setBlock($asparatic);
+        $this->listFamily->add($b2f);
 
         $asparagine = new Block();
         $asparagine->setBlockName("Asparagine");
@@ -103,6 +138,11 @@ class BaseAminoAcids {
         $asparagine->setContainer($container);
         $this->list->add($asparagine);
 
+        $b2f = new B2f();
+        $b2f->setFamily($family);
+        $b2f->setBlock($asparagine);
+        $this->listFamily->add($b2f);
+
         $threonine = new Block();
         $threonine->setBlockName("Threonine");
         $threonine->setAcronym("Thr");
@@ -114,6 +154,11 @@ class BaseAminoAcids {
         $threonine->setIdentifier("6288");
         $threonine->setContainer($container);
         $this->list->add($threonine);
+
+        $b2f = new B2f();
+        $b2f->setFamily($family);
+        $b2f->setBlock($threonine);
+        $this->listFamily->add($b2f);
 
         $proline = new Block();
         $proline->setBlockName("Proline");
@@ -127,6 +172,11 @@ class BaseAminoAcids {
         $proline->setContainer($container);
         $this->list->add($proline);
 
+        $b2f = new B2f();
+        $b2f->setFamily($family);
+        $b2f->setBlock($proline);
+        $this->listFamily->add($b2f);
+
         $glutamic = new Block();
         $glutamic->setBlockName("Glutamic acid");
         $glutamic->setAcronym("Glu");
@@ -138,6 +188,11 @@ class BaseAminoAcids {
         $glutamic->setIdentifier("33032");
         $glutamic->setContainer($container);
         $this->list->add($glutamic);
+
+        $b2f = new B2f();
+        $b2f->setFamily($family);
+        $b2f->setBlock($glutamic);
+        $this->listFamily->add($b2f);
 
         $glutamine = new Block();
         $glutamine->setBlockName("Glutamine");
@@ -151,6 +206,11 @@ class BaseAminoAcids {
         $glutamine->setContainer($container);
         $this->list->add($glutamine);
 
+        $b2f = new B2f();
+        $b2f->setFamily($family);
+        $b2f->setBlock($glutamine);
+        $this->listFamily->add($b2f);
+
         $valine = new Block();
         $valine->setBlockName("Valine");
         $valine->setAcronym("Val");
@@ -162,6 +222,11 @@ class BaseAminoAcids {
         $valine->setIdentifier("6287");
         $valine->setContainer($container);
         $this->list->add($valine);
+
+        $b2f = new B2f();
+        $b2f->setFamily($family);
+        $b2f->setBlock($valine);
+        $this->listFamily->add($b2f);
 
         $methionine = new Block();
         $methionine->setBlockName("Methionine");
@@ -175,6 +240,11 @@ class BaseAminoAcids {
         $methionine->setContainer($container);
         $this->list->add($methionine);
 
+        $b2f = new B2f();
+        $b2f->setFamily($family);
+        $b2f->setBlock($methionine);
+        $this->listFamily->add($b2f);
+
         $leucine = new Block();
         $leucine->setBlockName("Leucine");
         $leucine->setAcronym("Leu");
@@ -186,6 +256,11 @@ class BaseAminoAcids {
         $leucine->setIdentifier("6106");
         $leucine->setContainer($container);
         $this->list->add($leucine);
+
+        $b2f = new B2f();
+        $b2f->setFamily($family);
+        $b2f->setBlock($leucine);
+        $this->listFamily->add($b2f);
 
         $isoLeucine = new Block();
         $isoLeucine->setBlockName("Isoleucine");
@@ -199,6 +274,11 @@ class BaseAminoAcids {
         $isoLeucine->setContainer($container);
         $this->list->add($isoLeucine);
 
+        $b2f = new B2f();
+        $b2f->setFamily($family);
+        $b2f->setBlock($isoLeucine);
+        $this->listFamily->add($b2f);
+
         $lysine = new Block();
         $lysine->setBlockName("Lysine");
         $lysine->setAcronym("Lys");
@@ -210,6 +290,11 @@ class BaseAminoAcids {
         $lysine->setIdentifier("5962");
         $lysine->setContainer($container);
         $this->list->add($lysine);
+
+        $b2f = new B2f();
+        $b2f->setFamily($family);
+        $b2f->setBlock($lysine);
+        $this->listFamily->add($b2f);
 
         $arginine = new Block();
         $arginine->setBlockName("Arginine");
@@ -223,6 +308,11 @@ class BaseAminoAcids {
         $arginine->setContainer($container);
         $this->list->add($arginine);
 
+        $b2f = new B2f();
+        $b2f->setFamily($family);
+        $b2f->setBlock($arginine);
+        $this->listFamily->add($b2f);
+
         $histidine = new Block();
         $histidine->setBlockName("Histidine");
         $histidine->setAcronym("His");
@@ -234,6 +324,11 @@ class BaseAminoAcids {
         $histidine->setIdentifier("6274");
         $histidine->setContainer($container);
         $this->list->add($histidine);
+
+        $b2f = new B2f();
+        $b2f->setFamily($family);
+        $b2f->setBlock($histidine);
+        $this->listFamily->add($b2f);
 
         $phenylAlanine = new Block();
         $phenylAlanine->setBlockName("Phenylalanine");
@@ -247,6 +342,11 @@ class BaseAminoAcids {
         $phenylAlanine->setContainer($container);
         $this->list->add($phenylAlanine);
 
+        $b2f = new B2f();
+        $b2f->setFamily($family);
+        $b2f->setBlock($phenylAlanine);
+        $this->listFamily->add($b2f);
+
         $tyrosine = new Block();
         $tyrosine->setBlockName("Tyrosine");
         $tyrosine->setAcronym("Tyr");
@@ -259,6 +359,10 @@ class BaseAminoAcids {
         $tyrosine->setContainer($container);
         $this->list->add($tyrosine);
 
+        $b2f = new B2f();
+        $b2f->setFamily($family);
+        $b2f->setBlock($tyrosine);
+        $this->listFamily->add($b2f);
     }
 
     /***
@@ -267,6 +371,13 @@ class BaseAminoAcids {
      */
     public function getList(): Collection {
         return $this->list;
+    }
+
+    /**
+     * @return Collection|B2f[]
+     */
+    public function getFamilyList(): Collection {
+        return $this->listFamily;
     }
 
 }

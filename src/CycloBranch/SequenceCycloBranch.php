@@ -100,9 +100,16 @@ class SequenceCycloBranch extends AbstractCycloBranch {
                 array_push($errorStack, $item);
                 continue;
             }
+            $uniqueBlocks = [];
+            $cntUniqueBlocks = 0;
             foreach ($b2s as $connection) {
                 $sequence->addB2($connection);
+                if (!isset($uniqueBlocks[$connection->getBlock()->getId()])) {
+                    $uniqueBlocks[$connection->getBlock()->getId()] = 1;
+                    $cntUniqueBlocks++;
+                }
             }
+            $sequence->setUniqueBlockCount($cntUniqueBlocks);
             $entityManager->persist($sequence);
         }
         $entityManager->flush();

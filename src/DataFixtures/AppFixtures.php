@@ -3,8 +3,10 @@
 namespace App\DataFixtures;
 
 use App\Constant\BaseAminoAcids;
+use App\Entity\BlockFamily;
 use App\Entity\Container;
 use App\Entity\Modification;
+use App\Entity\SequenceFamily;
 use App\Entity\U2c;
 use App\Entity\User;
 use App\Enum\ContainerModeEnum;
@@ -69,12 +71,46 @@ class AppFixtures extends Fixture implements FixtureGroupInterface
         $u2c->setMode(ContainerModeEnum::RW);
         $manager->persist($u2c);
 
-        $acids = new BaseAminoAcids($container);
+        $family = new BlockFamily();
+        $family->setContainer($container);
+        $family->setBlockFamilyName('Proteinogenic Amino Acids');
+        $manager->persist($family);
+
+        $acids = new BaseAminoAcids($container, $family);
         $acidList = $acids->getList();
         foreach ($acidList as $block) {
             $manager->persist($block);
         }
+        $acidFamily = $acids->getFamilyList();
+        foreach ($acidFamily as $b2f) {
+            $manager->persist($b2f);
+        }
         $this->saveModifications($container, $manager);
+
+        $family = new BlockFamily();
+        $family->setContainer($container);
+        $family->setBlockFamilyName('Other');
+        $manager->persist($family);
+
+        $family = new SequenceFamily();
+        $family->setContainer($container);
+        $family->setSequenceFamilyName('beauverolide');
+        $manager->persist($family);
+
+        $family = new SequenceFamily();
+        $family->setContainer($container);
+        $family->setSequenceFamilyName('destruxin');
+        $manager->persist($family);
+
+        $family = new SequenceFamily();
+        $family->setContainer($container);
+        $family->setSequenceFamilyName('cyclosporin');
+        $manager->persist($family);
+
+        $family = new SequenceFamily();
+        $family->setContainer($container);
+        $family->setSequenceFamilyName('pseudacyclin');
+        $manager->persist($family);
 
         /* Add containers for user kokos and privrja */
         $container = new Container();

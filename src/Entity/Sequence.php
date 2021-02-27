@@ -76,6 +76,11 @@ class Sequence implements JsonSerializable {
     private $decays;
 
     /**
+     * @ORM\Column(type="integer")
+     */
+    private $uniqueBlockCount;
+
+    /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Modification", cascade={"persist"})
      */
     private $nModification;
@@ -338,6 +343,20 @@ class Sequence implements JsonSerializable {
      */
     public function setUsmiles($usmiles): void {
         $this->usmiles = $usmiles;
+    }
+
+    /**
+     * @return int
+     */
+    public function getUniqueBlockCount() {
+        return $this->uniqueBlockCount;
+    }
+
+    /**
+     * @param int $blockCount
+     */
+    public function setUniqueBlockCount(int $blockCount): void {
+        $this->uniqueBlockCount = $blockCount;
     }
 
     /**

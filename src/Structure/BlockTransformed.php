@@ -7,31 +7,31 @@ use JsonSerializable;
 class BlockTransformed extends AbstractTransformed implements JsonSerializable {
 
     /** @var string */
-    private $blockName;
+    public $blockName;
 
     /** @var string */
-    private $acronym;
+    public $acronym;
 
     /** @var string|null */
-    private $losses = null;
+    public $losses = null;
 
     /** @var string */
-    private $formula;
+    public $formula;
 
     /** @var float|null */
-    private $mass = null;
+    public $mass = null;
 
     /** @var string|null */
-    private $smiles = null;
+    public $smiles = null;
 
     /** @var string|null */
-    private $uSmiles = null;
+    public $uSmiles = null;
 
     /** @var int|null */
-    private $source = null;
+    public $source = null;
 
     /** @var string|null */
-    private $identifier = null;
+    public $identifier = null;
 
     /**
      * @return string

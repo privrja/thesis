@@ -153,6 +153,34 @@ class SequenceStructure extends AbstractStructure implements JsonSerializable {
         if ($this->blocks === null) {
             $trans->setBlocks([]);
         } else {
+            $blocksLength = sizeof($this->blocks);
+            for ($i = 0; $i < $blocksLength; $i++) {
+                if (!isset($this->blocks[$i]->databaseId)) {
+                    $blockStructure = new BlockStructure();
+                    $blockStructure->acronym = $this->blocks[$i]->acronym;
+                    $blockStructure->blockName = $this->blocks[$i]->blockName;
+                    if (!empty($this->blocks[$i]->formula)) {
+                        $blockStructure->formula = $this->blocks[$i]->formula;
+                    }
+                    if (isset($this->blocks[$i]->mass)) {
+                        $blockStructure->mass = $this->blocks[$i]->mass;
+                    }
+                    if (!empty($this->blocks[$i]->losses)) {
+                        $blockStructure->losses = $this->blocks[$i]->losses;
+                    }
+                    if (isset($this->blocks[$i]->source)) {
+                        $blockStructure->source = $this->blocks[$i]->source;
+                    }
+                    if (!empty($this->blocks[$i]->identifier)) {
+                        $blockStructure->identifier = $this->blocks[$i]->identifier;
+                    }
+                    if (!empty($this->blocks[$i]->smiles)) {
+                        $blockStructure->smiles = $this->blocks[$i]->smiles;
+                    }
+                    $blockTrans = $blockStructure->transform();
+                    $this->blocks[$i] = $blockTrans;
+                }
+            }
             $trans->setBlocks($this->blocks);
         }
         return $trans;

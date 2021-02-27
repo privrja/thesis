@@ -63,9 +63,8 @@ class BlockStructure extends AbstractStructure implements JsonSerializable {
         $trans->setSmiles($this->smiles);
         if (!empty($this->smiles)) {
             $graph = new Graph($this->smiles);
-            $eLosses = LossesEnum::toLosses($this->losses);
             if (empty($this->formula)) {
-                $trans->setFormula($graph->getFormula($eLosses));
+                $trans->setFormula($graph->getFormula(LossesEnum::H2O));
             } else {
                 $trans->setFormula($this->formula);
             }

@@ -263,6 +263,9 @@ class ContainerModel {
             return new Message(ErrorConstants::ERROR_CONTAINER_INSUFIENT_RIGHTS, Response::HTTP_FORBIDDEN);
         }
         $sequence->emptyB2s();
+        foreach ($sequence->getS2families() as $s2f) {
+            $this->entityManager->remove($s2f);
+        }
         $sequence->emptyS2Family();
         return $this->saveSequence($sequence, $container, $trans, Message::createNoContent());
     }

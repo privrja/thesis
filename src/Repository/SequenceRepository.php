@@ -36,4 +36,33 @@ class SequenceRepository extends ServiceEntityRepository {
             ->getArrayResult();
     }
 
+    public function similarity($containerId, $blockIds, $blockLength) {
+        $conn = $this->getEntityManager()->getConnection();
+        $sql = '
+        select fam.id as value, fam.sequence_family_name as label
+        from (
+        	select
+        		seq.id as sequence_id,
+        		row_number() over (order by count(distinct b2s.block_id) / (:blockLength + seq.unique_block_count - count(distinct b2s.block_id)) desc) as RN
+        	from sequence seq
+        		left join msb.b2s b2s on b2s.sequence_id = seq.id and b2s.block_id in ' . $blockIds . '
+        		join (
+        			select seq.id
+        			from msb.sequence seq
+        				join msb.s2f on s2f.sequence_id = seq.id and s2f.family_id is not null
+        			group by seq.id
+                ) fam on fam.id = seq.id
+            where seq.container_id = :containerId
+        	group by seq.sequence_name, seq.id, seq.unique_block_count
+            having count(distinct b2s.block_id) / (:blockLength + seq.unique_block_count - count(distinct b2s.block_id)) > 0.5
+        ) src
+        	join msb.s2f on s2f.sequence_id = src.sequence_id
+            join msb.sequence_family fam on fam.id = s2f.family_id and fam.container_id = :containerId
+        where src.RN = 1
+        ';
+        $stmt = $conn->prepare($sql);
+        $stmt->execute(['blockLength' => $blockLength, 'containerId' => $containerId]);
+        return $stmt->fetchAll();
+    }
+
 }

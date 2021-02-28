@@ -7,6 +7,7 @@ use App\Entity\BlockFamily;
 use App\Entity\Container;
 use App\Entity\Modification;
 use App\Entity\SequenceFamily;
+use App\Entity\Setup;
 use App\Entity\U2c;
 use App\Entity\User;
 use App\Enum\ContainerModeEnum;
@@ -26,6 +27,10 @@ class ProdFixtures extends Fixture implements FixtureGroupInterface
     }
 
     public function load(ObjectManager $manager) {
+        /* App setup */
+        $setup = new Setup();
+        $setup->setSimilarity('name');
+        $manager->persist($setup);
 
         /* Testing users */
         $userP = new User();

@@ -3,9 +3,16 @@
 namespace App\Controller;
 
 use App\Base\FormulaHelper;
+use App\Base\RequestHelper;
 use App\Exception\IllegalStateException;
+use App\Repository\SequenceFamilyRepository;
+use App\Repository\SequenceRepository;
+use App\Repository\SetupRepository;
 use App\Smiles\SmilesHelper;
 use App\Structure\FormulaMass;
+use App\Structure\SimilarityStructure;
+use App\Structure\SimilarityTransformed;
+use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -96,6 +103,41 @@ class SmilesController extends AbstractController {
         return new JsonResponse($res);
     }
 
-
+    /**
+     * @Route("/rest/smiles/similarity", name="similarity", methods={"POST"})
+     * @param Request $request
+     * @param LoggerInterface $logger
+     * @param SetupRepository $setupRepository
+     * @param SequenceFamilyRepository $sequenceFamilyRepository
+     *
+     * @SWG\Post(
+     *     tags={"SMILES"},
+     *     @SWG\Parameter(
+     *          name="body",
+     *          in="body",
+     *          type="string",
+     *          required=true,
+     *          description="Array of smiles objects: Shouldn't be empty. SMILES is special format of molecular structures like: CCC(C)C1C(=O)NC(C(=O)NCCCC(C(=O)NC(C(=O)N2CCCC2C(=O)N1)CC3=CC=CC=C3)NC(=O)C(C(C)CC)NC(=O)C)C(C)CC",
+     *          @SWG\Schema(type="string",
+     *              example="[{}]"),
+     *      ),
+     *     @SWG\Response(response="200", description="Return Unique SMILES."),
+     *     @SWG\Response(response="400", description="Return when input is wrong."),
+     *)
+     * @return JsonResponse
+     */
+    public function similarity(Request $request, LoggerInterface $logger, SetupRepository$setupRepository, SequenceFamilyRepository $sequenceFamilyRepository, SequenceRepository $sequenceRepository) {
+        /** @var SimilarityTransformed $trans */
+        $trans = RequestHelper::evaluateRequest($request, new SimilarityStructure(), $logger);
+        if ($trans instanceof JsonResponse) {
+            return $trans;
+        }
+        $setup = $setupRepository->findOneBy(['id' => 1]);
+        if ($setup->getSimilarity() === 'name') {
+            return new JsonResponse($sequenceFamilyRepository->similarity(1, $trans->sequenceName));
+        } else {
+            return new JsonResponse($sequenceRepository->similarity(1, $trans->blocks, $trans->blockLength));
+        }
+    }
 
 }

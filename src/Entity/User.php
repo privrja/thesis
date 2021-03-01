@@ -57,6 +57,11 @@ class User implements UserInterface, JsonSerializable {
      */
     private $conditions;
 
+    /**
+     * @ORM\Column(type="string", nullable=true)
+     */
+    private $chemSpiderToken;
+
     public function __construct() {
         $this->u2container = new ArrayCollection();
     }
@@ -188,6 +193,20 @@ class User implements UserInterface, JsonSerializable {
      */
     public function setConditions($conditions): void {
         $this->conditions = $conditions;
+    }
+
+    /**
+     * @return string
+     */
+    public function getChemSpiderToken() {
+        return $this->chemSpiderToken;
+    }
+
+    /**
+     * @param string $chemSpiderToken
+     */
+    public function setChemSpiderToken(string $chemSpiderToken): void {
+        $this->chemSpiderToken = $chemSpiderToken;
     }
 
     /**

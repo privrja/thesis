@@ -8,6 +8,9 @@ use App\Base\ResponseHelper;
 use App\Constant\ErrorConstants;
 use App\Entity\User;
 use App\Repository\UserRepository;
+use App\Structure\ChemSpiderKeyExport;
+use App\Structure\ChemSpiderKeyStructure;
+use App\Structure\ChemSpiderKeyTransformed;
 use App\Structure\NewRegistrationStructure;
 use App\Structure\NewRegistrationTransformed;
 use App\Structure\PassStructure;
@@ -139,5 +142,43 @@ class SecurityController extends AbstractController {
         return ResponseHelper::jsonResponse(Message::createNoContent());
     }
 
+    /**
+     * Get ChemSpider key from database
+     * @Route("/rest/chemspider/key", name="chemspider_get_key", methods={"GET"})
+     * @IsGranted("ROLE_USER")
+     * @param Security $security
+     * @return JsonResponse
+     */
+    public function chemSpiderKey(Security $security) {
+        /** @var User $user */
+        $user = $security->getUser();
+        $export = new ChemSpiderKeyExport();
+        $export->apiKey = $user->getChemSpiderToken();
+        return new JsonResponse($export);
+    }
+
+    /**
+     * Set ChemSpider key from database
+     * @Route("/rest/chemspider/key", name="chemspider_create_key", methods={"POST"})
+     * @IsGranted("ROLE_USER")
+     * @param Request $request
+     * @param EntityManagerInterface $entityManager
+     * @param Security $security
+     * @param LoggerInterface $logger
+     * @return JsonResponse
+     */
+    public function createChemSpiderKey(Request $request, EntityManagerInterface $entityManager, Security $security, LoggerInterface $logger) {
+        /** @var ChemSpiderKeyTransformed $trans */
+        $trans = RequestHelper::evaluateRequest($request, new ChemSpiderKeyStructure(), $logger);
+        if ($trans instanceof JsonResponse) {
+            return $trans;
+        }
+        /** @var User $user */
+        $user = $security->getUser();
+        $user->setChemSpiderToken($trans->apiKey);
+        $entityManager->persist($user);
+        $entityManager->flush();
+        return ResponseHelper::jsonResponse(Message::createNoContent());
+    }
 
 }

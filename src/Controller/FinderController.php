@@ -6,7 +6,9 @@ use App\Base\Message;
 use App\Base\RequestHelper;
 use App\Base\ResponseHelper;
 use App\Constant\ErrorConstants;
+use App\Entity\Block;
 use App\Entity\Container;
+use App\Entity\Sequence;
 use App\Enum\ContainerVisibilityEnum;
 use App\Model\ContainerModel;
 use App\Repository\SequenceRepository;
@@ -26,6 +28,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Security;
 
 class FinderController extends AbstractController {
+    const METHOD_DEFAULT = 'default';
 
     /**
      * @Route("/rest/container/{containerId}/name", name="find_name", methods={"POST"})
@@ -38,8 +41,8 @@ class FinderController extends AbstractController {
      * @param LoggerInterface $logger
      * @return JsonResponse
      */
-    public function name(Request $request, Container $container, SequenceRepository $sequenceRepository, EntityManagerInterface $entityManager, Security $security, LoggerInterface $logger) {
-        return $this->find($container, $request, new SequenceNameStructure, 'sequenceName', $sequenceRepository, $entityManager, $security, $logger);
+    public function name(Request $request, Container $container, EntityManagerInterface $entityManager, Security $security, LoggerInterface $logger) {
+        return $this->find($container, $request, new SequenceNameStructure, 'sequenceName', 'likeName', $entityManager, $security, $logger);
     }
 
     /**
@@ -53,8 +56,8 @@ class FinderController extends AbstractController {
      * @param LoggerInterface $logger
      * @return JsonResponse
      */
-    public function formula(Request $request, Container $container, SequenceRepository $sequenceRepository, EntityManagerInterface $entityManager, Security $security, LoggerInterface $logger) {
-        return $this->find($container, $request, new SequenceFormulaStructure, 'sequenceFormula', $sequenceRepository, $entityManager, $security, $logger);
+    public function formula(Request $request, Container $container, EntityManagerInterface $entityManager, Security $security, LoggerInterface $logger) {
+        return $this->find($container, $request, new SequenceFormulaStructure, 'sequenceFormula', self::METHOD_DEFAULT, $entityManager, $security, $logger);
     }
 
     /**
@@ -68,8 +71,8 @@ class FinderController extends AbstractController {
      * @param LoggerInterface $logger
      * @return JsonResponse
      */
-    public function smiles(Request $request, Container $container, SequenceRepository $sequenceRepository, EntityManagerInterface $entityManager, Security $security, LoggerInterface $logger) {
-        return $this->find($container, $request, new SequenceSmilesStructure, 'usmiles', $sequenceRepository, $entityManager, $security, $logger);
+    public function smiles(Request $request, Container $container, EntityManagerInterface $entityManager, Security $security, LoggerInterface $logger) {
+        return $this->find($container, $request, new SequenceSmilesStructure, 'usmiles', 'similarity', $entityManager, $security, $logger);
     }
 
     /**
@@ -83,18 +86,23 @@ class FinderController extends AbstractController {
      * @param LoggerInterface $logger
      * @return JsonResponse
      */
-    public function identifier(Request $request, Container $container, SequenceRepository $sequenceRepository, EntityManagerInterface $entityManager, Security $security, LoggerInterface $logger) {
-        return $this->find($container, $request, new SequenceIdStructure, 'id', $sequenceRepository, $entityManager, $security, $logger);
+    public function identifier(Request $request, Container $container, EntityManagerInterface $entityManager, Security $security, LoggerInterface $logger) {
+        return $this->find($container, $request, new SequenceIdStructure, 'id', self::METHOD_DEFAULT, $entityManager, $security, $logger);
     }
 
-    private function find(Container $container, Request $request, $structure, string $param, SequenceRepository $sequenceRepository, EntityManagerInterface $entityManager, Security $security, LoggerInterface $logger) {
+    private function find(Container $container, Request $request, $structure, string $param, string $method, EntityManagerInterface $entityManager, Security $security, LoggerInterface $logger) {
         if ($container->getVisibility() === ContainerVisibilityEnum::PUBLIC) {
             /** @var IValue $trans */
             $trans = RequestHelper::evaluateRequest($request, $structure, $logger);
             if ($trans instanceof JsonResponse) {
                 return $trans;
             }
-            return new JsonResponse($sequenceRepository->findBy(['container' => $container, $param => $trans->getValue()]));
+            if ($method === self::METHOD_DEFAULT) {
+                $sequenceRepository = $entityManager->getRepository(Sequence::class);
+                return new JsonResponse($sequenceRepository->findBy(['container' => $container, $param => $trans->getValue()]));
+            } else {
+                return new JsonResponse($this->$method($container->getId(), $trans->getValue(), $entityManager));
+            }
         }
         if ($this->isGranted("USER_ROLE")) {
             $containerModel = new ContainerModel($entityManager, $this->getDoctrine(), $security->getUser(), $logger);
@@ -104,11 +112,33 @@ class FinderController extends AbstractController {
                 if ($trans instanceof JsonResponse) {
                     return $trans;
                 }
-                return new JsonResponse($sequenceRepository->findBy(['container' => $container, $param => $trans->getValue()]));
+                if ($method === self::METHOD_DEFAULT) {
+                    $sequenceRepository = $entityManager->getRepository(Sequence::class);
+                    return new JsonResponse($sequenceRepository->findBy(['container' => $container, $param => $trans->getValue()]));
+                } else {
+                    return new JsonResponse($this->$method($container->getId(), $trans->getValue(), $entityManager));
+                }
             }
             return ResponseHelper::jsonResponse(new Message(ErrorConstants::ERROR_CONTAINER_INSUFIENT_RIGHTS, Response::HTTP_FORBIDDEN));
         }
         return ResponseHelper::jsonResponse(new Message(ErrorConstants::ERROR_CONTAINER_NOT_FOUND, Response::HTTP_FORBIDDEN));
+    }
+
+    private function likeName(int $containerId, string $name, EntityManagerInterface $entityManager) {
+        $sequenceRepository = $entityManager->getRepository(Sequence::class);
+        return $sequenceRepository->name($containerId, $name);
+    }
+
+    private function similarity(int $containerId, array $smiles, EntityManagerInterface $entityManager) {
+        $blockRepository = $entityManager->getRepository(Block::class);
+        $ids = $blockRepository->findBlockIds($containerId, $smiles);
+        $blocIds = "('" . $ids[0]['id'];
+        for ($i = 1; $i < sizeof($ids); $i++) {
+            $blocIds .= "', '" . $ids[$i]['id'];
+        }
+        $blocIds .= "')";
+        $sequenceRepository = $entityManager->getRepository(Sequence::class);
+        return $sequenceRepository->similarityMore($containerId, $blocIds, $i);
     }
 
 }

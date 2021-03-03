@@ -56,9 +56,8 @@ class BlockRepository extends ServiceEntityRepository {
             from msb.block src
             where src.container_id = :containerId
             group by src.residue, src.block_mass';
-
         $stmt = $conn->prepare($sql);
-        $stmt->execute(array('containerId' => $containerId));
+        $stmt->execute(['containerId' => $containerId]);
         return $stmt->fetchAll();
     }
 
@@ -81,5 +80,15 @@ class BlockRepository extends ServiceEntityRepository {
             ->getArrayResult();
     }
 
+    public function findBlockIds(int $containerId, array $smiles) {
+        return $this->createQueryBuilder('blc')
+            ->select('blc.id')
+            ->where('blc.container = :containerId')
+            ->andWhere('blc.usmiles in (:usmiles)')
+            ->setParameters(['containerId' => $containerId, 'usmiles' => $smiles])
+            ->groupBy('blc.id')
+            ->getQuery()
+            ->getArrayResult();
+    }
 
 }

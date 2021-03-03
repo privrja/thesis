@@ -65,13 +65,46 @@ class SequenceRepository extends ServiceEntityRepository {
         return $stmt->fetchAll();
     }
 
-    public function formula(int $containerId, string $formula) {
+    public function similarityMore($containerId, $blockIds, $blockLength) {
         $conn = $this->getEntityManager()->getConnection();
         $sql = '
-        
+        select src.id, src.sequenceName, src.smiles, src.formula, src.mass
+        from (
+        	select
+        		seq.id,
+        	    seq.sequence_name as sequenceName,
+                seq.sequence_smiles as smiles,
+        	    seq.sequence_formula as formula,
+        	    seq.sequence_mass as mass,
+        		row_number() over (order by count(distinct b2s.block_id) / (:blockLength + seq.unique_block_count - count(distinct b2s.block_id)) desc) as RN
+        	from sequence seq
+        		left join msb.b2s b2s on b2s.sequence_id = seq.id and b2s.block_id in ' . $blockIds . '
+        		join (
+        			select seq.id
+        			from msb.sequence seq
+        				join msb.s2f on s2f.sequence_id = seq.id and s2f.family_id is not null
+        			group by seq.id
+                ) fam on fam.id = seq.id
+            where seq.container_id = :containerId
+        	group by seq.unique_block_count, seq.id, seq.sequence_name, seq.sequence_smiles, seq.sequence_formula, seq.sequence_mass
+            having count(distinct b2s.block_id) / (:blockLength + seq.unique_block_count - count(distinct b2s.block_id)) >= 0.5
+        ) src
+        where src.RN <= 100
         ';
         $stmt = $conn->prepare($sql);
-        $stmt->execute(['containerId' => $containerId, 'formula' => $formula]);
+        $stmt->execute(['blockLength' => $blockLength, 'containerId' => $containerId]);
+        return $stmt->fetchAll();
+    }
+
+    public function name(int $containerId, string $name) {
+        $conn = $this->getEntityManager()->getConnection();
+        $sql = '
+        select seq.sequence_name as sequenceName, seq.sequence_smiles as smiles, seq.sequence_formula as formula, seq.sequence_mass as mass, seq.id
+        from msb.sequence seq
+        where seq.sequence_name like concat(\'%\', :sequenceName, \'%\') and seq.container_id = :containerId
+        ';
+        $stmt = $conn->prepare($sql);
+        $stmt->execute(['containerId' => $containerId, 'sequenceName' => $name]);
         return $stmt->fetchAll();
     }
 

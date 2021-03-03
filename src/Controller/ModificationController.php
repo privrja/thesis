@@ -41,7 +41,7 @@ class ModificationController extends AbstractController {
     public function getModifications(Container $container, Request $request, EntityManagerInterface $entityManager, Security $security, LoggerInterface $logger, ModificationRepository $modificationRepository) {
         $possibleFilters = ['id', 'modificationName', 'modificationFormula', 'modificationMassFrom', 'modificationMassTo', 'nTerminal', 'cTerminal'];
         $filters = RequestHelper::getFiltering($request, $possibleFilters);
-        $filters = RequestHelper::transformFilters($filters, ['nTerminal', 'cTerminal'], ["Yes" => 1, "No" => 0]);
+        $filters = RequestHelper::transformFilters($filters, ['nTerminal', 'cTerminal'], ["yes" => 1, "no" => 0]);
         $sort = RequestHelper::getSorting($request);
         if ($security->isGranted('ROLE_USER')) {
             $model = new ContainerModel($entityManager, $this->getDoctrine(), $security->getUser(), $logger);

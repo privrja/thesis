@@ -28,7 +28,7 @@ class RequestHelper {
             $containerData = $mapper->map(json_decode($request->getContent()), $structure);
         } catch (JsonMapper_Exception | InvalidArgumentException  $e) {
             $logger->warning($e->getMessage(), $e->getTrace());
-            return ResponseHelper::emplaceJsonResponse(ErrorConstants::ERROR_JSON_FORMAT);
+            return ResponseHelper::emplaceJsonResponse(ErrorConstants::ERROR_JSON_FORMAT . $e->getMessage());
         }
         $message = $containerData->checkInput();
         if (!$message->result) {

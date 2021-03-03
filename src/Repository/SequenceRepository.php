@@ -65,4 +65,14 @@ class SequenceRepository extends ServiceEntityRepository {
         return $stmt->fetchAll();
     }
 
+    public function formula(int $containerId, string $formula) {
+        $conn = $this->getEntityManager()->getConnection();
+        $sql = '
+        
+        ';
+        $stmt = $conn->prepare($sql);
+        $stmt->execute(['containerId' => $containerId, 'formula' => $formula]);
+        return $stmt->fetchAll();
+    }
+
 }

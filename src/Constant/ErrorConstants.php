@@ -23,5 +23,6 @@ class ErrorConstants {
     const ERROR_SEQUENCE_FAMILY_NOT_FOUND = 'Sequence family not exists';
     const ERROR_MODIFICATION_NOT_FOUND = 'Modification not found';
     const ERROR_CONDITIONS_NOT_MET = 'Conditions not met';
+    const ERROR_CONTAINER_NOT_FOUND = 'Container not found';
 
 }

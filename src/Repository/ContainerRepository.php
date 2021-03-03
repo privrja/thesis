@@ -36,16 +36,17 @@ class ContainerRepository extends ServiceEntityRepository
             ->getArrayResult();
     }
 
-    public function getContainerModifications(int $containerId, Sort $sort) {
-        return $this->createQueryBuilder('cnt')
-            ->select('mdf.id', 'cnt.id as containerId', 'mdf.modificationName', 'mdf.modificationFormula', 'mdf.modificationMass', 'mdf.nTerminal', 'mdf.cTerminal')
-            ->innerJoin('cnt.modificationId', 'mdf')
-            ->where('cnt.id = :containerId')
-            ->setParameter('containerId', $containerId)
-            ->addOrderBy('mdf.' . $sort->sort, $sort->order)
-            ->getQuery()
-            ->getArrayResult();
-    }
+//    public function getContainerModifications(int $containerId, array $filters, Sort $sort) {
+//        $qb = $this->createQueryBuilder('cnt')
+//            ->select('mdf.id', 'cnt.id as containerId', 'mdf.modificationName', 'mdf.modificationFormula', 'mdf.modificationMass', 'mdf.nTerminal', 'mdf.cTerminal')
+//            ->innerJoin('cnt.modificationId', 'mdf')
+//            ->where('cnt.id = :containerId')
+//            ->setParameter('containerId', $containerId)
+//            ->addOrderBy('mdf.' . $sort->sort, $sort->order)
+//
+//            return $qb->getQuery()
+//            ->getArrayResult();
+//    }
 
 
 }

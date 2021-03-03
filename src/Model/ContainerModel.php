@@ -153,9 +153,10 @@ class ContainerModel {
         return $this->userRepository->isContainerForLoggedUserByContainerIdRWM($this->usr->getId(), $containerId);
     }
 
-    public function getContainerModifications(int $containerId, Sort $sort) {
-        return $this->containerRepository->getContainerModifications($containerId, $sort);
-    }
+//    public function getContainerModifications(array $filters, Sort $sort) {
+//        $this->modificationRepository->findBy($filters, )
+//        return $this->containerRepository->getContainerModifications($containerId, $filters, $sort);
+//    }
 
     public function deleteBlock(Container $container, Block $block): Message {
         $hasContainerRW = $this->hasContainerRW($container->getId());

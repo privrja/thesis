@@ -10,6 +10,7 @@ use App\Entity\Container;
 use App\Entity\Modification;
 use App\Enum\ContainerVisibilityEnum;
 use App\Model\ContainerModel;
+use App\Repository\ModificationRepository;
 use App\Structure\ModificationStructure;
 use App\Structure\ModificationTransformed;
 use Doctrine\ORM\EntityManagerInterface;
@@ -37,7 +38,11 @@ class ModificationController extends AbstractController {
      * @param LoggerInterface $logger
      * @return JsonResponse
      */
-    public function getModifications(Container $container, Request $request, EntityManagerInterface $entityManager, Security $security, LoggerInterface $logger) {
+    public function getModifications(Container $container, Request $request, EntityManagerInterface $entityManager, Security $security, LoggerInterface $logger, ModificationRepository $modificationRepository) {
+        $possibleFilters = ['id', 'modificationName', 'modificationFormula', 'modificationMassFrom', 'modificationMassTo', 'nTerminal', 'cTerminal'];
+        $filters = RequestHelper::getFiltering($request, $possibleFilters);
+        $filters = RequestHelper::transformFilters($filters, ['nTerminal', 'cTerminal'], ["Yes" => 1, "No" => 0]);
+        $sort = RequestHelper::getSorting($request);
         if ($security->isGranted('ROLE_USER')) {
             $model = new ContainerModel($entityManager, $this->getDoctrine(), $security->getUser(), $logger);
             if ($container->getVisibility() === ContainerVisibilityEnum::PRIVATE) {
@@ -46,18 +51,13 @@ class ModificationController extends AbstractController {
                     return ResponseHelper::jsonResponse(new Message(ErrorConstants::ERROR_CONTAINER_NOT_EXISTS_FOR_USER, Response::HTTP_NOT_FOUND));
                 }
             }
-            return new JsonResponse($model->getContainerModifications($container->getId(), RequestHelper::getSorting($request)));
+            return new JsonResponse($modificationRepository->filters($container, $filters, $sort));
         } else {
-            return $this->getModificationsFree($container, $request, $entityManager, $logger);
+            if ($container->getVisibility() === ContainerVisibilityEnum::PRIVATE) {
+                return ResponseHelper::jsonResponse(new Message(ErrorConstants::ERROR_CONTAINER_NOT_EXISTS_FOR_USER, Response::HTTP_NOT_FOUND));
+            }
+            return new JsonResponse($modificationRepository->filters($container, $filters, $sort));
         }
-    }
-
-    public function getModificationsFree(Container $container, Request $request, EntityManagerInterface $entityManager, LoggerInterface $logger) {
-        if ($container->getVisibility() === ContainerVisibilityEnum::PRIVATE) {
-            return ResponseHelper::jsonResponse(new Message(ErrorConstants::ERROR_CONTAINER_NOT_EXISTS_FOR_USER, Response::HTTP_NOT_FOUND));
-        }
-        $model = new ContainerModel($entityManager, $this->getDoctrine(), null, $logger);
-        return new JsonResponse($model->getContainerModifications($container->getId(), RequestHelper::getSorting($request)));
     }
 
     /**

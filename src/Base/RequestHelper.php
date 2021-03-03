@@ -49,4 +49,24 @@ class RequestHelper {
         return new Sort($sort, $order);
     }
 
+    public static function getFiltering(Request $request, array $possibleFilters) {
+        $res = [];
+        foreach ($possibleFilters as $filterParam) {
+            $filterValue = $request->get($filterParam);
+            if (isset($filterValue)) {
+                $res[$filterParam] = $filterValue;
+            }
+        }
+        return $res;
+    }
+
+    public static function transformFilters(array $filters, array $paramsToTransform, array $transformValues) {
+        foreach ($paramsToTransform as $param) {
+            if (isset($filters[$param]) && isset($transformValues[$filters[$param]])) {
+                $filters[$param] = $transformValues[$filters[$param]];
+            }
+        }
+        return $filters;
+    }
+
 }

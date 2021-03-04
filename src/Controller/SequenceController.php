@@ -92,13 +92,17 @@ class SequenceController extends AbstractController {
      * )
      */
     public function index(Container $container, Request $request, EntityManagerInterface $entityManager, Security $security, LoggerInterface $logger, SequenceRepository $sequenceRepository) {
+        $possibleFilters = ['id', 'sequenceName', 'sequence', 'sequenceType', 'sequenceFormula', 'sequenceMassFrom', 'sequenceMassTo', 'nModification', 'cModification', 'bModification','identifier', 'family'];
+        $filters = RequestHelper::getFiltering($request, $possibleFilters);
+        $filters = RequestHelper::transformIdentifier($filters);
+        $sort = RequestHelper::getSorting($request);
         if ($container->getVisibility() === ContainerVisibilityEnum::PUBLIC) {
-            return new JsonResponse($sequenceRepository->findSequences($container->getId(), RequestHelper::getSorting($request)), Response::HTTP_OK);
+            return new JsonResponse($sequenceRepository->findSequences($container->getId(), $filters, $sort), Response::HTTP_OK);
         } else {
             if ($security->getUser() !== null) {
                 $containerModel = new ContainerModel($entityManager, $this->getDoctrine(), $security->getUser(), $logger);
                 if ($containerModel->hasContainer($container->getId())) {
-                    return new JsonResponse($sequenceRepository->findSequences($container->getId(), RequestHelper::getSorting($request)), Response::HTTP_OK);
+                    return new JsonResponse($sequenceRepository->findSequences($container->getId(), $filters, $sort), Response::HTTP_OK);
                 } else {
                     return ResponseHelper::jsonResponse(new Message(ErrorConstants::ERROR_CONTAINER_INSUFIENT_RIGHTS, Response::HTTP_FORBIDDEN));
                 }

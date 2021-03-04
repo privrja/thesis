@@ -20,8 +20,8 @@ class SequenceRepository extends ServiceEntityRepository {
         parent::__construct($registry, Sequence::class);
     }
 
-    public function findSequences($containerId, Sort $sort) {
-        return $this->createQueryBuilder('seq')
+    public function findSequences($containerId, array $filters, Sort $sort) {
+        $qb = $this->createQueryBuilder('seq')
             ->select('seq.id, seq.sequenceType, seq.sequenceName, seq.sequence, seq.sequenceFormula as formula, seq.sequenceMass as mass, seq.sequenceSmiles as smiles, seq.source, seq.identifier, seq.decays, nmd.modificationName as nModification, cmd.modificationName as cModification, bmd.modificationName as bModification, group_concat(fam.sequenceFamilyName) as family')
             ->leftJoin('seq.s2families', 's2f')
             ->leftJoin('s2f.family', 'fam', Join::WITH, 'fam.container = seq.container')
@@ -29,9 +29,67 @@ class SequenceRepository extends ServiceEntityRepository {
             ->leftJoin('seq.cModification', 'cmd', Join::WITH, 'cmd.container = seq.container')
             ->leftJoin('seq.bModification', 'bmd', Join::WITH, 'bmd.container = seq.container')
             ->where('seq.container = :containerId')
-            ->setParameter('containerId', $containerId)
-            ->groupBy('seq.id, seq.sequenceType, seq.sequenceName, seq.sequence, seq.sequenceFormula, seq.sequenceMass, seq.sequenceSmiles, seq.source, seq.identifier, seq.decays, nmd.modificationName, cmd.modificationName, bmd.modificationName')
-            ->orderBy('seq.' . $sort->sort, $sort->order)
+            ->setParameter('containerId', $containerId);
+        if (isset($filters['id'])) {
+            $qb->andWhere('seq.id = :id')
+                ->setParameter('id', $filters['id']);
+        }
+        if (isset($filters['sequenceType'])) {
+            $qb->andWhere('seq.sequenceType like concat(\'%\', :sequenceType, \'%\')')
+                ->setParameter('sequenceType', $filters['sequenceType']);
+        }
+        if (isset($filters['sequenceName'])) {
+            $qb->andWhere('seq.sequenceName like concat(\'%\', :sequenceName, \'%\')')
+                ->setParameter('sequenceName', $filters['sequenceName']);
+        }
+        if (isset($filters['sequence'])) {
+            $qb->andWhere('seq.sequence like concat(\'%\', :sequence, \'%\')')
+                ->setParameter('sequence', $filters['sequence']);
+        }
+        if (isset($filters['sequenceFormula'])) {
+            $qb->andWhere('seq.sequenceFormula like concat(\'%\', :sequenceFormula, \'%\')')
+                ->setParameter('sequenceFormula', $filters['sequenceFormula']);
+        }
+        if (isset($filters['sequenceMassFrom']) && isset($filters['sequenceMassTo'])) {
+            $qb->andWhere('seq.sequenceMass between :sequenceMassFrom and :sequenceMassTo')
+                ->setParameter('sequenceMassFrom', $filters['sequenceMassFrom'])
+                ->setParameter('sequenceMassTo', $filters['sequenceMassTo']);
+        } else {
+            if (isset($filters['sequenceMassFrom'])) {
+                $qb->andWhere('seq.sequenceMass >= :sequenceMassFrom')
+                    ->setParameter('sequenceMassFrom', $filters['sequenceMassFrom']);
+            }
+            if (isset($filters['sequenceMassTo'])) {
+                $qb->andWhere('seq.sequenceMass <= :sequenceMassTo')
+                    ->setParameter('sequenceMassTo', $filters['sequenceMassTo']);
+            }
+        }
+        if (isset($filters['source'])) {
+            $qb->andWhere('seq.source = :source')
+                ->setParameter('source', $filters['source']);
+        }
+        if (isset($filters['identifier'])) {
+            $qb->setParameter('identifier', $filters['identifier'])
+                ->andWhere('seq.identifier = :identifier');
+        }
+        if (isset($filters['nModification'])) {
+            $qb->andWhere('nmd.modificationName like concat(\'%\', :nModification, \'%\')')
+                ->setParameter('nModification', $filters['nModification']);
+        }
+        if (isset($filters['cModification'])) {
+            $qb->andWhere('cmd.modificationName like concat(\'%\', :cModification, \'%\')')
+                ->setParameter('cModification', $filters['cModification']);
+        }
+        if (isset($filters['bModification'])) {
+            $qb->andWhere('bmd.modificationName like concat(\'%\', :bModification, \'%\')')
+                ->setParameter('bModification', $filters['bModification']);
+        }
+        $qb->groupBy('seq.id, seq.sequenceType, seq.sequenceName, seq.sequence, seq.sequenceFormula, seq.sequenceMass, seq.sequenceSmiles, seq.source, seq.identifier, seq.decays, nmd.modificationName, cmd.modificationName, bmd.modificationName');
+        if (isset($filters['family'])) {
+            $qb->having('group_concat(fam.sequenceFamilyName) like concat(\'%\', :family, \'%\')')
+                ->setParameter('family', $filters['family']);
+        }
+        return $qb->orderBy('seq.' . $sort->sort, $sort->order)
             ->getQuery()
             ->getArrayResult();
     }

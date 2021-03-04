@@ -50,13 +50,17 @@ class BlockController extends AbstractController {
      * )
      */
     public function index(Container $container, Request $request, EntityManagerInterface $entityManager, Security $security, LoggerInterface $logger, BlockRepository $blockRepository) {
+        $possibleFilters = ['id', 'blockName', 'acronym', 'residue', 'blockMassFrom', 'blockMassTo', 'blockSmiles', 'losses', 'identifier', 'family'];
+        $filters = RequestHelper::getFiltering($request, $possibleFilters);
+        $filters = RequestHelper::transformIdentifier($filters);
+        $sort = RequestHelper::getSorting($request);
         if ($container->getVisibility() === ContainerVisibilityEnum::PUBLIC) {
-            return new JsonResponse($blockRepository->findBlocks($container->getId(), RequestHelper::getSorting($request)), Response::HTTP_OK);
+            return new JsonResponse($blockRepository->findBlocks($container->getId(), $filters, $sort), Response::HTTP_OK);
         } else {
             if ($security->getUser() !== null) {
                 $containerModel = new ContainerModel($entityManager, $this->getDoctrine(), $security->getUser(), $logger);
                 if ($containerModel->hasContainer($container->getId())) {
-                    return new JsonResponse($blockRepository->findBlocks($container->getId(), RequestHelper::getSorting($request)), Response::HTTP_OK);
+                    return new JsonResponse($blockRepository->findBlocks($container->getId(), $filters, $sort), Response::HTTP_OK);
                 } else {
                     return ResponseHelper::jsonResponse(new Message(ErrorConstants::ERROR_CONTAINER_NOT_EXISTS_FOR_USER, Response::HTTP_NOT_FOUND));
                 }
@@ -209,7 +213,7 @@ class BlockController extends AbstractController {
      *     @SWG\Response(response="404", description="Return when container is not found.")
      * )
      */
-    public function detailBlock(Container $container, Block $block, BlockRepository $blockRepository, EntityManagerInterface $entityManager, Security $security, LoggerInterface $logger) {
+    public function detailBlock(Container $container, Block $block, EntityManagerInterface $entityManager, Security $security, LoggerInterface $logger) {
         if ($container->getVisibility() === ContainerVisibilityEnum::PUBLIC) {
             return new JsonResponse($block);
         } else if ($this->isGranted("ROLE_USER")) {

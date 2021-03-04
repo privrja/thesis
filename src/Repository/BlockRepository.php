@@ -20,15 +20,67 @@ class BlockRepository extends ServiceEntityRepository {
         parent::__construct($registry, Block::class);
     }
 
-    public function findBlocks(int $containerId, Sort $sort) {
-        return $this->createQueryBuilder('blc')
+    public function findBlocks(int $containerId, array $filters, Sort $sort) {
+        $qb = $this->createQueryBuilder('blc')
             ->select('blc.id, blc.blockName, blc.acronym, blc.residue as formula, blc.blockMass as mass, blc.blockSmiles as smiles, blc.usmiles as uniqueSmiles, blc.losses, blc.source, blc.identifier, group_concat(fam.blockFamilyName) as family')
             ->leftJoin('blc.b2families', 'b2f')
             ->leftJoin('b2f.family', 'fam', Join::WITH, 'fam.container = blc.container')
             ->where('blc.container = :containerId')
-            ->setParameter('containerId', $containerId)
-            ->groupBy('blc.id, blc.blockName, blc.acronym, blc.residue, blc.blockMass, blc.blockSmiles, blc.usmiles, blc.losses, blc.source, blc.identifier')
-            ->addOrderBy('blc.' . $sort->sort, $sort->order)
+            ->setParameter('containerId', $containerId);
+        if (isset($filters['id'])) {
+            $qb->andWhere('blc.id = :id')
+                ->setParameter('id', $filters['id']);
+        }
+        if (isset($filters['blockName'])) {
+            $qb->andWhere('blc.blockName like concat(\'%\', :blockName, \'%\')')
+                ->setParameter('blockName', $filters['blockName']);
+        }
+        if (isset($filters['acronym'])) {
+            $qb->andWhere('blc.acronym like concat(\'%\', :acronym, \'%\')')
+                ->setParameter('acronym', $filters['acronym']);
+        }
+        if (isset($filters['residue'])) {
+            $qb->andWhere('blc.residue like concat(\'%\', :residue, \'%\')')
+                ->setParameter('residue', $filters['residue']);
+        }
+        if (isset($filters['blockMassFrom']) && isset($filters['blockMassTo'])) {
+            $qb->andWhere('blc.blockMass between :blockMassFrom and :blockMassTo')
+                ->setParameter('blockMassFrom', $filters['blockMassFrom'])
+                ->setParameter('blockMassTo', $filters['blockMassTo']);
+        } else {
+            if (isset($filters['blockMassFrom'])) {
+                $qb->andWhere('blc.blockMass >= :blockMassFrom')
+                    ->setParameter('blockMassFrom', $filters['blockMassFrom']);
+            }
+            if (isset($filters['blockMassTo'])) {
+                $qb->andWhere('blc.blockMass <= :blockMassTo')
+                    ->setParameter('blockMassTo', $filters['blockMassTo']);
+            }
+        }
+        if (isset($filters['blockSmiles'])) {
+            $qb->andWhere('blc.blockSmiles like concat(\'%\', :blockSmiles, \'%\')')
+                ->setParameter('blockSmiles', $filters['blockSmiles']);
+        }
+        if (isset($filters['losses'])) {
+            $qb->andWhere('blc.losses like concat(\'%\', :losses, \'%\')')
+                ->setParameter('losses', $filters['losses']);
+        }
+        if (isset($filters['source'])) {
+            $qb->andWhere('blc.source = :source')
+                ->setParameter('source', $filters['source']);
+        }
+        if (isset($filters['identifier'])) {
+            $qb->setParameter('identifier', $filters['identifier'])
+                ->andWhere('blc.identifier = :identifier');
+        }
+        $qb->groupBy('blc.id, blc.blockName, blc.acronym, blc.residue, blc.blockMass, blc.blockSmiles, blc.usmiles, blc.losses, blc.source, blc.identifier');
+
+        if (isset($filters['family'])) {
+            $qb->having('group_concat(fam.blockFamilyName) like concat(\'%\', :family, \'%\')')
+                ->setParameter('family', $filters['family']);
+        }
+
+        return $qb->addOrderBy('blc.' . $sort->sort, $sort->order)
             ->getQuery()
             ->getArrayResult();
     }

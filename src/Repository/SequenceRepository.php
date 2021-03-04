@@ -89,8 +89,23 @@ class SequenceRepository extends ServiceEntityRepository {
             $qb->having('group_concat(fam.sequenceFamilyName) like concat(\'%\', :family, \'%\')')
                 ->setParameter('family', $filters['family']);
         }
-        return $qb->orderBy('seq.' . $sort->sort, $sort->order)
-            ->getQuery()
+        if ($sort->sort === 'family') {
+            $qb->addOrderBy('case when fam.sequenceFamilyName is null then 1 else 0 end', $sort->order)
+                ->addOrderBy('fam.sequenceFamilyName', $sort->order);
+        } else if ($sort->sort === 'nModification') {
+            $qb->addOrderBy('case when nmd.modificationName is null then 1 else 0 end', $sort->order)
+                ->addOrderBy('nmd.modificationName', $sort->order);
+        } else if ($sort->sort === 'cModification') {
+            $qb->addOrderBy('case when cmd.modificationName is null then 1 else 0 end', $sort->order)
+                ->addOrderBy('cmd.modificationName', $sort->order);
+        } else if ($sort->sort === 'bModification') {
+            $qb->addOrderBy('case when bmd.modificationName is null then 1 else 0 end', $sort->order)
+                ->addOrderBy('bmd.modificationName', $sort->order);
+        } else {
+            $qb->addOrderBy('case when seq.' . $sort->sort . ' is null then 1 else 0 end', $sort->order)
+                ->addOrderBy('seq.' . $sort->sort, $sort->order);
+        }
+        return $qb->getQuery()
             ->getArrayResult();
     }
 

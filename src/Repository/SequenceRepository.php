@@ -101,6 +101,9 @@ class SequenceRepository extends ServiceEntityRepository {
         } else if ($sort->sort === 'bModification') {
             $qb->addOrderBy('case when bmd.modificationName is null then 1 else 0 end', $sort->order)
                 ->addOrderBy('bmd.modificationName', $sort->order);
+        } else if ($sort->sort === 'identifier') {
+            $qb->addOrderBy('seq.source', $sort->order)
+                ->addOrderBy('seq.identifier', $sort->order);
         } else {
             $qb->addOrderBy('case when seq.' . $sort->sort . ' is null then 1 else 0 end', $sort->order)
                 ->addOrderBy('seq.' . $sort->sort, $sort->order);

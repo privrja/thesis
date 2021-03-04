@@ -83,6 +83,9 @@ class BlockRepository extends ServiceEntityRepository {
         if ($sort->sort === 'family') {
             $qb->addOrderBy('case when fam.blockFamilyName is null then 1 else 0 end', $sort->order)
                 ->addOrderBy('fam.blockFamilyName', $sort->order);
+        } else if ($sort->sort === 'identifier') {
+            $qb->addOrderBy('blc.source', $sort->order)
+                ->addOrderBy('blc.identifier', $sort->order);
         } else {
             $qb->addOrderBy('case when blc.' . $sort->sort . ' is null then 1 else 0 end', $sort->order)
                 ->addOrderBy('blc.' . $sort->sort, $sort->order);

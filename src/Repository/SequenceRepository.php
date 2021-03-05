@@ -35,7 +35,7 @@ class SequenceRepository extends ServiceEntityRepository {
                 ->setParameter('id', $filters['id']);
         }
         if (isset($filters['sequenceType'])) {
-            $qb->andWhere('seq.sequenceType like concat(\'%\', :sequenceType, \'%\')')
+            $qb->andWhere('seq.sequenceType = :sequenceType')
                 ->setParameter('sequenceType', $filters['sequenceType']);
         }
         if (isset($filters['sequenceName'])) {

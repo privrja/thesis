@@ -264,7 +264,7 @@ class BlockController extends AbstractController {
     }
 
     /**
-     * Return containers for logged user
+     * Return unique smiles and info for logged user
      * @Route("/rest/container/{containerId}/smiles", name="block_unique", methods={"POST"})
      * @Entity("container", expr="repository.find(containerId)")
      * @param Container $container

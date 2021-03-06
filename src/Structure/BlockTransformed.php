@@ -33,6 +33,9 @@ class BlockTransformed extends AbstractTransformed implements JsonSerializable {
     /** @var string|null */
     public $identifier = null;
 
+    /** @var bool */
+    public $isPolyketide = false;
+
     /**
      * @return string
      */

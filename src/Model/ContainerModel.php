@@ -200,6 +200,7 @@ class ContainerModel {
         $block->setUsmiles($trans->getUSmiles());
         $block->setSource($trans->getSource());
         $block->setIdentifier($trans->getIdentifier());
+        $block->setIsPolyketide($trans->isPolyketide);
         $this->entityManager->persist($block);
         $this->entityManager->flush();
         return $message;
@@ -391,6 +392,7 @@ class ContainerModel {
             $sBlock->setBlockName($block->blockName);
             $sBlock->setAcronym($block->acronym);
             $sBlock->setContainer($container);
+            $sBlock->setIsPolyketide($block->isPolyketide);
             if (!empty($block->losses)) {
                 $sBlock->setLosses($block->losses);
             }

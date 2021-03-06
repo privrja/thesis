@@ -17,7 +17,7 @@ class SimilarityStructure extends AbstractStructure {
     public $blockLength;
 
     public function checkInput(): Message {
-        if (!empty($this->sequenceName) && (!isset($this->blocks) || empty($this->blocks))) {
+        if (empty($this->sequenceName) && empty($this->blocks)) {
             return new Message(ErrorConstants::ERROR_EMPTY_PARAMS);
         }
         return Message::createOkMessage();

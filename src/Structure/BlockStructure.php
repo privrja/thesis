@@ -56,6 +56,9 @@ class BlockStructure extends AbstractStructure implements JsonSerializable {
     public function transform(): AbstractTransformed {
         $trans = new BlockTransformed();
         $trans->setblockName($this->blockName);
+        if (str_contains('(-2H)', $this->blockName)) {
+            $trans->isPolyketide = true;
+        }
         $trans->setAcronym($this->acronym);
         $trans->setSource($this->source);
         $trans->setIdentifier($this->identifier);

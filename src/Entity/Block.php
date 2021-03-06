@@ -67,6 +67,11 @@ class Block implements JsonSerializable {
     private $identifier;
 
     /**
+     * @ORM\Column(type="boolean", nullable=false, options={"default": 0})
+     */
+    private $isPolyketide;
+
+    /**
      * @ORM\OneToMany(targetEntity="App\Entity\B2s", mappedBy="block")
      */
     private $b2s;
@@ -243,8 +248,21 @@ class Block implements JsonSerializable {
 
     public function setUsmiles(?string $usmiles): self {
         $this->usmiles = $usmiles;
-
         return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getIsPolyketide() {
+        return $this->isPolyketide;
+    }
+
+    /**
+     * @param mixed $isPolyketide
+     */
+    public function setIsPolyketide($isPolyketide): void {
+        $this->isPolyketide = $isPolyketide;
     }
 
     /**
@@ -263,4 +281,5 @@ class Block implements JsonSerializable {
             EntityColumnsEnum::IDENTIFIER => $this->identifier
         ];
     }
+
 }

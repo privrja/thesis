@@ -22,7 +22,7 @@ class BlockRepository extends ServiceEntityRepository {
 
     public function findBlocks(int $containerId, array $filters, Sort $sort) {
         $qb = $this->createQueryBuilder('blc')
-            ->select('blc.id, blc.blockName, blc.acronym, blc.residue as formula, blc.blockMass as mass, blc.blockSmiles as smiles, blc.usmiles as uniqueSmiles, blc.losses, blc.source, blc.identifier, group_concat(fam.blockFamilyName) as family')
+            ->select('blc.id, blc.blockName, blc.acronym, blc.residue as formula, blc.blockMass as mass, blc.blockSmiles as smiles, blc.usmiles as uniqueSmiles, blc.losses, blc.source, blc.identifier, group_concat(fam.blockFamilyName order by fam.blockFamilyName asc) as family')
             ->leftJoin('blc.b2families', 'b2f')
             ->leftJoin('b2f.family', 'fam', Join::WITH, 'fam.container = blc.container')
             ->where('blc.container = :containerId')
@@ -124,7 +124,7 @@ class BlockRepository extends ServiceEntityRepository {
 
     public function blockUsage(int $containerId, int $blockId, Sort $sort) {
         return $this->createQueryBuilder('blc')
-            ->select('seq.id, seq.sequenceType, seq.sequenceName, seq.sequence, seq.sequenceFormula as formula, seq.sequenceMass as mass, seq.sequenceSmiles as smiles, seq.source, seq.identifier, seq.decays, nmd.modificationName as nModification, cmd.modificationName as cModification, bmd.modificationName as bModification, group_concat(fam.sequenceFamilyName) as family, count(1) as blockUsages')
+            ->select('seq.id, seq.sequenceType, seq.sequenceName, seq.sequence, seq.sequenceFormula as formula, seq.sequenceMass as mass, seq.sequenceSmiles as smiles, seq.source, seq.identifier, seq.decays, nmd.modificationName as nModification, cmd.modificationName as cModification, bmd.modificationName as bModification, group_concat(fam.sequenceFamilyName order by fam.sequenceFamilyName asc) as family, count(1) as blockUsages')
             ->innerJoin('blc.b2s', 'b2s')
             ->innerJoin('b2s.sequence', 'seq')
             ->leftJoin('seq.s2families', 's2f')

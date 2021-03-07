@@ -20,6 +20,9 @@ class NewRegistrationStructure extends AbstractStructure {
         if (empty($this->name) || empty($this->password)) {
             return new Message(ErrorConstants::ERROR_EMPTY_PARAMS);
         }
+        if (strlen($this->password) < 8) {
+            return new Message(ErrorConstants::ERROR_CONDITIONS_NOT_MET);
+        }
         // TODO if mail is setup then check it
         return Message::createOkMessage();
     }

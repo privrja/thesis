@@ -63,7 +63,7 @@ class SmilesHelper {
             $graph = new Graph(SmilesHelper::canonicalSmiles($smilesFirst->smiles));
             $smilesFirst->unique = $graph->getUniqueSmiles();
         } catch (Exception $e) {
-            $smilesFirst->unique = null;
+            $smilesFirst->unique = $smilesFirst->smiles;
         }
 
         $res = [$smilesFirst];
@@ -76,7 +76,7 @@ class SmilesHelper {
                 $graph = new Graph(SmilesHelper::canonicalSmiles($smiles->smiles));
                 $smiles->unique = $graph->getUniqueSmiles();
             } catch (Exception $e) {
-                $smiles->unique = null;
+                $smiles->unique = $smiles->smiles;
             }
             for ($j = 0; $j < $i; $j++) {
                 if ($smiles->unique == $res[$j]->unique) {

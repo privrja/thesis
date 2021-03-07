@@ -133,7 +133,7 @@ class SequenceRepository extends ServiceEntityRepository {
             having count(distinct b2s.block_id) / (:blockLength + seq.unique_block_count - count(distinct b2s.block_id)) >= 0.4
         ) src
         	join msb.s2f on s2f.sequence_id = src.sequence_id
-            join msb.sequence_family fam on fam.id = s2f.family_id and fam.container_id = :containerId
+            join msb.sequence_family fam on fam.id = s2f.family_id and fam.container_id = :containerId and fam.sequence_family_name <> \'synthetic\'
         where src.RN = 1
         ';
         $stmt = $conn->prepare($sql);

@@ -177,7 +177,36 @@ class ContainerModel {
     }
 
     private function updateBlockProperties(BlockTransformed $trans, Block $block) {
-        return $this->saveBlock($block, $trans, Message::createNoContent());
+        $acronym = $block->getAcronym();
+        $this->entityManager->beginTransaction();
+        $block->setBlockName($trans->getBlockName());
+        $block->setAcronym($trans->getAcronym());
+        $block->setResidue($trans->getFormula());
+        $block->setBlockMass($trans->getMass());
+        $block->setLosses($trans->getLosses());
+        $block->setBlockSmiles($trans->getSmiles());
+        $block->setUsmiles($trans->getUSmiles());
+        $block->setSource($trans->getSource());
+        $block->setIdentifier($trans->getIdentifier());
+        $block->setIsPolyketide($trans->isPolyketide);
+        $this->entityManager->persist($block);
+        $this->entityManager->flush();
+        var_dump($acronym, $trans->getAcronym());
+        if ($acronym !== $trans->getAcronym()) {
+            $blockUsages = $this->blockRepository->blockUsage($block->getContainer()->getId(), $block->getId());
+            foreach ($blockUsages as $usage) {
+                $sequence = $this->sequenceRepository->generateSequence($usage['id']);
+                var_dump($sequence);
+                if (sizeof($sequence) > 0) {
+                    $seq = $this->sequenceRepository->find($sequence[0]['id']);
+                    $seq->setSequence($sequence[0]['sequence']);
+                    $this->entityManager->persist($seq);
+                }
+            }
+        }
+        $this->entityManager->commit();
+        $this->entityManager->flush();
+        return Message::createNoContent();
     }
 
     public function createNewBlock(Container $container, BlockTransformed $trans): Message {
@@ -203,6 +232,7 @@ class ContainerModel {
         $block->setIsPolyketide($trans->isPolyketide);
         $this->entityManager->persist($block);
         $this->entityManager->flush();
+        $this->entityManager->commit();
         return $message;
     }
 

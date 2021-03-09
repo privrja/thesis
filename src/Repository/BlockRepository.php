@@ -122,8 +122,8 @@ class BlockRepository extends ServiceEntityRepository {
         return $stmt->fetchAll();
     }
 
-    public function blockUsage(int $containerId, int $blockId, Sort $sort) {
-        return $this->createQueryBuilder('blc')
+    public function blockUsage(int $containerId, int $blockId, Sort $sort = null) {
+        $qb = $this->createQueryBuilder('blc')
             ->select('seq.id, seq.sequenceType, seq.sequenceName, seq.sequence, seq.sequenceFormula as formula, seq.sequenceMass as mass, seq.sequenceSmiles as smiles, seq.source, seq.identifier, seq.decays, nmd.modificationName as nModification, cmd.modificationName as cModification, bmd.modificationName as bModification, group_concat(distinct fam.sequenceFamilyName order by fam.sequenceFamilyName asc) as family, count(1) as blockUsages')
             ->innerJoin('blc.b2s', 'b2s')
             ->innerJoin('b2s.sequence', 'seq')
@@ -135,9 +135,11 @@ class BlockRepository extends ServiceEntityRepository {
             ->where('blc.container = :containerId')
             ->andWhere('blc.id = :blockId')
             ->setParameters(['containerId' => $containerId, 'blockId' => $blockId])
-            ->groupBy('seq.id, seq.sequenceType, seq.sequenceName, seq.sequence, seq.sequenceFormula, seq.sequenceMass, seq.sequenceSmiles, seq.source, seq.identifier, seq.decays, nmd.modificationName, cmd.modificationName, bmd.modificationName')
-            ->orderBy('seq.' . $sort->sort, $sort->order)
-            ->getQuery()
+            ->groupBy('seq.id, seq.sequenceType, seq.sequenceName, seq.sequence, seq.sequenceFormula, seq.sequenceMass, seq.sequenceSmiles, seq.source, seq.identifier, seq.decays, nmd.modificationName, cmd.modificationName, bmd.modificationName');
+        if (isset($sort)) {
+            $qb->orderBy('seq.' . $sort->sort, $sort->order);
+        }
+        return $qb->getQuery()
             ->getArrayResult();
     }
 

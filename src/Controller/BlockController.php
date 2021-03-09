@@ -196,8 +196,6 @@ class BlockController extends AbstractController {
      * @Entity("block", expr="repository.find(blockId)")
      * @param Container $container
      * @param Block $block
-     * @param Request $request
-     * @param BlockRepository $blockRepository
      * @param EntityManagerInterface $entityManager
      * @param Security $security
      * @param LoggerInterface $logger

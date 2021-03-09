@@ -184,4 +184,23 @@ class SequenceRepository extends ServiceEntityRepository {
         return $stmt->fetchAll();
     }
 
+    public function generateSequence(int $sequenceId) {
+        $conn = $this->getEntityManager()->getConnection();
+        $sql = '
+        select src.id, replace(replace(group_concat(concat(case when BRANCH_START = 1 then \'\\\(\' else \'\' end, \'[\', acronym, \']\', case when BRANCH_END = 1 then \'\\\)\' else \'\' end) order by sort asc separator \'-\'), \'-\\\(\', \'\\\(\'), \'\\\)-\', \'\\\)\') as sequence
+        from (
+	        select seq.id, blc.acronym, b2s.sort,
+	            case when seq.sequence_type not in (\'branched\', \'branch-cyclic\') then 0 else row_number() over (order by case when branch_reference_id is not null then 0 else 1 end asc, is_branch asc, sort asc) end as BRANCH_START,
+	            case when seq.sequence_type not in (\'branched\', \'branch-cyclic\') then 0 else row_number() over (order by is_branch desc, sort desc) end as BRANCH_END
+	        from msb.sequence seq
+		        join msb.b2s b2s on b2s.sequence_id = seq.id
+		        join msb.block blc on blc.id = b2s.block_id
+	        where seq.id = :sequenceId
+        ) src
+        ';
+        $stmt = $conn->prepare($sql);
+        $stmt->execute(['sequenceId' => $sequenceId]);
+        return $stmt->fetchAll();
+    }
+
 }

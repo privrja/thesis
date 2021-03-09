@@ -149,6 +149,15 @@ class SecurityController extends AbstractController {
      * @IsGranted("ROLE_USER")
      * @param Security $security
      * @return JsonResponse
+     *
+     * @SWG\Get(
+     *  tags={"Setup"},
+     *     security={
+     *         {"ApiKeyAuth":{}}
+     *     },
+     *     @SWG\Response(response="200", description="Return Chemspider apikey."),
+     *     @SWG\Response(response="401", description="Return when user is not logged in."),
+     * )
      */
     public function chemSpiderKey(Security $security) {
         /** @var User $user */

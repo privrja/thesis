@@ -77,7 +77,6 @@ class ContainerController extends AbstractController {
      * )
      */
     public function index(UserRepository $userRepository, Request $request, Security $security) {
-        // TODO prepare filtering options to query, maybe paging
         return new JsonResponse($userRepository->findContainersForLoggedUser($security->getUser()->getId(), RequestHelper::getSorting($request)));
     }
 
@@ -94,7 +93,6 @@ class ContainerController extends AbstractController {
      * )
      */
     public function freeContainers(ContainerRepository $containerRepository, Request $request) {
-        // TODO prepare filtering options to query, maybe paging
         return new JsonResponse($containerRepository->findBy([EntityColumnsEnum::CONTAINER_VISIBILITY => ContainerVisibilityEnum::PUBLIC], RequestHelper::getSorting($request)->asArray()));
     }
 

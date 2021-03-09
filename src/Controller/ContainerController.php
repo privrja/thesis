@@ -357,13 +357,21 @@ class ContainerController extends AbstractController {
      * @param Container $container
      * @param ModificationRepository $repository
      * @return Response
+     *
+     * @SWG\Get(
+     *     tags={"Export"},
+     *     @SWG\Response(response="200", description="Export modifications."),
+     *     @SWG\Response(response="403", description="Forbidden."),
+     *     @SWG\Response(response="404", description="Not found."),
+     * )
+     *
      */
     public function modificationExport(Container $container, ModificationRepository $repository) {
         if ($container->getVisibility() === ContainerVisibilityEnum::PUBLIC || $this->isGranted("ROLE_USER")) {
             $export = new ModificationCycloBranch($repository, $container->getId());
             return $export->export();
         } else {
-            return new JsonResponse(new Message(ErrorConstants::ERROR_CONTAINER_INSUFIENT_RIGHTS));
+            return new JsonResponse(new Message(ErrorConstants::ERROR_CONTAINER_INSUFIENT_RIGHTS, Response::HTTP_FORBIDDEN));
         }
     }
 
@@ -374,30 +382,46 @@ class ContainerController extends AbstractController {
      * @param Container $container
      * @param BlockRepository $repository
      * @return Response
+     *
+     * @SWG\Get(
+     *     tags={"Export"},
+     *     @SWG\Response(response="200", description="Export blocks."),
+     *     @SWG\Response(response="403", description="Forbidden."),
+     *     @SWG\Response(response="404", description="Not found."),
+     * )
+     *
      */
     public function blockExport(Container $container, BlockRepository $repository) {
         if ($container->getVisibility() === ContainerVisibilityEnum::PUBLIC || $this->isGranted("ROLE_USER")) {
             $export = new BlockCycloBranch($repository, $container->getId());
             return $export->export();
         } else {
-            return new JsonResponse(new Message(ErrorConstants::ERROR_CONTAINER_INSUFIENT_RIGHTS));
+            return new JsonResponse(new Message(ErrorConstants::ERROR_CONTAINER_INSUFIENT_RIGHTS, Response::HTTP_FORBIDDEN));
         }
     }
 
     /**
-     * Export blocks for CycloBranch
+     * Export sequences for CycloBranch
      * @Route("/rest/container/{containerId}/sequence/export", name="sequence_export", methods={"GET"})
      * @Entity("container", expr="repository.find(containerId)")
      * @param Container $container
      * @param SequenceRepository $repository
      * @return Response
+     *
+     * @SWG\Get(
+     *     tags={"Export"},
+     *     @SWG\Response(response="200", description="Export sequences."),
+     *     @SWG\Response(response="403", description="Forbidden."),
+     *     @SWG\Response(response="404", description="Not found."),
+     * )
+     *
      */
     public function sequenceExport(Container $container, SequenceRepository $repository) {
         if ($container->getVisibility() === ContainerVisibilityEnum::PUBLIC || $this->isGranted("ROLE_USER")) {
             $export = new SequenceCycloBranch($repository, $container->getId());
             return $export->export();
         } else {
-            return new JsonResponse(new Message(ErrorConstants::ERROR_CONTAINER_INSUFIENT_RIGHTS));
+            return new JsonResponse(new Message(ErrorConstants::ERROR_CONTAINER_INSUFIENT_RIGHTS, Response::HTTP_FORBIDDEN));
         }
     }
 
@@ -408,6 +432,14 @@ class ContainerController extends AbstractController {
      * @param Container $container
      * @param BlockRepository $repository
      * @return Response
+     *
+     * @SWG\Get(
+     *     tags={"Export"},
+     *     @SWG\Response(response="200", description="Export merged blocks."),
+     *     @SWG\Response(response="403", description="Forbidden."),
+     *     @SWG\Response(response="404", description="Not found."),
+     * )
+     *
      */
     public function blockMergeExport(Container $container, BlockRepository $repository) {
         if ($container->getVisibility() === ContainerVisibilityEnum::PUBLIC || $this->isGranted("ROLE_USER")) {
@@ -427,6 +459,13 @@ class ContainerController extends AbstractController {
      * @param SequenceRepository $sequenceRepository
      * @param ModificationRepository $modificationRepository
      * @return Response
+     *
+     * @SWG\Get(
+     *     tags={"Export"},
+     *     @SWG\Response(response="200", description="Export all."),
+     *     @SWG\Response(response="403", description="Forbidden."),
+     *     @SWG\Response(response="404", description="Not found."),
+     * )
      */
     public function allExport(Container $container, BlockRepository $blockRepository, SequenceRepository $sequenceRepository, ModificationRepository $modificationRepository) {
         if ($container->getVisibility() === ContainerVisibilityEnum::PUBLIC || $this->isGranted("ROLE_USER")) {
@@ -465,6 +504,14 @@ class ContainerController extends AbstractController {
      * @param Security $security
      * @param LoggerInterface $logger
      * @return Response
+     *
+     * @SWG\Post(
+     *     tags={"Import"},
+     *     @SWG\Response(response="200", description="Return list of not imported modifications."),
+     *     @SWG\Response(response="403", description="Forbidden"),
+     *     @SWG\Response(response="404", description="Not found."),
+     * )
+     *
      */
     public function modificationImport(Container $container, Request $request, ModificationRepository $repository, EntityManagerInterface $entityManager, Security $security, LoggerInterface $logger) {
         return $this->import($container, $request, new ModificationCycloBranch($repository, $container->getId()), ModificationStructure::class, $entityManager, $security, $logger);
@@ -481,6 +528,13 @@ class ContainerController extends AbstractController {
      * @param Security $security
      * @param LoggerInterface $logger
      * @return Response
+     *
+     * @SWG\Post(
+     *     tags={"Import"},
+     *     @SWG\Response(response="200", description="Return list of not imported blocks."),
+     *     @SWG\Response(response="403", description="Forbidden"),
+     *     @SWG\Response(response="404", description="Not found."),
+     * )
      */
     public function blockImport(Container $container, Request $request, BlockRepository $repository, EntityManagerInterface $entityManager, Security $security, LoggerInterface $logger) {
         return $this->import($container, $request, new BlockCycloBranch($repository, $container->getId()), BlockStructure::class, $entityManager, $security, $logger);
@@ -498,6 +552,13 @@ class ContainerController extends AbstractController {
      * @param Security $security
      * @param LoggerInterface $logger
      * @return Response
+     *
+     * @SWG\Post(
+     *     tags={"Import"},
+     *     @SWG\Response(response="200", description="Return list of not imported sequences."),
+     *     @SWG\Response(response="403", description="Forbidden"),
+     *     @SWG\Response(response="404", description="Not found."),
+     * )
      */
     public function sequenceImport(Container $container, Request $request, SequenceRepository $repository, EntityManagerInterface $entityManager, Security $security, LoggerInterface $logger) {
         return $this->import($container, $request, new SequenceCycloBranch($repository, $container->getId()), SequenceStructure::class, $entityManager, $security, $logger);

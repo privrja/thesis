@@ -176,6 +176,15 @@ class SecurityController extends AbstractController {
      * @param Security $security
      * @param LoggerInterface $logger
      * @return JsonResponse
+     *
+     * @SWG\Post(
+     *  tags={"Setup"},
+     *     security={
+     *         {"ApiKeyAuth":{}}
+     *     },
+     *     @SWG\Response(response="204", description="Add new Chemspider apikey."),
+     *     @SWG\Response(response="401", description="Return when user is not logged in."),
+     * )
      */
     public function createChemSpiderKey(Request $request, EntityManagerInterface $entityManager, Security $security, LoggerInterface $logger) {
         /** @var ChemSpiderKeyTransformed $trans */

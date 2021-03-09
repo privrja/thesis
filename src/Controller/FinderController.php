@@ -20,6 +20,7 @@ use App\Structure\SequenceSmilesStructure;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
+use Swagger\Annotations as SWG;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -35,11 +36,15 @@ class FinderController extends AbstractController {
      * @Entity("container", expr="repository.find(containerId)")
      * @param Request $request
      * @param Container $container
-     * @param SequenceRepository $sequenceRepository
      * @param EntityManagerInterface $entityManager
      * @param Security $security
      * @param LoggerInterface $logger
      * @return JsonResponse
+     *
+     * @SWG\Post(
+     *     tags={"Finder"},
+     *     @SWG\Response(response="200", description="Results"),
+     * )
      */
     public function name(Request $request, Container $container, EntityManagerInterface $entityManager, Security $security, LoggerInterface $logger) {
         return $this->find($container, $request, new SequenceNameStructure, 'sequenceName', 'likeName', $entityManager, $security, $logger);
@@ -55,6 +60,11 @@ class FinderController extends AbstractController {
      * @param Security $security
      * @param LoggerInterface $logger
      * @return JsonResponse
+     *
+     * @SWG\Post(
+     *     tags={"Finder"},
+     *     @SWG\Response(response="200", description="Results"),
+     * )
      */
     public function formula(Request $request, Container $container, EntityManagerInterface $entityManager, Security $security, LoggerInterface $logger) {
         return $this->find($container, $request, new SequenceFormulaStructure, 'sequenceFormula', self::METHOD_DEFAULT, $entityManager, $security, $logger);
@@ -70,6 +80,11 @@ class FinderController extends AbstractController {
      * @param Security $security
      * @param LoggerInterface $logger
      * @return JsonResponse
+     *
+     * @SWG\Post(
+     *     tags={"Finder"},
+     *     @SWG\Response(response="200", description="Results"),
+     * )
      */
     public function smiles(Request $request, Container $container, EntityManagerInterface $entityManager, Security $security, LoggerInterface $logger) {
         return $this->find($container, $request, new SequenceSmilesStructure, 'usmiles', 'similarity', $entityManager, $security, $logger);
@@ -85,6 +100,11 @@ class FinderController extends AbstractController {
      * @param Security $security
      * @param LoggerInterface $logger
      * @return JsonResponse
+     *
+     * @SWG\Post(
+     *     tags={"Finder"},
+     *     @SWG\Response(response="200", description="Results"),
+     * )
      */
     public function identifier(Request $request, Container $container, EntityManagerInterface $entityManager, Security $security, LoggerInterface $logger) {
         return $this->find($container, $request, new SequenceIdStructure, 'id', self::METHOD_DEFAULT, $entityManager, $security, $logger);

@@ -191,12 +191,10 @@ class ContainerModel {
         $block->setIsPolyketide($trans->isPolyketide);
         $this->entityManager->persist($block);
         $this->entityManager->flush();
-        var_dump($acronym, $trans->getAcronym());
         if ($acronym !== $trans->getAcronym()) {
             $blockUsages = $this->blockRepository->blockUsage($block->getContainer()->getId(), $block->getId());
             foreach ($blockUsages as $usage) {
                 $sequence = $this->sequenceRepository->generateSequence($usage['id']);
-                var_dump($sequence);
                 if (sizeof($sequence) > 0) {
                     $seq = $this->sequenceRepository->find($sequence[0]['id']);
                     $seq->setSequence($sequence[0]['sequence']);

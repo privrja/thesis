@@ -139,10 +139,15 @@ class SmilesParser implements IParser {
             } else {
                 /** @var Digit $digit */
                 $digit = $this->arNumberBonds[$result->getResult()->getDigit()]->getObject();
-                if ($digit->getBondType() !== $result->getResult()->getBondType()) {
+                if ($digit->getBondType() === $result->getResult()->getBondType()) {
+                    $this->graph->addBidirectionalBond($digit->getDigit(), $this->intNodeIndex - 1, $digit->getBondType());
+                } else if ($digit->getBondType() === '') {
+                    $this->graph->addBidirectionalBond($digit->getDigit(), $this->intNodeIndex - 1, $result->getResult()->getBondType());
+                } else if ($result->getResult()->getBondType() === '') {
+                    $this->graph->addBidirectionalBond($digit->getDigit(), $this->intNodeIndex - 1, $digit->getBondType());
+                } else {
                     self::ko($result, $lastResult);
                 }
-                $this->graph->addBidirectionalBond($digit->getDigit(), $this->intNodeIndex - 1, $digit->getBondType());
                 $this->intReading++;
             }
         } else {

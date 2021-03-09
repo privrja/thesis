@@ -490,7 +490,7 @@ final class GraphTest extends TestCase {
 
     public function testGraphWrong20() {
         $this->expectException(InvalidArgumentException::class);
-        new Graph('CCC=1CC=CC1');
+        new Graph('CCC=1CC=CC-1');
     }
 
     public function testGraphRight18() {

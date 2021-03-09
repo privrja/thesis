@@ -37,6 +37,12 @@ class ModificationController extends AbstractController {
      * @param Security $security
      * @param LoggerInterface $logger
      * @return JsonResponse
+     *
+     * @SWG\Get(
+     *     tags={"Modification"},
+     *     @SWG\Response(response="200", description="Return list of containers for logged user."),
+     * )
+     *
      */
     public function getModifications(Container $container, Request $request, EntityManagerInterface $entityManager, Security $security, LoggerInterface $logger, ModificationRepository $modificationRepository) {
         $possibleFilters = ['id', 'modificationName', 'modificationFormula', 'modificationMassFrom', 'modificationMassTo', 'nTerminal', 'cTerminal'];

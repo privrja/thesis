@@ -156,7 +156,7 @@ class SequenceController extends AbstractController {
      * @param LoggerInterface $logger
      * @return JsonResponse
      *
-     * @SWG\Post(
+     * @SWG\Put(
      *     tags={"Sequence"},
      *     security={
      *         {"ApiKeyAuth":{}}
@@ -199,7 +199,7 @@ class SequenceController extends AbstractController {
      * @param LoggerInterface $logger
      * @return JsonResponse
      *
-     * @SWG\Delete(
+     * @SWG\Get(
      *     tags={"Sequence"},
      *     security={
      *         {"ApiKeyAuth":{}}
@@ -240,7 +240,7 @@ class SequenceController extends AbstractController {
      * @param LoggerInterface $logger
      * @return JsonResponse
      *
-     * @SWG\Delete(
+     * @SWG\Post(
      *     tags={"Sequence"},
      *     security={
      *         {"ApiKeyAuth":{}}

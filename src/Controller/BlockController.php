@@ -200,7 +200,7 @@ class BlockController extends AbstractController {
      * @param Security $security
      * @param LoggerInterface $logger
      * @return JsonResponse
-     * @SWG\Delete(
+     * @SWG\Get(
      *     tags={"Block"},
      *     security={
      *         {"ApiKeyAuth":{}}
@@ -237,7 +237,7 @@ class BlockController extends AbstractController {
      * @param Security $security
      * @param LoggerInterface $logger
      * @return JsonResponse
-     * @SWG\Delete(
+     * @SWG\Get(
      *     tags={"Block"},
      *     security={
      *         {"ApiKeyAuth":{}}

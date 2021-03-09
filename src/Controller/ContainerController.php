@@ -331,7 +331,7 @@ class ContainerController extends AbstractController {
      * @param LoggerInterface $logger
      * @return JsonResponse
      *
-     * @SWG\Delete(
+     * @SWG\Put(
      *     tags={"Collaborator"},
      *     security={
      *         {"ApiKeyAuth":{}}

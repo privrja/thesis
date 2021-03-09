@@ -80,7 +80,7 @@ class SecurityController extends AbstractController {
      * @param UserRepository $userRepository
      * @return JsonResponse
      *
-     * @SWG\Post(
+     * @SWG\Get(
      *     tags={"Auth"},
      *     @SWG\Response(response="200", description="List od users"),
      *     @SWG\Response(response="401", description="Bad auth")
@@ -109,6 +109,7 @@ class SecurityController extends AbstractController {
     /**
      * Change
      * @Route("/rest/user", name="change", methods={"PUT"})
+     * @IsGranted("ROLE_USER")
      * @param Request $request
      * @param EntityManagerInterface $entityManager
      * @param Security $security
@@ -116,7 +117,7 @@ class SecurityController extends AbstractController {
      * @param LoggerInterface $logger
      * @return JsonResponse
      *
-     * @SWG\Post(
+     * @SWG\Put(
      *     tags={"Auth"},
      *     @SWG\Response(response="201", description="Password changed"),
      *     @SWG\Response(response="500", description="Internal server Error"),

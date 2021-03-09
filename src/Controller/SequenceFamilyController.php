@@ -134,7 +134,7 @@ class SequenceFamilyController extends AbstractController {
      * @return JsonResponse
      *
      * @SWG\Put(
-     *     tags={"Block Family"},
+     *     tags={"Sequence Family"},
      *     security={
      *         {"ApiKeyAuth":{}}
      *     },

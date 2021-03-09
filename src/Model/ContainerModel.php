@@ -404,14 +404,31 @@ class ContainerModel {
             }
             if ($block->smiles !== null) {
                 $sBlock->setBlockSmiles($block->smiles);
-                $graph = new Graph($block->smiles);
+                try {
+                    $graph = new Graph($block->smiles);
+                } catch (InvalidArgumentException $exception) {
+                   $sBlock->setUsmiles($block->smiles);
+                   if ($block->formula !== null) {
+                       $sBlock->setResidue($block->formula);
+                   }
+                    if ($block->mass === null && $block->formula !== null) {
+                        try {
+                            $sBlock->setBlockMass(FormulaHelper::computeMass($sBlock->getResidue()));
+                        } catch (IllegalStateException $e) {
+                            /* Empty on purpose, mass can be null */
+                        }
+                    } else {
+                        $sBlock->setBlockMass($block->mass);
+                    }
+                    return $sBlock;
+                }
                 try {
                     $sBlock->setUsmiles($graph->getUniqueSmiles());
                 } catch (IllegalStateException $e) {
                     $sBlock->setUsmiles($block->smiles);
                 }
                 if ($block->formula === null) {
-                    $graph->getFormula($block->losses);
+                    $sBlock->setResidue($graph->getFormula($block->losses));
                 } else {
                     $sBlock->setResidue($block->formula);
                 }

@@ -119,6 +119,7 @@ class SequenceHelper {
             $b2s->setIsBranch($this->branch);
             $b2s->setBranchReference($this->branchNext());
             $b2s->setNextBlock($this->findNext());
+            $b2s->setSort($len);
             array_push($res, $b2s);
             $len++;
         }

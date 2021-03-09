@@ -34,6 +34,7 @@ class BaseAminoAcids {
         $tryptophan->setSource(ServerEnum::PUBCHEM);
         $tryptophan->setIdentifier("6305");
         $tryptophan->setContainer($container);
+        $tryptophan->setIsPolyketide(false);
         $this->list->add($tryptophan);
 
         $b2f = new B2f();
@@ -51,6 +52,7 @@ class BaseAminoAcids {
         $glycine->setSource(ServerEnum::PUBCHEM);
         $glycine->setIdentifier("750");
         $glycine->setContainer($container);
+        $glycine->setIsPolyketide(false);
         $this->list->add($glycine);
 
         $b2f = new B2f();
@@ -68,6 +70,7 @@ class BaseAminoAcids {
         $alanine->setSource(ServerEnum::PUBCHEM);
         $alanine->setIdentifier("5950");
         $alanine->setContainer($container);
+        $alanine->setIsPolyketide(false);
         $this->list->add($alanine);
 
         $b2f = new B2f();
@@ -85,6 +88,7 @@ class BaseAminoAcids {
         $serine->setSource(ServerEnum::PUBCHEM);
         $serine->setIdentifier("5951");
         $serine->setContainer($container);
+        $serine->setIsPolyketide(false);
         $this->list->add($serine);
 
         $b2f = new B2f();
@@ -102,6 +106,7 @@ class BaseAminoAcids {
         $cysteine->setSource(ServerEnum::PUBCHEM);
         $cysteine->setIdentifier("5862");
         $cysteine->setContainer($container);
+        $cysteine->setIsPolyketide(false);
         $this->list->add($cysteine);
 
         $b2f = new B2f();
@@ -119,6 +124,7 @@ class BaseAminoAcids {
         $asparatic->setSource(ServerEnum::PUBCHEM);
         $asparatic->setIdentifier("5960");
         $asparatic->setContainer($container);
+        $asparatic->setIsPolyketide(false);
         $this->list->add($asparatic);
 
         $b2f = new B2f();
@@ -136,6 +142,7 @@ class BaseAminoAcids {
         $asparagine->setSource(ServerEnum::PUBCHEM);
         $asparagine->setIdentifier("6267");
         $asparagine->setContainer($container);
+        $asparagine->setIsPolyketide(false);
         $this->list->add($asparagine);
 
         $b2f = new B2f();
@@ -153,6 +160,7 @@ class BaseAminoAcids {
         $threonine->setSource(ServerEnum::PUBCHEM);
         $threonine->setIdentifier("6288");
         $threonine->setContainer($container);
+        $threonine->setIsPolyketide(false);
         $this->list->add($threonine);
 
         $b2f = new B2f();
@@ -170,6 +178,7 @@ class BaseAminoAcids {
         $proline->setSource(ServerEnum::PUBCHEM);
         $proline->setIdentifier("145742");
         $proline->setContainer($container);
+        $proline->setIsPolyketide(false);
         $this->list->add($proline);
 
         $b2f = new B2f();
@@ -187,6 +196,7 @@ class BaseAminoAcids {
         $glutamic->setSource(ServerEnum::PUBCHEM);
         $glutamic->setIdentifier("33032");
         $glutamic->setContainer($container);
+        $glutamic->setIsPolyketide(false);
         $this->list->add($glutamic);
 
         $b2f = new B2f();
@@ -204,6 +214,7 @@ class BaseAminoAcids {
         $glutamine->setSource(ServerEnum::PUBCHEM);
         $glutamine->setIdentifier("5961");
         $glutamine->setContainer($container);
+        $glutamine->setIsPolyketide(false);
         $this->list->add($glutamine);
 
         $b2f = new B2f();
@@ -221,6 +232,7 @@ class BaseAminoAcids {
         $valine->setSource(ServerEnum::PUBCHEM);
         $valine->setIdentifier("6287");
         $valine->setContainer($container);
+        $valine->setIsPolyketide(false);
         $this->list->add($valine);
 
         $b2f = new B2f();
@@ -238,6 +250,7 @@ class BaseAminoAcids {
         $methionine->setSource(ServerEnum::PUBCHEM);
         $methionine->setIdentifier("6137");
         $methionine->setContainer($container);
+        $methionine->setIsPolyketide(false);
         $this->list->add($methionine);
 
         $b2f = new B2f();
@@ -255,6 +268,7 @@ class BaseAminoAcids {
         $leucine->setSource(ServerEnum::PUBCHEM);
         $leucine->setIdentifier("6106");
         $leucine->setContainer($container);
+        $leucine->setIsPolyketide(false);
         $this->list->add($leucine);
 
         $b2f = new B2f();
@@ -272,6 +286,7 @@ class BaseAminoAcids {
         $isoLeucine->setSource(ServerEnum::PUBCHEM);
         $isoLeucine->setIdentifier("6306");
         $isoLeucine->setContainer($container);
+        $isoLeucine->setIsPolyketide(false);
         $this->list->add($isoLeucine);
 
         $b2f = new B2f();
@@ -289,6 +304,7 @@ class BaseAminoAcids {
         $lysine->setSource(ServerEnum::PUBCHEM);
         $lysine->setIdentifier("5962");
         $lysine->setContainer($container);
+        $lysine->setIsPolyketide(false);
         $this->list->add($lysine);
 
         $b2f = new B2f();
@@ -306,6 +322,7 @@ class BaseAminoAcids {
         $arginine->setSource(ServerEnum::PUBCHEM);
         $arginine->setIdentifier("6322");
         $arginine->setContainer($container);
+        $arginine->setIsPolyketide(false);
         $this->list->add($arginine);
 
         $b2f = new B2f();
@@ -323,6 +340,7 @@ class BaseAminoAcids {
         $histidine->setSource(ServerEnum::PUBCHEM);
         $histidine->setIdentifier("6274");
         $histidine->setContainer($container);
+        $histidine->setIsPolyketide(false);
         $this->list->add($histidine);
 
         $b2f = new B2f();
@@ -340,6 +358,7 @@ class BaseAminoAcids {
         $phenylAlanine->setSource(ServerEnum::PUBCHEM);
         $phenylAlanine->setIdentifier("6140");
         $phenylAlanine->setContainer($container);
+        $phenylAlanine->setIsPolyketide(false);
         $this->list->add($phenylAlanine);
 
         $b2f = new B2f();
@@ -357,6 +376,7 @@ class BaseAminoAcids {
         $tyrosine->setSource(ServerEnum::PUBCHEM);
         $tyrosine->setIdentifier("6057");
         $tyrosine->setContainer($container);
+        $tyrosine->setIsPolyketide(false);
         $this->list->add($tyrosine);
 
         $b2f = new B2f();

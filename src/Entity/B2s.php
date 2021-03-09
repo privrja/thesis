@@ -48,6 +48,11 @@ class B2s {
      */
     private $branchReference;
 
+    /**
+     * @ORM\Column(type="integer")
+     */
+    private $sort;
+
     public function getId(): ?int {
         return $this->id;
     }
@@ -114,6 +119,20 @@ class B2s {
      */
     public function setBlockOriginalId($blockOriginalId): void {
         $this->blockOriginalId = $blockOriginalId;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getSort() {
+        return $this->sort;
+    }
+
+    /**
+     * @param mixed $sort
+     */
+    public function setSort($sort): void {
+        $this->sort = $sort;
     }
 
 }

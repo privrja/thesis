@@ -9,6 +9,7 @@ use App\Enum\ServerEnum;
 use App\Exception\IllegalStateException;
 use App\Smiles\Enum\LossesEnum;
 use App\Smiles\Graph;
+use InvalidArgumentException;
 use JsonSerializable;
 
 class BlockStructure extends AbstractStructure implements JsonSerializable {
@@ -65,7 +66,25 @@ class BlockStructure extends AbstractStructure implements JsonSerializable {
         $trans->setLosses($this->losses);
         $trans->setSmiles($this->smiles);
         if (!empty($this->smiles)) {
-            $graph = new Graph($this->smiles);
+            try {
+                $graph = new Graph($this->smiles);
+            } catch (InvalidArgumentException $error) {
+                if (!empty($this->formula)) {
+                    $trans->setFormula($this->formula);
+                }
+                if (empty($this->mass) && !empty($this->formula)) {
+                    try {
+                        $trans->setMass(FormulaHelper::computeMass($trans->getFormula()));
+                    } catch (IllegalStateException $e) {
+                        /* Empty on purpose - mass can be null */
+                    }
+                } else {
+                    $trans->setMass($this->mass);
+                }
+                $trans->smiles = $this->smiles;
+                $trans->uSmiles = $this->smiles;
+                return $trans;
+            }
             if (empty($this->formula)) {
                 $trans->setFormula($graph->getFormula(LossesEnum::H2O));
             } else {

@@ -507,6 +507,9 @@ class ContainerController extends AbstractController {
      *
      * @SWG\Post(
      *     tags={"Import"},
+     *     security={
+     *         {"ApiKeyAuth":{}}
+     *     },
      *     @SWG\Response(response="200", description="Return list of not imported modifications."),
      *     @SWG\Response(response="403", description="Forbidden"),
      *     @SWG\Response(response="404", description="Not found."),
@@ -531,6 +534,9 @@ class ContainerController extends AbstractController {
      *
      * @SWG\Post(
      *     tags={"Import"},
+     *     security={
+     *         {"ApiKeyAuth":{}}
+     *     },
      *     @SWG\Response(response="200", description="Return list of not imported blocks."),
      *     @SWG\Response(response="403", description="Forbidden"),
      *     @SWG\Response(response="404", description="Not found."),
@@ -555,6 +561,9 @@ class ContainerController extends AbstractController {
      *
      * @SWG\Post(
      *     tags={"Import"},
+     *     security={
+     *         {"ApiKeyAuth":{}}
+     *     },
      *     @SWG\Response(response="200", description="Return list of not imported sequences."),
      *     @SWG\Response(response="403", description="Forbidden"),
      *     @SWG\Response(response="404", description="Not found."),

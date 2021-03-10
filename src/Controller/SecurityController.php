@@ -74,7 +74,7 @@ class SecurityController extends AbstractController {
     }
 
     /**
-     * Registration of new user
+     * Get list of users
      * @Route("/rest/user", name="user", methods={"GET"})
      * @IsGranted("ROLE_USER")
      * @param UserRepository $userRepository
@@ -82,6 +82,9 @@ class SecurityController extends AbstractController {
      *
      * @SWG\Get(
      *     tags={"Auth"},
+     *     security={
+     *         {"ApiKeyAuth":{}}
+     *     },
      *     @SWG\Response(response="200", description="List od users"),
      *     @SWG\Response(response="401", description="Bad auth")
      * )
@@ -97,6 +100,15 @@ class SecurityController extends AbstractController {
      * @param Security $security
      * @param EntityManagerInterface $entityManager
      * @return Response
+     *
+     * @SWG\Post(
+     *     tags={"Auth"},
+     *     security={
+     *         {"ApiKeyAuth":{}}
+     *     },
+     *     @SWG\Response(response="204", description="Conditions agreed"),
+     *     @SWG\Response(response="401", description="Bad auth")
+     * )
      */
     public function conditions(Security $security, EntityManagerInterface $entityManager) {
         $user = $security->getUser();
@@ -119,6 +131,9 @@ class SecurityController extends AbstractController {
      *
      * @SWG\Put(
      *     tags={"Auth"},
+     *     security={
+     *         {"ApiKeyAuth":{}}
+     *     },
      *     @SWG\Response(response="201", description="Password changed"),
      *     @SWG\Response(response="500", description="Internal server Error"),
      *     @SWG\Response(response="400", description="Name is taken")

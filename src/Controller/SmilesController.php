@@ -3,7 +3,10 @@
 namespace App\Controller;
 
 use App\Base\FormulaHelper;
+use App\Base\Message;
 use App\Base\RequestHelper;
+use App\Base\ResponseHelper;
+use App\Constant\ErrorConstants;
 use App\Exception\IllegalStateException;
 use App\Repository\SequenceFamilyRepository;
 use App\Repository\SequenceRepository;
@@ -16,6 +19,7 @@ use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Swagger\Annotations as SWG;
 
@@ -136,6 +140,9 @@ class SmilesController extends AbstractController {
         if ($setup->getSimilarity() === 'name') {
             return new JsonResponse($sequenceFamilyRepository->similarity(1, $trans->sequenceName));
         } else {
+            if ($trans->blockLength === 0) {
+                return ResponseHelper::jsonResponse(new Message(ErrorConstants::ERROR_EMPTY_PARAMS, Response::HTTP_BAD_REQUEST));
+            }
             return new JsonResponse($sequenceRepository->similarity(1, $trans->blocks, $trans->blockLength));
         }
     }

@@ -29,9 +29,11 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Security;
 
 class FinderController extends AbstractController {
-    const METHOD_DEFAULT = 'default';
+
+    const METHOD_DEFAULT = 'name';
 
     /**
+     * Find by name
      * @Route("/rest/container/{containerId}/name", name="find_name", methods={"POST"})
      * @Entity("container", expr="repository.find(containerId)")
      * @param Request $request
@@ -44,6 +46,8 @@ class FinderController extends AbstractController {
      * @SWG\Post(
      *     tags={"Finder"},
      *     @SWG\Response(response="200", description="Results"),
+     *     @SWG\Response(response="404", description="Not found"),
+     *     @SWG\Response(response="403", description="Insuficient rights"),
      * )
      */
     public function name(Request $request, Container $container, EntityManagerInterface $entityManager, Security $security, LoggerInterface $logger) {
@@ -51,11 +55,11 @@ class FinderController extends AbstractController {
     }
 
     /**
+     * Find by formula
      * @Route("/rest/container/{containerId}/formula", name="find_formula", methods={"POST"})
      * @Entity("container", expr="repository.find(containerId)")
      * @param Request $request
      * @param Container $container
-     * @param SequenceRepository $sequenceRepository
      * @param EntityManagerInterface $entityManager
      * @param Security $security
      * @param LoggerInterface $logger
@@ -64,6 +68,8 @@ class FinderController extends AbstractController {
      * @SWG\Post(
      *     tags={"Finder"},
      *     @SWG\Response(response="200", description="Results"),
+     *     @SWG\Response(response="404", description="Not found"),
+     *     @SWG\Response(response="403", description="Insuficient rights"),
      * )
      */
     public function formula(Request $request, Container $container, EntityManagerInterface $entityManager, Security $security, LoggerInterface $logger) {
@@ -71,11 +77,11 @@ class FinderController extends AbstractController {
     }
 
     /**
+     * Find by similarity
      * @Route("/rest/container/{containerId}/similarity", name="find_smiles", methods={"POST"})
      * @Entity("container", expr="repository.find(containerId)")
      * @param Request $request
      * @param Container $container
-     * @param SequenceRepository $sequenceRepository
      * @param EntityManagerInterface $entityManager
      * @param Security $security
      * @param LoggerInterface $logger
@@ -84,6 +90,8 @@ class FinderController extends AbstractController {
      * @SWG\Post(
      *     tags={"Finder"},
      *     @SWG\Response(response="200", description="Results"),
+     *     @SWG\Response(response="404", description="Not found"),
+     *     @SWG\Response(response="403", description="Insuficient rights"),
      * )
      */
     public function smiles(Request $request, Container $container, EntityManagerInterface $entityManager, Security $security, LoggerInterface $logger) {
@@ -91,11 +99,11 @@ class FinderController extends AbstractController {
     }
 
     /**
+     * Find by identifier
      * @Route("/rest/container/{containerId}/identifier", name="find_identifier", methods={"POST"})
      * @Entity("container", expr="repository.find(containerId)")
      * @param Request $request
      * @param Container $container
-     * @param SequenceRepository $sequenceRepository
      * @param EntityManagerInterface $entityManager
      * @param Security $security
      * @param LoggerInterface $logger
@@ -104,6 +112,8 @@ class FinderController extends AbstractController {
      * @SWG\Post(
      *     tags={"Finder"},
      *     @SWG\Response(response="200", description="Results"),
+     *     @SWG\Response(response="404", description="Not found"),
+     *     @SWG\Response(response="403", description="Insuficient rights"),
      * )
      */
     public function identifier(Request $request, Container $container, EntityManagerInterface $entityManager, Security $security, LoggerInterface $logger) {

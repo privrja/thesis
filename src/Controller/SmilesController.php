@@ -114,6 +114,8 @@ class SmilesController extends AbstractController {
      * @param SetupRepository $setupRepository
      * @param SequenceFamilyRepository $sequenceFamilyRepository
      *
+     * @param SequenceRepository $sequenceRepository
+     * @return JsonResponse
      * @SWG\Post(
      *     tags={"SMILES"},
      *     @SWG\Parameter(
@@ -128,7 +130,6 @@ class SmilesController extends AbstractController {
      *     @SWG\Response(response="200", description="Return Unique SMILES."),
      *     @SWG\Response(response="400", description="Return when input is wrong."),
      *)
-     * @return JsonResponse
      */
     public function similarity(Request $request, LoggerInterface $logger, SetupRepository$setupRepository, SequenceFamilyRepository $sequenceFamilyRepository, SequenceRepository $sequenceRepository) {
         /** @var SimilarityTransformed $trans */

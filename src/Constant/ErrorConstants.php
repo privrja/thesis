@@ -24,5 +24,6 @@ class ErrorConstants {
     const ERROR_MODIFICATION_NOT_FOUND = 'Modification not found';
     const ERROR_CONDITIONS_NOT_MET = 'Conditions not met';
     const ERROR_CONTAINER_NOT_FOUND = 'Container not found';
+    const ERROR_SIMILARITY_FORMAT = 'Similarity has not supported format! Supported format is name/tanimoto';
 
 }

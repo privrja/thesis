@@ -179,16 +179,7 @@ class ContainerModel {
     private function updateBlockProperties(BlockTransformed $trans, Block $block) {
         $acronym = $block->getAcronym();
         $this->entityManager->beginTransaction();
-        $block->setBlockName($trans->getBlockName());
-        $block->setAcronym($trans->getAcronym());
-        $block->setResidue($trans->getFormula());
-        $block->setBlockMass($trans->getMass());
-        $block->setLosses($trans->getLosses());
-        $block->setBlockSmiles($trans->getSmiles());
-        $block->setUsmiles($trans->getUSmiles());
-        $block->setSource($trans->getSource());
-        $block->setIdentifier($trans->getIdentifier());
-        $block->setIsPolyketide($trans->isPolyketide);
+        $block = $this->setupBlock($block, $trans);
         $this->entityManager->persist($block);
         $this->entityManager->flush();
         if ($acronym !== $trans->getAcronym()) {
@@ -217,7 +208,7 @@ class ContainerModel {
         return $this->saveBlock($block, $trans, Message::createCreated());
     }
 
-    private function saveBlock(Block $block, BlockTransformed $trans, Message $message) {
+    private function setupBlock(Block $block, BlockTransformed $trans) {
         $block->setBlockName($trans->getBlockName());
         $block->setAcronym($trans->getAcronym());
         $block->setResidue($trans->getFormula());
@@ -228,6 +219,11 @@ class ContainerModel {
         $block->setSource($trans->getSource());
         $block->setIdentifier($trans->getIdentifier());
         $block->setIsPolyketide($trans->isPolyketide);
+        return $block;
+    }
+
+    private function saveBlock(Block $block, BlockTransformed $trans, Message $message) {
+        $block = $this->setupBlock($block, $trans);
         $this->entityManager->persist($block);
         $this->entityManager->flush();
         $this->entityManager->commit();

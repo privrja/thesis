@@ -76,7 +76,6 @@ class User implements UserInterface, JsonSerializable {
 
     public function setNick(string $nick): self {
         $this->nick = $nick;
-
         return $this;
     }
 
@@ -102,7 +101,6 @@ class User implements UserInterface, JsonSerializable {
 
     public function setRoles(array $roles): self {
         $this->roles = $roles;
-
         return $this;
     }
 
@@ -115,7 +113,6 @@ class User implements UserInterface, JsonSerializable {
 
     public function setPassword(string $password): self {
         $this->password = $password;
-
         return $this;
     }
 
@@ -139,7 +136,6 @@ class User implements UserInterface, JsonSerializable {
 
     public function setMail(string $mail): self {
         $this->mail = $mail;
-
         return $this;
     }
 
@@ -149,7 +145,6 @@ class User implements UserInterface, JsonSerializable {
 
     public function setApiToken(?string $apiToken): self {
         $this->apiToken = $apiToken;
-
         return $this;
     }
 

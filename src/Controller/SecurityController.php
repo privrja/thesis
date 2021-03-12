@@ -6,7 +6,11 @@ use App\Base\Message;
 use App\Base\RequestHelper;
 use App\Base\ResponseHelper;
 use App\Constant\ErrorConstants;
+use App\Entity\U2c;
 use App\Entity\User;
+use App\Enum\ContainerModeEnum;
+use App\Repository\ContainerRepository;
+use App\Repository\U2cRepository;
 use App\Repository\UserRepository;
 use App\Structure\ChemSpiderKeyExport;
 use App\Structure\ChemSpiderKeyStructure;
@@ -212,6 +216,65 @@ class SecurityController extends AbstractController {
         $user->setChemSpiderToken($trans->apiKey);
         $entityManager->persist($user);
         $entityManager->flush();
+        return ResponseHelper::jsonResponse(Message::createNoContent());
+    }
+
+    /**
+     * Set ChemSpider key from database
+     * @Route("/rest/user", name="user_delete", methods={"DELETE"})
+     * @IsGranted("ROLE_USER")
+     * @param U2cRepository $u2cRepository
+     * @param ContainerRepository $containerRepository
+     * @param Security $security
+     * @param EntityManagerInterface $entityManager
+     * @return JsonResponse
+     */
+    public function deleteUser(U2cRepository $u2cRepository, ContainerRepository $containerRepository, UserRepository $userRepository, Security $security, EntityManagerInterface $entityManager) {
+        /** @var User $usr */
+        $usr = $security->getUser();
+        if ($usr->getNick() === 'admin') {
+            return ResponseHelper::jsonResponse(new Message('Admin can\'t be deleted'));
+        }
+        $entityManager->beginTransaction();
+        $containers = $u2cRepository->userDeleteContainers($usr->getId());
+        foreach ($containers as $container) {
+            $cont = $containerRepository->find($container['container_id']);
+            switch ($container['operation_todo']) {
+                case 'DELETE':
+                    $entityManager->remove($cont);
+                    $entityManager->flush();
+                    break;
+                case 'UPGRADE':
+                    foreach ($cont->getC2users() as $role) {
+                        if ($role->getMode() === ContainerModeEnum::RW) {
+                            $role->setMode(ContainerModeEnum::RWM);
+                            $entityManager->persist($role);
+                            $entityManager->flush();
+                        }
+                    }
+                    break;
+                case 'ADMIN':
+                    foreach ($cont->getC2users() as $role) {
+                        if ($role->getUser()->getNick() == 'admin') {
+                            $entityManager->remove($role);
+                            $entityManager->flush();
+                        }
+                    }
+                    $u2c = new U2c();
+                    $u2c->setContainer($cont);
+                    $u2c->setMode(ContainerModeEnum::RWM);
+                    $u2c->setUser($userRepository->findOneBy(['nick' => 'admin']));
+                    $entityManager->persist($u2c);
+                    $entityManager->flush();
+                    break;
+                default:
+                    $entityManager->rollback();
+                    return ResponseHelper::jsonResponse(new Message('Something goes wrong'));
+            }
+        }
+        $entityManager->remove($usr);
+        $entityManager->flush();
+        $entityManager->commit();
         return ResponseHelper::jsonResponse(Message::createNoContent());
     }
 

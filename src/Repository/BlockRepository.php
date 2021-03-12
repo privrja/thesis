@@ -137,7 +137,27 @@ class BlockRepository extends ServiceEntityRepository {
             ->setParameters(['containerId' => $containerId, 'blockId' => $blockId])
             ->groupBy('seq.id, seq.sequenceType, seq.sequenceName, seq.sequence, seq.sequenceFormula, seq.sequenceMass, seq.sequenceSmiles, seq.source, seq.identifier, seq.decays, nmd.modificationName, cmd.modificationName, bmd.modificationName');
         if (isset($sort)) {
-            $qb->orderBy('seq.' . $sort->sort, $sort->order);
+            if ($sort->sort === 'family') {
+                $qb->addOrderBy('case when fam.sequenceFamilyName is null then 1 else 0 end', $sort->order)
+                    ->addOrderBy('fam.sequenceFamilyName', $sort->order);
+            } else if ($sort->sort === 'nModification') {
+                $qb->addOrderBy('case when nmd.modificationName is null then 1 else 0 end', $sort->order)
+                    ->addOrderBy('nmd.modificationName', $sort->order);
+            } else if ($sort->sort === 'cModification') {
+                $qb->addOrderBy('case when cmd.modificationName is null then 1 else 0 end', $sort->order)
+                    ->addOrderBy('cmd.modificationName', $sort->order);
+            } else if ($sort->sort === 'bModification') {
+                $qb->addOrderBy('case when bmd.modificationName is null then 1 else 0 end', $sort->order)
+                    ->addOrderBy('bmd.modificationName', $sort->order);
+            } else if ($sort->sort === 'identifier') {
+                $qb->addOrderBy('seq.source', $sort->order)
+                    ->addOrderBy('seq.identifier', $sort->order);
+            } else if ($sort->sort === 'usages') {
+                $qb->addOrderBy('blockUsages', $sort->order);
+            } else {
+                $qb->addOrderBy('case when seq.' . $sort->sort . ' is null then 1 else 0 end', $sort->order)
+                    ->addOrderBy('seq.' . $sort->sort, $sort->order);
+            }
         }
         return $qb->getQuery()
             ->getArrayResult();

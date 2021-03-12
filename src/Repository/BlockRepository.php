@@ -122,7 +122,7 @@ class BlockRepository extends ServiceEntityRepository {
         return $stmt->fetchAll();
     }
 
-    public function blockUsage(int $containerId, int $blockId, Sort $sort = null) {
+    public function blockUsage(int $containerId, int $blockId, array $filters, Sort $sort = null) {
         $qb = $this->createQueryBuilder('blc')
             ->select('seq.id, seq.sequenceType, seq.sequenceName, seq.sequence, seq.sequenceFormula as formula, seq.sequenceMass as mass, seq.sequenceSmiles as smiles, seq.source, seq.identifier, seq.decays, nmd.modificationName as nModification, cmd.modificationName as cModification, bmd.modificationName as bModification, group_concat(distinct fam.sequenceFamilyName order by fam.sequenceFamilyName asc) as family, count(1) as blockUsages')
             ->innerJoin('blc.b2s', 'b2s')
@@ -134,8 +134,73 @@ class BlockRepository extends ServiceEntityRepository {
             ->leftJoin('seq.bModification', 'bmd', Join::WITH, 'bmd.container = seq.container')
             ->where('blc.container = :containerId')
             ->andWhere('blc.id = :blockId')
-            ->setParameters(['containerId' => $containerId, 'blockId' => $blockId])
-            ->groupBy('seq.id, seq.sequenceType, seq.sequenceName, seq.sequence, seq.sequenceFormula, seq.sequenceMass, seq.sequenceSmiles, seq.source, seq.identifier, seq.decays, nmd.modificationName, cmd.modificationName, bmd.modificationName');
+            ->setParameters(['containerId' => $containerId, 'blockId' => $blockId]);
+        if (isset($filters['id'])) {
+            $qb->andWhere('seq.id = :id')
+                ->setParameter('id', $filters['id']);
+        }
+        if (isset($filters['sequenceType'])) {
+            $qb->andWhere('seq.sequenceType = :sequenceType')
+                ->setParameter('sequenceType', $filters['sequenceType']);
+        }
+        if (isset($filters['sequenceName'])) {
+            $qb->andWhere('seq.sequenceName like concat(\'%\', :sequenceName, \'%\')')
+                ->setParameter('sequenceName', $filters['sequenceName']);
+        }
+        if (isset($filters['sequence'])) {
+            $qb->andWhere('seq.sequence like concat(\'%\', :sequence, \'%\')')
+                ->setParameter('sequence', $filters['sequence']);
+        }
+        if (isset($filters['sequenceFormula'])) {
+            $qb->andWhere('seq.sequenceFormula like concat(\'%\', :sequenceFormula, \'%\')')
+                ->setParameter('sequenceFormula', $filters['sequenceFormula']);
+        }
+        if (isset($filters['sequenceMassFrom']) && isset($filters['sequenceMassTo'])) {
+            $qb->andWhere('seq.sequenceMass between :sequenceMassFrom and :sequenceMassTo')
+                ->setParameter('sequenceMassFrom', $filters['sequenceMassFrom'])
+                ->setParameter('sequenceMassTo', $filters['sequenceMassTo']);
+        } else {
+            if (isset($filters['sequenceMassFrom'])) {
+                $qb->andWhere('seq.sequenceMass >= :sequenceMassFrom')
+                    ->setParameter('sequenceMassFrom', $filters['sequenceMassFrom']);
+            }
+            if (isset($filters['sequenceMassTo'])) {
+                $qb->andWhere('seq.sequenceMass <= :sequenceMassTo')
+                    ->setParameter('sequenceMassTo', $filters['sequenceMassTo']);
+            }
+        }
+        if (isset($filters['source'])) {
+            $qb->andWhere('seq.source = :source')
+                ->setParameter('source', $filters['source']);
+        }
+        if (isset($filters['identifier'])) {
+            $qb->setParameter('identifier', $filters['identifier'])
+                ->andWhere('seq.identifier = :identifier');
+        }
+        if (isset($filters['nModification'])) {
+            $qb->andWhere('nmd.modificationName like concat(\'%\', :nModification, \'%\')')
+                ->setParameter('nModification', $filters['nModification']);
+        }
+        if (isset($filters['cModification'])) {
+            $qb->andWhere('cmd.modificationName like concat(\'%\', :cModification, \'%\')')
+                ->setParameter('cModification', $filters['cModification']);
+        }
+        if (isset($filters['bModification'])) {
+            $qb->andWhere('bmd.modificationName like concat(\'%\', :bModification, \'%\')')
+                ->setParameter('bModification', $filters['bModification']);
+        }
+        $qb->groupBy('seq.id, seq.sequenceType, seq.sequenceName, seq.sequence, seq.sequenceFormula, seq.sequenceMass, seq.sequenceSmiles, seq.source, seq.identifier, seq.decays, nmd.modificationName, cmd.modificationName, bmd.modificationName');
+        if (isset($filters['family']) && !isset($filters['usages'])) {
+            $qb->having('group_concat(fam.sequenceFamilyName) like concat(\'%\', :family, \'%\')')
+                ->setParameter('family', $filters['family']);
+        } else if (isset($filters['usages']) && !isset($filters['family'])) {
+            $qb->having('count(1) = :usages')
+                ->setParameter('usages', $filters['usages']);
+        } else if (isset($filters['family']) && isset($filters['usages'])) {
+            $qb->having('group_concat(fam.sequenceFamilyName) like concat(\'%\', :family, \'%\') and count(1) = :usages')
+                ->setParameter('family', $filters['family'])
+                ->setParameter('usages', $filters['usages']);
+        }
         if (isset($sort)) {
             if ($sort->sort === 'family') {
                 $qb->addOrderBy('case when fam.sequenceFamilyName is null then 1 else 0 end', $sort->order)

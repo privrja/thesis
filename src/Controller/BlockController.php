@@ -249,12 +249,16 @@ class BlockController extends AbstractController {
      * )
      */
     public function usageBlock(Container $container, Block $block, Request $request, BlockRepository $blockRepository, EntityManagerInterface $entityManager, Security $security, LoggerInterface $logger) {
+        $possibleFilters = ['id', 'sequenceName', 'sequence', 'sequenceType', 'sequenceFormula', 'sequenceMassFrom', 'sequenceMassTo', 'nModification', 'cModification', 'bModification','identifier', 'family', 'usages'];
+        $filters = RequestHelper::getFiltering($request, $possibleFilters);
+        $filters = RequestHelper::transformIdentifier($filters);
+        $sort = RequestHelper::getSorting($request);
         if ($container->getVisibility() === ContainerVisibilityEnum::PUBLIC) {
-            return new JsonResponse($blockRepository->blockUsage($container->getId(), $block->getId(), RequestHelper::getSorting($request)));
+            return new JsonResponse($blockRepository->blockUsage($container->getId(), $block->getId(), $filters, $sort));
         } else if ($this->isGranted("ROLE_USER")) {
             $containerModel = new ContainerModel($entityManager, $this->getDoctrine(), $security->getUser(), $logger);
             if ($containerModel->hasContainer($container->getId())) {
-                return new JsonResponse($blockRepository->blockUsage($container->getId(), $block->getId(), RequestHelper::getSorting($request)));
+                return new JsonResponse($blockRepository->blockUsage($container->getId(), $block->getId(), $filters, $sort));
             }
             return ResponseHelper::jsonResponse(new Message(ErrorConstants::ERROR_CONTAINER_INSUFIENT_RIGHTS, Response::HTTP_FORBIDDEN));
         }

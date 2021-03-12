@@ -102,7 +102,6 @@ class Block implements JsonSerializable {
 
     public function setBlockName(string $blockName): self {
         $this->blockName = $blockName;
-
         return $this;
     }
 
@@ -112,7 +111,6 @@ class Block implements JsonSerializable {
 
     public function setAcronym(string $acronym): self {
         $this->acronym = $acronym;
-
         return $this;
     }
 
@@ -122,7 +120,6 @@ class Block implements JsonSerializable {
 
     public function setResidue(string $residue): self {
         $this->residue = $residue;
-
         return $this;
     }
 
@@ -132,7 +129,6 @@ class Block implements JsonSerializable {
 
     public function setBlockMass(?float $blockMass): self {
         $this->blockMass = $blockMass;
-
         return $this;
     }
 
@@ -142,7 +138,6 @@ class Block implements JsonSerializable {
 
     public function setLosses(?string $losses): self {
         $this->losses = $losses;
-
         return $this;
     }
 
@@ -152,7 +147,6 @@ class Block implements JsonSerializable {
 
     public function setBlockSmiles(?string $blockSmiles): self {
         $this->blockSmiles = $blockSmiles;
-
         return $this;
     }
 
@@ -162,7 +156,6 @@ class Block implements JsonSerializable {
 
     public function setSource(?int $source): self {
         $this->source = $source;
-
         return $this;
     }
 
@@ -172,7 +165,6 @@ class Block implements JsonSerializable {
 
     public function setIdentifier(?string $identifier): self {
         $this->identifier = $identifier;
-
         return $this;
     }
 
@@ -188,7 +180,6 @@ class Block implements JsonSerializable {
             $this->b2s[] = $b2;
             $b2->setBlock($this);
         }
-
         return $this;
     }
 
@@ -200,7 +191,6 @@ class Block implements JsonSerializable {
                 $b2->setBlock(null);
             }
         }
-
         return $this;
     }
 
@@ -210,7 +200,6 @@ class Block implements JsonSerializable {
 
     public function setContainer(?Container $container): self {
         $this->container = $container;
-
         return $this;
     }
 
@@ -263,6 +252,10 @@ class Block implements JsonSerializable {
      */
     public function setIsPolyketide($isPolyketide): void {
         $this->isPolyketide = $isPolyketide;
+    }
+
+    public function emptyB2Family() {
+        $this->b2families = new ArrayCollection();
     }
 
     /**

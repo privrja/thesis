@@ -101,7 +101,7 @@ class BlockController extends AbstractController {
     }
 
     /**
-     * Update container values (name, visibility)
+     * Update block
      * @Route("/rest/container/{containerId}/block/{blockId}", name="block_update", methods={"PUT"}, requirements={"blockId"="\d+"})
      * @Entity("container", expr="repository.find(containerId)")
      * @Entity("block", expr="repository.find(blockId)")

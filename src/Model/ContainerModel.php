@@ -156,11 +156,6 @@ class ContainerModel {
         return $this->userRepository->isContainerForLoggedUserByContainerIdRWM($this->usr->getId(), $containerId);
     }
 
-//    public function getContainerModifications(array $filters, Sort $sort) {
-//        $this->modificationRepository->findBy($filters, )
-//        return $this->containerRepository->getContainerModifications($containerId, $filters, $sort);
-//    }
-
     public function deleteBlock(Container $container, Block $block): Message {
         $hasContainerRW = $this->hasContainerRW($container->getId());
         if (empty($hasContainerRW) || $container->getId() !== $block->getContainer()->getId()) {
@@ -176,13 +171,17 @@ class ContainerModel {
         if (empty($hasContainerRW) || $container->getId() !== $block->getContainer()->getId()) {
             return new Message(ErrorConstants::ERROR_CONTAINER_INSUFIENT_RIGHTS, Response::HTTP_FORBIDDEN);
         }
-        return $this->updateBlockProperties($trans, $block);
+        foreach ($block->getB2families() as $b2f) {
+            $this->entityManager->remove($b2f);
+        }
+        $block->emptyB2Family();
+        return $this->updateBlockProperties($container, $trans, $block);
     }
 
-    private function updateBlockProperties(BlockTransformed $trans, Block $block) {
+    private function updateBlockProperties(Container $container, BlockTransformed $trans, Block $block) {
         $acronym = $block->getAcronym();
         $this->entityManager->beginTransaction();
-        $block = $this->setupBlock($block, $trans);
+        $block = $this->setupBlock($container, $block, $trans);
         $this->entityManager->persist($block);
         $this->entityManager->flush();
         if ($acronym !== $trans->getAcronym()) {
@@ -211,21 +210,7 @@ class ContainerModel {
         return $this->saveBlock($container, $block, $trans, Message::createCreated());
     }
 
-    private function setupBlock(Block $block, BlockTransformed $trans) {
-        $block->setBlockName($trans->getBlockName());
-        $block->setAcronym($trans->getAcronym());
-        $block->setResidue($trans->getFormula());
-        $block->setBlockMass($trans->getMass());
-        $block->setLosses($trans->getLosses());
-        $block->setBlockSmiles($trans->getSmiles());
-        $block->setUsmiles($trans->getUSmiles());
-        $block->setSource($trans->getSource());
-        $block->setIdentifier($trans->getIdentifier());
-        $block->setIsPolyketide($trans->isPolyketide);
-        return $block;
-    }
-
-    private function saveBlock(Container $container, Block $block, BlockTransformed $trans, Message $message) {
+    private function setupBlock(Container $container, Block $block, BlockTransformed $trans) {
         foreach ($trans->family as $family) {
             if (is_numeric($family)) {
                 $sFamily = $this->blockFamilyRepository->findOneBy(['id' => $family, 'container' => $container->getId()]);
@@ -241,7 +226,21 @@ class ContainerModel {
             $b2f->setFamily($sFamily);
             $block->addB2family($b2f);
         }
-        $block = $this->setupBlock($block, $trans);
+        $block->setBlockName($trans->getBlockName());
+        $block->setAcronym($trans->getAcronym());
+        $block->setResidue($trans->getFormula());
+        $block->setBlockMass($trans->getMass());
+        $block->setLosses($trans->getLosses());
+        $block->setBlockSmiles($trans->getSmiles());
+        $block->setUsmiles($trans->getUSmiles());
+        $block->setSource($trans->getSource());
+        $block->setIdentifier($trans->getIdentifier());
+        $block->setIsPolyketide($trans->isPolyketide);
+        return $block;
+    }
+
+    private function saveBlock(Container $container, Block $block, BlockTransformed $trans, Message $message) {
+        $block = $this->setupBlock($container, $block, $trans);
         $this->entityManager->persist($block);
         $this->entityManager->flush();
         return $message;

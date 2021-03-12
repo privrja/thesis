@@ -401,6 +401,7 @@ class ContainerModel {
 
         $uniqueBlocks = [];
         $cntUniqueBlocks = 0;
+        $cntBlocks = 0;
         $sequenceHelper = new SequenceHelper($trans->getSequence(), SequenceEnum::$backValues[$trans->getSequenceType()], $blockArray);
         $b2s = $sequenceHelper->sequenceBlocksStructure($trans->getSequenceOriginal());
         foreach ($b2s as $connection) {
@@ -409,8 +410,10 @@ class ContainerModel {
                 $uniqueBlocks[$connection->getBlock()->getId()] = 1;
                 $cntUniqueBlocks++;
             }
+            $cntBlocks++;
         }
         $sequence->setUniqueBlockCount($cntUniqueBlocks);
+        $sequence->setBlockCount($cntBlocks);
 
         $this->entityManager->persist($sequence);
         $this->entityManager->flush();

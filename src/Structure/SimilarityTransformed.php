@@ -11,6 +11,9 @@ class SimilarityTransformed extends AbstractTransformed {
     public $sequenceName;
 
     /** @var int */
+    public $blockLengthUnique;
+
+    /** @var int */
     public $blockLength;
 
 }

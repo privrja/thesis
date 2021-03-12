@@ -11,7 +11,6 @@ use App\Entity\Container;
 use App\Entity\Sequence;
 use App\Enum\ContainerVisibilityEnum;
 use App\Model\ContainerModel;
-use App\Repository\SequenceRepository;
 use App\Structure\IValue;
 use App\Structure\SequenceFormulaStructure;
 use App\Structure\SequenceIdStructure;
@@ -168,7 +167,7 @@ class FinderController extends AbstractController {
         }
         $blocIds .= "')";
         $sequenceRepository = $entityManager->getRepository(Sequence::class);
-        return $sequenceRepository->similarityMore($containerId, $blocIds, $i);
+        return $sequenceRepository->similarityMore($containerId, $blocIds, $i, sizeof($smiles));
     }
 
 }

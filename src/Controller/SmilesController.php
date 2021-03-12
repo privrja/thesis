@@ -141,10 +141,10 @@ class SmilesController extends AbstractController {
         if ($setup->getSimilarity() === 'name') {
             return new JsonResponse($sequenceFamilyRepository->similarity(1, $trans->sequenceName));
         } else {
-            if ($trans->blockLength === 0) {
+            if ($trans->blockLengthUnique === 0) {
                 return ResponseHelper::jsonResponse(new Message(ErrorConstants::ERROR_EMPTY_PARAMS, Response::HTTP_BAD_REQUEST));
             }
-            return new JsonResponse($sequenceRepository->similarity(1, $trans->blocks, $trans->blockLength));
+            return new JsonResponse($sequenceRepository->similarity(1, $trans->blocks, $trans->blockLengthUnique, $trans->blockLength));
         }
     }
 

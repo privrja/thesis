@@ -81,6 +81,11 @@ class Sequence implements JsonSerializable {
     private $uniqueBlockCount;
 
     /**
+     * @ORM\Column(type="integer")
+     */
+    private $blockCount;
+
+    /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Modification", cascade={"persist"})
      */
     private $nModification;
@@ -126,7 +131,6 @@ class Sequence implements JsonSerializable {
 
     public function setSequenceType(string $sequenceType): self {
         $this->sequenceType = $sequenceType;
-
         return $this;
     }
 
@@ -136,7 +140,6 @@ class Sequence implements JsonSerializable {
 
     public function setSequenceName(string $sequenceName): self {
         $this->sequenceName = $sequenceName;
-
         return $this;
     }
 
@@ -146,7 +149,6 @@ class Sequence implements JsonSerializable {
 
     public function setSequenceFormula(string $sequenceFormula): self {
         $this->sequenceFormula = $sequenceFormula;
-
         return $this;
     }
 
@@ -156,7 +158,6 @@ class Sequence implements JsonSerializable {
 
     public function setSequenceMass(?float $sequenceMass): self {
         $this->sequenceMass = $sequenceMass;
-
         return $this;
     }
 
@@ -166,7 +167,6 @@ class Sequence implements JsonSerializable {
 
     public function setSequenceSmiles(?string $sequenceSmiles): self {
         $this->sequenceSmiles = $sequenceSmiles;
-
         return $this;
     }
 
@@ -176,7 +176,6 @@ class Sequence implements JsonSerializable {
 
     public function setSource(?int $source): self {
         $this->source = $source;
-
         return $this;
     }
 
@@ -186,7 +185,6 @@ class Sequence implements JsonSerializable {
 
     public function setIdentifier(?string $identifier): self {
         $this->identifier = $identifier;
-
         return $this;
     }
 
@@ -196,7 +194,6 @@ class Sequence implements JsonSerializable {
 
     public function setDecays(?string $decays): self {
         $this->decays = $decays;
-
         return $this;
     }
 
@@ -206,7 +203,6 @@ class Sequence implements JsonSerializable {
 
     public function setNModification(?Modification $nModification): self {
         $this->nModification = $nModification;
-
         return $this;
     }
 
@@ -216,7 +212,6 @@ class Sequence implements JsonSerializable {
 
     public function setCModification(?Modification $cModification): self {
         $this->cModification = $cModification;
-
         return $this;
     }
 
@@ -226,7 +221,6 @@ class Sequence implements JsonSerializable {
 
     public function setBModification(?Modification $bModification): self {
         $this->bModification = $bModification;
-
         return $this;
     }
 
@@ -357,6 +351,20 @@ class Sequence implements JsonSerializable {
      */
     public function setUniqueBlockCount(int $blockCount): void {
         $this->uniqueBlockCount = $blockCount;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getBlockCount() {
+        return $this->blockCount;
+    }
+
+    /**
+     * @param mixed $blockCount
+     */
+    public function setBlockCount($blockCount): void {
+        $this->blockCount = $blockCount;
     }
 
     /**

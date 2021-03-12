@@ -14,6 +14,9 @@ class SimilarityStructure extends AbstractStructure {
     public $sequenceName;
 
     /** @var int|null */
+    public $blockLengthUnique;
+
+    /** @var int|null */
     public $blockLength;
 
     public function checkInput(): Message {
@@ -26,13 +29,10 @@ class SimilarityStructure extends AbstractStructure {
     public function transform(): AbstractTransformed {
         $trans = new SimilarityTransformed();
         $trans->sequenceName = $this->sequenceName;
-        if (!isset($this->blockLength)) {
-            $trans->blockLength = sizeof($this->blocks);
-        } else {
-            $trans->blockLength = $this->blockLength;
-        }
+        $trans->blockLengthUnique = $this->setBlockLength($this->blockLengthUnique);
+        $trans->blockLength = $this->setBlockLength($this->blockLength);
         $trans->blocks = '(';
-        for ($i = 0; $i < $trans->blockLength; $i++) {
+        for ($i = 0; $i < $trans->blockLengthUnique; $i++) {
             if ($i === 0) {
                 $trans->blocks .= $this->blocks[$i];
             } else {
@@ -41,6 +41,14 @@ class SimilarityStructure extends AbstractStructure {
         }
         $trans->blocks .= ')';
         return $trans;
+    }
+
+    private function setBlockLength($length) {
+        if (!isset($length)) {
+            return sizeof($this->blocks);
+        } else {
+            return $length;
+        }
     }
 
 }

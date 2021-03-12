@@ -112,14 +112,14 @@ class SequenceRepository extends ServiceEntityRepository {
             ->getArrayResult();
     }
 
-    public function similarity($containerId, $blockIds, $blockLength) {
+    public function similarity($containerId, $blockIds, $blockLengthUnique, $blockLength) {
         $conn = $this->getEntityManager()->getConnection();
         $sql = '
         select fam.id as value, fam.sequence_family_name as label
         from (
         	select
         		seq.id as sequence_id,
-        		row_number() over (order by count(distinct b2s.block_id) / (:blockLength + seq.unique_block_count - count(distinct b2s.block_id)) desc) as RN
+        		row_number() over (order by count(distinct b2s.block_id) / (:blockLengthUnique + seq.unique_block_count - count(distinct b2s.block_id)) desc, abs(:blockLength - seq.block_count) asc) as RN
         	from sequence seq
         		left join msb.b2s b2s on b2s.sequence_id = seq.id and b2s.block_id in ' . $blockIds . '
         		join (
@@ -130,18 +130,18 @@ class SequenceRepository extends ServiceEntityRepository {
                 ) fam on fam.id = seq.id
             where seq.container_id = :containerId
         	group by seq.sequence_name, seq.id, seq.unique_block_count
-            having count(distinct b2s.block_id) / (:blockLength + seq.unique_block_count - count(distinct b2s.block_id)) >= 0.4
+            having count(distinct b2s.block_id) / (:blockLengthUnique + seq.unique_block_count - count(distinct b2s.block_id)) >= 0.4
         ) src
         	join msb.s2f on s2f.sequence_id = src.sequence_id
             join msb.sequence_family fam on fam.id = s2f.family_id and fam.container_id = :containerId and fam.sequence_family_name <> \'synthetic\'
         where src.RN = 1
         ';
         $stmt = $conn->prepare($sql);
-        $stmt->execute(['blockLength' => $blockLength, 'containerId' => $containerId]);
+        $stmt->execute(['blockLengthUnique' => $blockLengthUnique, 'blockLength' => $blockLength, 'containerId' => $containerId]);
         return $stmt->fetchAll();
     }
 
-    public function similarityMore($containerId, $blockIds, $blockLength) {
+    public function similarityMore($containerId, $blockIds, $blockLengthUnique, $blockLength) {
         $conn = $this->getEntityManager()->getConnection();
         $sql = '
         select src.id, src.sequenceName, src.smiles, src.formula, src.mass
@@ -152,7 +152,7 @@ class SequenceRepository extends ServiceEntityRepository {
                 seq.sequence_smiles as smiles,
         	    seq.sequence_formula as formula,
         	    seq.sequence_mass as mass,
-        		row_number() over (order by count(distinct b2s.block_id) / (:blockLength + seq.unique_block_count - count(distinct b2s.block_id)) desc) as RN
+        		row_number() over (order by count(distinct b2s.block_id) / (:blockLengthUnique + seq.unique_block_count - count(distinct b2s.block_id)) desc, abs(:blockLength - seq.block_count) asc) as RN
         	from sequence seq
         		left join msb.b2s b2s on b2s.sequence_id = seq.id and b2s.block_id in ' . $blockIds . '
         		join (
@@ -163,12 +163,12 @@ class SequenceRepository extends ServiceEntityRepository {
                 ) fam on fam.id = seq.id
             where seq.container_id = :containerId
         	group by seq.unique_block_count, seq.id, seq.sequence_name, seq.sequence_smiles, seq.sequence_formula, seq.sequence_mass
-            having count(distinct b2s.block_id) / (:blockLength + seq.unique_block_count - count(distinct b2s.block_id)) >= 0.5
+            having count(distinct b2s.block_id) / (:blockLengthUnique + seq.unique_block_count - count(distinct b2s.block_id)) >= 0.5
         ) src
         where src.RN <= 100
         ';
         $stmt = $conn->prepare($sql);
-        $stmt->execute(['blockLength' => $blockLength, 'containerId' => $containerId]);
+        $stmt->execute(['blockLengthUnique' => $blockLengthUnique, 'blockLength' => $blockLength, 'containerId' => $containerId]);
         return $stmt->fetchAll();
     }
 

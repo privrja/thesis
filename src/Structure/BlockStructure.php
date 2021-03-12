@@ -38,6 +38,9 @@ class BlockStructure extends AbstractStructure implements JsonSerializable {
     /** @var string|null */
     public $identifier;
 
+    /** @var array */
+    public $family;
+
     public function checkInput(): Message {
         if (empty($this->blockName) || empty($this->acronym)) {
             return new Message(ErrorConstants::ERROR_EMPTY_PARAMS);
@@ -65,6 +68,11 @@ class BlockStructure extends AbstractStructure implements JsonSerializable {
         $trans->setIdentifier($this->identifier);
         $trans->setLosses($this->losses);
         $trans->setSmiles($this->smiles);
+        if ($this->family === null) {
+            $trans->family = [];
+        } else {
+            $trans->family = $this->family;
+        }
         if (!empty($this->smiles)) {
             try {
                 $graph = new Graph($this->smiles);

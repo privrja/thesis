@@ -23,7 +23,7 @@ class B2f
     private $block;
 
     /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\BlockFamily", inversedBy="f2blocks")
+     * @ORM\ManyToOne(targetEntity="App\Entity\BlockFamily", inversedBy="f2blocks", cascade={"persist"})
      * @ORM\JoinColumn(nullable=false)
      */
     private $family;

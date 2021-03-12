@@ -8,6 +8,7 @@ use App\Base\Message;
 use App\Base\ResponseHelper;
 use App\Base\SequenceHelper;
 use App\Constant\ErrorConstants;
+use App\Entity\B2f;
 use App\Entity\B2s;
 use App\Entity\Block;
 use App\Entity\BlockFamily;
@@ -51,6 +52,7 @@ class ContainerModel {
     private $blockRepository;
     private $u2cRepository;
     private $sequenceFamilyRepository;
+    private $blockFamilyRepository;
     private $modificationRepository;
     private $sequenceRepository;
 
@@ -71,6 +73,7 @@ class ContainerModel {
         $this->blockRepository = $doctrine->getRepository(Block::class);
         $this->u2cRepository = $doctrine->getRepository(U2c::class);
         $this->sequenceFamilyRepository = $doctrine->getRepository(SequenceFamily::class);
+        $this->blockFamilyRepository = $doctrine->getRepository(BlockFamily::class);
         $this->modificationRepository = $doctrine->getRepository(Modification::class);
         $this->sequenceRepository = $doctrine->getRepository(Sequence::class);
     }
@@ -205,7 +208,7 @@ class ContainerModel {
         }
         $block = new Block();
         $block->setContainer($container);
-        return $this->saveBlock($block, $trans, Message::createCreated());
+        return $this->saveBlock($container, $block, $trans, Message::createCreated());
     }
 
     private function setupBlock(Block $block, BlockTransformed $trans) {
@@ -222,11 +225,25 @@ class ContainerModel {
         return $block;
     }
 
-    private function saveBlock(Block $block, BlockTransformed $trans, Message $message) {
+    private function saveBlock(Container $container, Block $block, BlockTransformed $trans, Message $message) {
+        foreach ($trans->family as $family) {
+            if (is_numeric($family)) {
+                $sFamily = $this->blockFamilyRepository->findOneBy(['id' => $family, 'container' => $container->getId()]);
+                if (!isset($sFamily)) {
+                    return new Message(ErrorConstants::ERROR_SEQUENCE_FAMILY_NOT_FOUND);
+                }
+            } else {
+                $sFamily = new BlockFamily();
+                $sFamily->setContainer($container);
+                $sFamily->setBlockFamilyName($family);
+            }
+            $b2f = new B2f();
+            $b2f->setFamily($sFamily);
+            $block->addB2family($b2f);
+        }
         $block = $this->setupBlock($block, $trans);
         $this->entityManager->persist($block);
         $this->entityManager->flush();
-        $this->entityManager->commit();
         return $message;
     }
 

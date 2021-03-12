@@ -83,7 +83,7 @@ class Block implements JsonSerializable {
     private $container;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\B2f", mappedBy="block")
+     * @ORM\OneToMany(targetEntity="App\Entity\B2f", mappedBy="block", cascade={"persist", "remove"})
      */
     private $b2families;
 

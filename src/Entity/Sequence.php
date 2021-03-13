@@ -116,9 +116,15 @@ class Sequence implements JsonSerializable {
      */
     private $s2families;
 
+    /**
+     * @ORM\OneToMany(targetEntity=Organism::class, mappedBy="sequence", orphanRemoval=true)
+     */
+    private $S2Organisms;
+
     public function __construct() {
         $this->b2s = new ArrayCollection();
         $this->s2families = new ArrayCollection();
+        $this->S2Organisms = new ArrayCollection();
     }
 
     public function getId(): ?int {
@@ -386,6 +392,36 @@ class Sequence implements JsonSerializable {
             'cModification' => $this->cModification,
             'bModification' => $this->bModification,
         ];
+    }
+
+    /**
+     * @return Collection|Organism[]
+     */
+    public function getS2Organisms(): Collection
+    {
+        return $this->S2Organisms;
+    }
+
+    public function addS2Organism(Organism $s2Organism): self
+    {
+        if (!$this->S2Organisms->contains($s2Organism)) {
+            $this->S2Organisms[] = $s2Organism;
+            $s2Organism->setSequence($this);
+        }
+
+        return $this;
+    }
+
+    public function removeS2Organism(Organism $s2Organism): self
+    {
+        if ($this->S2Organisms->removeElement($s2Organism)) {
+            // set the owning side to null (unless already changed)
+            if ($s2Organism->getSequence() === $this) {
+                $s2Organism->setSequence(null);
+            }
+        }
+
+        return $this;
     }
 
 }

@@ -62,6 +62,11 @@ class Container implements JsonSerializable
      */
     private $c2users;
 
+    /**
+     * @ORM\OneToMany(targetEntity=Organism::class, mappedBy="container", orphanRemoval=true)
+     */
+    private $organisms;
+
     public function __construct()
     {
         $this->sequenceId = new ArrayCollection();
@@ -70,6 +75,7 @@ class Container implements JsonSerializable
         $this->blockFamilies = new ArrayCollection();
         $this->sequenceFamilies = new ArrayCollection();
         $this->c2users = new ArrayCollection();
+        $this->organisms = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -292,6 +298,36 @@ class Container implements JsonSerializable
      */
     public function jsonSerialize() {
         return [EntityColumnsEnum::ID => $this->id, EntityColumnsEnum::CONTAINER_NAME => $this->containerName, EntityColumnsEnum::CONTAINER_VISIBILITY => $this->visibility];
+    }
+
+    /**
+     * @return Collection|Organism[]
+     */
+    public function getOrganisms(): Collection
+    {
+        return $this->organisms;
+    }
+
+    public function addOrganism(Organism $organism): self
+    {
+        if (!$this->organisms->contains($organism)) {
+            $this->organisms[] = $organism;
+            $organism->setContainer($this);
+        }
+
+        return $this;
+    }
+
+    public function removeOrganism(Organism $organism): self
+    {
+        if ($this->organisms->removeElement($organism)) {
+            // set the owning side to null (unless already changed)
+            if ($organism->getContainer() === $this) {
+                $organism->setContainer(null);
+            }
+        }
+
+        return $this;
     }
 
 }

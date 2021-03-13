@@ -59,7 +59,6 @@ class Modification implements JsonSerializable {
 
     public function setModificationName(string $modificationName): self {
         $this->modificationName = $modificationName;
-
         return $this;
     }
 
@@ -69,7 +68,6 @@ class Modification implements JsonSerializable {
 
     public function setModificationFormula(string $modificationFormula): self {
         $this->modificationFormula = $modificationFormula;
-
         return $this;
     }
 
@@ -79,7 +77,6 @@ class Modification implements JsonSerializable {
 
     public function setModificationMass(?float $modificationMass): self {
         $this->modificationMass = $modificationMass;
-
         return $this;
     }
 
@@ -89,7 +86,6 @@ class Modification implements JsonSerializable {
 
     public function setNTerminal(bool $nTerminal): self {
         $this->nTerminal = $nTerminal;
-
         return $this;
     }
 
@@ -99,7 +95,6 @@ class Modification implements JsonSerializable {
 
     public function setCTerminal(bool $cTerminal): self {
         $this->cTerminal = $cTerminal;
-
         return $this;
     }
 
@@ -109,7 +104,6 @@ class Modification implements JsonSerializable {
 
     public function setContainer(?Container $container): self {
         $this->container = $container;
-
         return $this;
     }
 
@@ -126,4 +120,5 @@ class Modification implements JsonSerializable {
             'cTerminal' => $this->cTerminal
         ];
     }
+
 }

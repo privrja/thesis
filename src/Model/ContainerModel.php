@@ -20,6 +20,7 @@ use App\Entity\SequenceFamily;
 use App\Entity\U2c;
 use App\Entity\User;
 use App\Enum\ContainerModeEnum;
+use App\Enum\ContainerVisibilityEnum;
 use App\Enum\SequenceEnum;
 use App\Exception\IllegalStateException;
 use App\Smiles\Graph;
@@ -185,7 +186,7 @@ class ContainerModel {
         $this->entityManager->persist($block);
         $this->entityManager->flush();
         if ($acronym !== $trans->getAcronym()) {
-            $blockUsages = $this->blockRepository->blockUsage($block->getContainer()->getId(), $block->getId());
+            $blockUsages = $this->blockRepository->blockUsage($block->getContainer()->getId(), $block->getId(), []);
             foreach ($blockUsages as $usage) {
                 $sequence = $this->sequenceRepository->generateSequence($usage['id']);
                 if (sizeof($sequence) > 0) {
@@ -450,10 +451,10 @@ class ContainerModel {
                 try {
                     $graph = new Graph($block->smiles);
                 } catch (InvalidArgumentException $exception) {
-                   $sBlock->setUsmiles($block->smiles);
-                   if ($block->formula !== null) {
-                       $sBlock->setResidue($block->formula);
-                   }
+                    $sBlock->setUsmiles($block->smiles);
+                    if ($block->formula !== null) {
+                        $sBlock->setResidue($block->formula);
+                    }
                     if ($block->mass === null && $block->formula !== null) {
                         try {
                             $sBlock->setBlockMass(FormulaHelper::computeMass($sBlock->getResidue()));
@@ -618,32 +619,32 @@ class ContainerModel {
         return Message::createNoContent();
     }
 
-   private function collaboratorCheck(Container $container, User $collaborator) {
-       $hasContainerRWM = $this->hasContainerRWM($container->getId());
-       if (empty($hasContainerRWM)) {
-           return new Message(ErrorConstants::ERROR_CONTAINER_INSUFIENT_RIGHTS, Response::HTTP_FORBIDDEN);
-       }
-       $u2c = $this->u2cRepository->findOneBy(['user' => $collaborator->getId(), 'container' => $container->getId()]);
-       if ($u2c->getMode() === ContainerModeEnum::RWM) {
-           $lastRWM = $this->u2cRepository->count(['container' => $container->getId(), 'mode' => ContainerModeEnum::RWM]);
-           if ($lastRWM < 2) {
-               return new Message(ErrorConstants::ERROR_CANT_DELETE_LAST_RWM_USER);
-           }
-       }
-       return $u2c;
-   }
+    private function collaboratorCheck(Container $container, User $collaborator) {
+        $hasContainerRWM = $this->hasContainerRWM($container->getId());
+        if (empty($hasContainerRWM)) {
+            return new Message(ErrorConstants::ERROR_CONTAINER_INSUFIENT_RIGHTS, Response::HTTP_FORBIDDEN);
+        }
+        $u2c = $this->u2cRepository->findOneBy(['user' => $collaborator->getId(), 'container' => $container->getId()]);
+        if ($u2c->getMode() === ContainerModeEnum::RWM) {
+            $lastRWM = $this->u2cRepository->count(['container' => $container->getId(), 'mode' => ContainerModeEnum::RWM]);
+            if ($lastRWM < 2) {
+                return new Message(ErrorConstants::ERROR_CANT_DELETE_LAST_RWM_USER);
+            }
+        }
+        return $u2c;
+    }
 
-   public function cloneSequence(Container $container, Sequence $sequence): JsonResponse {
+    public function cloneSequence(Container $container, Sequence $sequence): JsonResponse {
         if (!$this->hasContainerRW($container->getId())) {
             return ResponseHelper::jsonResponse(new Message(ErrorConstants::ERROR_CONTAINER_INSUFIENT_RIGHTS, Response::HTTP_FORBIDDEN));
         }
         $postFix = GeneratorHelper::generate(self::CLONE_LENGTH);
-        while($this->sequenceRepository->findOneBy(['container' => $container->getId(), 'sequenceName' => $sequence->getSequenceName() . '-' . $postFix])) {
+        while ($this->sequenceRepository->findOneBy(['container' => $container->getId(), 'sequenceName' => $sequence->getSequenceName() . '-' . $postFix])) {
             $postFix = GeneratorHelper::generate(self::CLONE_LENGTH);
         }
         $clone = new Sequence();
         $clone->setContainer($sequence->getContainer());
-        $clone->setSequenceName($sequence->getSequenceName() . '-' .  $postFix);
+        $clone->setSequenceName($sequence->getSequenceName() . '-' . $postFix);
         $clone->setSequenceType($sequence->getSequenceType());
         $clone->setSequence($sequence->getSequence());
         $clone->setSequenceOriginal($sequence->getSequenceOriginal());
@@ -676,6 +677,157 @@ class ContainerModel {
         $seq = new SequenceCloneExport();
         $seq->id = $clone->getId();
         return new JsonResponse($seq);
-   }
+    }
+
+    public function cloneContainer(Container $container): Message {
+        $this->entityManager->beginTransaction();
+        $postFix = GeneratorHelper::generate(self::CLONE_LENGTH);
+        while ($this->containerRepository->findOneBy(['containerName' => $container->getContainerName() . '-' . $postFix])) {
+            $postFix = GeneratorHelper::generate(self::CLONE_LENGTH);
+        }
+        $cloneContainer = new Container();
+        $cloneContainer->setVisibility(ContainerVisibilityEnum::PRIVATE);
+        $cloneContainer->setContainerName($container->getContainerName() . '-' . $postFix);
+        $this->entityManager->persist($cloneContainer);
+        $this->entityManager->flush();
+
+        $u2c = new U2c();
+        $u2c->setMode(ContainerModeEnum::RWM);
+        $u2c->setUser($this->usr);
+        $u2c->setContainer($cloneContainer);
+        $this->entityManager->persist($u2c);
+        $this->entityManager->flush();
+
+        /** Clone families */
+        foreach ($container->getBlockFamilies() as $b2f) {
+            $cloneBlockFamily = new BlockFamily();
+            $cloneBlockFamily->setContainer($cloneContainer);
+            $cloneBlockFamily->setBlockFamilyName($b2f->getBlockFamilyName());
+            $this->entityManager->persist($cloneBlockFamily);
+            $this->entityManager->flush();
+        }
+
+        foreach ($container->getSequenceFamilies() as $s2f) {
+            $cloneSequenceFamily = new SequenceFamily();
+            $cloneSequenceFamily->setContainer($cloneContainer);
+            $cloneSequenceFamily->setSequenceFamilyName($s2f->getSequenceFamilyName());
+            $this->entityManager->persist($cloneSequenceFamily);
+            $this->entityManager->flush();
+        }
+
+        foreach ($container->getModificationId() as $modification) {
+            $cloneModification = new Modification();
+            $cloneModification->setContainer($cloneContainer);
+            $cloneModification->setModificationName($modification->getModificationName());
+            $cloneModification->setModificationFormula($modification->getModificationFormula());
+            $cloneModification->setModificationMass($modification->getModificationMass());
+            $cloneModification->setNTerminal($modification->getNTerminal());
+            $cloneModification->setCTerminal($modification->getCTerminal());
+            $this->entityManager->persist($cloneModification);
+            $this->entityManager->flush();
+        }
+
+        foreach ($container->getBlockId() as $block) {
+            $cloneBlock = new Block();
+            $cloneBlock->setContainer($cloneContainer);
+            $cloneBlock->setBlockName($block->getBlockName());
+            $cloneBlock->setAcronym($block->getAcronym());
+            $cloneBlock->setResidue($block->getResidue());
+            $cloneBlock->setBlockMass($block->getBlockMass());
+            $cloneBlock->setBlockSmiles($block->getBlockSmiles());
+            $cloneBlock->setUsmiles($block->getUsmiles());
+            $cloneBlock->setSource($block->getSource());
+            $cloneBlock->setIdentifier($block->getIdentifier());
+            $cloneBlock->setIsPolyketide($block->getIsPolyketide());
+            $cloneBlock->setLosses($block->getLosses());
+            $this->entityManager->persist($cloneBlock);
+            $this->entityManager->flush();
+            /** @var BLockFamily $family */
+            foreach ($block->getB2families() as $family) {
+                $cloneFamily = new B2f();
+                $cloneFamily->setBlock($cloneBlock);
+                $fam = $this->blockFamilyRepository->findOneBy(['container' => $cloneContainer, 'blockFamilyName' => $family->getFamily()->getBlockFamilyName()]);
+                $cloneFamily->setFamily($fam);
+                $this->entityManager->persist($cloneFamily);
+                $this->entityManager->flush();
+            }
+        }
+
+        foreach ($container->getSequenceId() as $sequence) {
+            $cloneSequence = new Sequence();
+            $cloneSequence->setContainer($cloneContainer);
+            $cloneSequence->setSequenceName($sequence->getSequenceName());
+            $cloneSequence->setSequenceType($sequence->getSequenceType());
+            $cloneSequence->setSequence($sequence->getSequence());
+            $cloneSequence->setSequenceFormula($sequence->getSequenceFormula());
+            $cloneSequence->setSequenceMass($sequence->getSequenceMass());
+            $cloneSequence->setDecays($sequence->getDecays());
+            $cloneSequence->setSequenceSmiles($sequence->getSequenceSmiles());
+            $cloneSequence->setUsmiles($sequence->getUsmiles());
+            $cloneSequence->setBlockCount($sequence->getBlockCount());
+            $cloneSequence->setUniqueBlockCount($sequence->getUniqueBlockCount());
+            $cloneSequence->setSource($sequence->getSource());
+            $cloneSequence->setIdentifier($sequence->getIdentifier());
+            $cloneSequence->setSequenceOriginal($sequence->getSequenceOriginal());
+            $this->entityManager->persist($cloneSequence);
+            $this->entityManager->flush();
+
+            $nModification = $sequence->getNModification();
+            if (isset($nModification)) {
+                $nMod = $this->modificationRepository->findOneBy(['container' => $cloneContainer, 'modificationName' => $nModification->getModificationName()]);
+                $cloneSequence->setNModification($nMod);
+            }
+
+            $cModification = $sequence->getCModification();
+            if (isset($cModification)) {
+                $cMod = $this->modificationRepository->findOneBy(['container' => $cloneContainer, 'modificationName' => $cModification->getModificationName()]);
+                $cloneSequence->setNModification($cMod);
+            }
+
+            $bModification = $sequence->getBModification();
+            if (isset($bModification)) {
+                $bMod = $this->modificationRepository->findOneBy(['container' => $cloneContainer, 'modificationName' => $bModification->getModificationName()]);
+                $cloneSequence->setNModification($bMod);
+            }
+            $this->entityManager->persist($cloneSequence);
+            $this->entityManager->flush();
+
+            /** @var SequenceFamily $family */
+            foreach ($sequence->getS2families() as $family) {
+                $cloneFamily = new S2f();
+                $cloneFamily->setSequence($cloneSequence);
+                $fam = $this->sequenceFamilyRepository->findOneBy(['container' => $cloneContainer, 'sequenceFamilyName' => $family->getFamily()->getSequenceFamilyName()]);
+                $cloneFamily->setFamily($fam);
+                $this->entityManager->persist($cloneFamily);
+                $this->entityManager->flush();
+            }
+
+            foreach ($sequence->getB2s() as $b2s) {
+                $cloneB2s = new B2s();
+                $cloneB2s->setSequence($cloneSequence);
+                $cloneB2s->setSort($b2s->getSort());
+                $cloneB2s->setIsBranch($b2s->getIsBranch());
+                $cloneB2s->setBlockOriginalId($b2s->getBlockOriginalId());
+
+                $actBlock = $this->blockRepository->findOneBy(['container' => $cloneContainer, 'blockName' => $b2s->getBlock()->getBlockName()]);
+                $cloneB2s->setBlock($actBlock);
+                $next = $b2s->getNextBlock();
+                if (isset($next)) {
+                    $nextBlock = $this->blockRepository->findOneBy(['container' => $cloneContainer, 'blockName' => $next->getBlockName()]);
+                    $cloneB2s->setNextBlock($nextBlock);
+                }
+                $branchBlock = $b2s->getNextBlock();
+                if (isset($branchBlock)) {
+                    $branchBlock = $this->blockRepository->findOneBy(['container' => $cloneContainer, 'blockName' => $branchBlock->getBlockName()]);
+                    $cloneB2s->setBranchReference($branchBlock);
+                }
+                $this->entityManager->persist($cloneB2s);
+                $this->entityManager->flush();
+            }
+        }
+        $this->entityManager->flush();
+        $this->entityManager->commit();
+        return Message::createCreated();
+    }
 
 }

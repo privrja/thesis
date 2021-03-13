@@ -573,6 +573,38 @@ class ContainerController extends AbstractController {
         return $this->import($container, $request, new SequenceCycloBranch($repository, $container->getId()), SequenceStructure::class, $entityManager, $security, $logger);
     }
 
+    /**
+     * Clone container
+     * @Route("/rest/container/{containerId}/clone", name="container_clone", methods={"POST"}, requirements={"containerId"="\d+"})
+     * @Entity("container", expr="repository.find(containerId)")
+     * @Entity("sequence", expr="repository.find(sequenceId)")
+     * @IsGranted("ROLE_USER")
+     * @param Container $container
+     * @param EntityManagerInterface $entityManager
+     * @param Security $security
+     * @param LoggerInterface $logger
+     * @return JsonResponse
+     *
+     * @SWG\Post(
+     *     tags={"Sequence"},
+     *     security={
+     *         {"ApiKeyAuth":{}}
+     *     },
+     *     @SWG\Response(response="204", description="Sucessfully deleted sequence."),
+     *     @SWG\Response(response="401", description="Return when user is not logged in."),
+     *     @SWG\Response(response="403", description="Return when permisions is insufient."),
+     *     @SWG\Response(response="404", description="Return when sequence is not found.")
+     * )
+     */
+    public function cloneContainer(Container $container, EntityManagerInterface $entityManager, Security $security, LoggerInterface $logger) {
+        $model = new ContainerModel($entityManager, $this->getDoctrine(), $security->getUser(), $logger);
+        if ($container->getVisibility() === ContainerVisibilityEnum::PUBLIC || $model->hasContainer($container->getId())) {
+            return ResponseHelper::jsonResponse($model->cloneContainer($container));
+        } else {
+            return ResponseHelper::jsonResponse(new Message(ErrorConstants::ERROR_CONTAINER_INSUFIENT_RIGHTS, Response::HTTP_FORBIDDEN));
+        }
+    }
+
     private function import(Container $container, Request $request, AbstractCycloBranch $import, $className, EntityManagerInterface $entityManager, Security $security, LoggerInterface $logger) {
         $model = new ContainerModel($entityManager, $this->getDoctrine(), $security->getUser(), $logger);
         if ($model->hasContainerRW($container->getId())) {

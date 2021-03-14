@@ -27,7 +27,7 @@ class BaseAminoAcids {
         $tryptophan = new Block();
         $tryptophan->setBlockName("Tryptophan");
         $tryptophan->setAcronym("Trp");
-        $tryptophan->setResidue("C11H10N20");
+        $tryptophan->setResidue("C11H10N2O");
         $tryptophan->setBlockMass(186.07931300000001328);
         $tryptophan->setBlockSmiles("C1=CC=C2C(=C1)C(=CN2)CC(C(=O)O)N");
         $tryptophan->setUsmiles("NC(CC1=CNC2=CC=CC=C12)C(O)=O");

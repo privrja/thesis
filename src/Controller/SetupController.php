@@ -36,6 +36,15 @@ class SetupController extends AbstractController {
      *     security={
      *         {"ApiKeyAuth":{}}
      *     },
+     *     @SWG\Parameter(
+     *          name="body",
+     *          in="body",
+     *          type="string",
+     *          required=true,
+     *          description="Setup similarity method computing for application, values: name or tanimoto",
+     *          @SWG\Schema(type="string",
+     *              example="{""similarity"":""tanimoto""}")
+     *      ),
      *     @SWG\Response(response="204", description="Similarity method set."),
      *     @SWG\Response(response="401", description="Return when user is not logged in."),
      *     @SWG\Response(response="403", description="Return when you don't have right for operation.")

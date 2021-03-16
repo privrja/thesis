@@ -46,8 +46,16 @@ class SecurityController extends AbstractController {
      *
      * @SWG\Post(
      *     tags={"Auth"},
+     *     @SWG\Parameter(
+     *          name="body",
+     *          in="body",
+     *          type="string",
+     *          required=true,
+     *          description="Setup similarity method computing for application, values: name or tanimoto",
+     *          @SWG\Schema(type="string",
+     *              example="{""name"":""kokoska"",""password"":""H6saf@sd%sdp""}")
+     *      ),
      *     @SWG\Response(response="201", description="User created"),
-     *     @SWG\Response(response="500", description="Internal server Error"),
      *     @SWG\Response(response="400", description="Name is taken")
      * )
      */
@@ -123,7 +131,7 @@ class SecurityController extends AbstractController {
     }
 
     /**
-     * Change
+     * Change password
      * @Route("/rest/user", name="change", methods={"PUT"})
      * @IsGranted("ROLE_USER")
      * @param Request $request
@@ -138,6 +146,15 @@ class SecurityController extends AbstractController {
      *     security={
      *         {"ApiKeyAuth":{}}
      *     },
+     *     @SWG\Parameter(
+     *          name="body",
+     *          in="body",
+     *          type="string",
+     *          required=true,
+     *          description="Setup similarity method computing for application, values: name or tanimoto",
+     *          @SWG\Schema(type="string",
+     *              example="{""password"":""H6saf@sd%sdp2""}")
+     *      ),
      *     @SWG\Response(response="201", description="Password changed"),
      *     @SWG\Response(response="500", description="Internal server Error"),
      *     @SWG\Response(response="400", description="Name is taken")
@@ -244,6 +261,7 @@ class SecurityController extends AbstractController {
      *         {"ApiKeyAuth":{}}
      *     },
      *     @SWG\Response(response="204", description="User deleted."),
+     *     @SWG\Response(response="401", description="Bad auth."),
      * )
      *
      */

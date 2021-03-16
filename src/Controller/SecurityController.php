@@ -251,6 +251,7 @@ class SecurityController extends AbstractController {
      * @IsGranted("ROLE_USER")
      * @param U2cRepository $u2cRepository
      * @param ContainerRepository $containerRepository
+     * @param UserRepository $userRepository
      * @param Security $security
      * @param EntityManagerInterface $entityManager
      * @return JsonResponse
@@ -263,7 +264,6 @@ class SecurityController extends AbstractController {
      *     @SWG\Response(response="204", description="User deleted."),
      *     @SWG\Response(response="401", description="Bad auth."),
      * )
-     *
      */
     public function deleteUser(U2cRepository $u2cRepository, ContainerRepository $containerRepository, UserRepository $userRepository, Security $security, EntityManagerInterface $entityManager) {
         /** @var User $usr */

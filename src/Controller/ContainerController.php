@@ -524,6 +524,15 @@ class ContainerController extends AbstractController {
      *     security={
      *         {"ApiKeyAuth":{}}
      *     },
+     *     @SWG\Parameter(
+     *          name="body",
+     *          in="body",
+     *          type="string",
+     *          required=true,
+     *          description="Array with modification to import",
+     *          @SWG\Schema(type="string",
+     *              example="[{""modificationName"":""Acetyl"",""formula"":""H2C2O"",""mass"":42.0105646863,""nTerminal"":true,""cTerminal"":false},{""modificationName"":""Amidated"",""formula"":""HNO-1"",""mass"":-0.9840155848,""nTerminal"":false,""cTerminal"":false},{""modificationName"":""Ethanolamine"",""formula"":""H5C2N"",""mass"":43.0421991657,""nTerminal"":false,""cTerminal"":false},{""modificationName"":""Formyl"",""formula"":""CO"",""mass"":27.9949146221,""nTerminal"":true,""cTerminal"":false}]"),
+     *      ),
      *     @SWG\Response(response="200", description="Return list of not imported modifications."),
      *     @SWG\Response(response="403", description="Forbidden"),
      *     @SWG\Response(response="404", description="Not found."),
@@ -643,7 +652,7 @@ class ContainerController extends AbstractController {
             $errorStack = $import->import($container, $entityManager, $okStack, $errorStack);
             return new JsonResponse($errorStack, Response::HTTP_OK);
         } else {
-            return new JsonResponse(new Message(ErrorConstants::ERROR_CONTAINER_INSUFIENT_RIGHTS));
+            return ResponseHelper::jsonResponse(new Message(ErrorConstants::ERROR_CONTAINER_INSUFIENT_RIGHTS, Response::HTTP_FORBIDDEN));
         }
     }
 

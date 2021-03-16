@@ -97,7 +97,7 @@ class ContainerController extends AbstractController {
     }
 
     /**
-     * Return containers for logged user
+     * Return container detail
      * @Route("/rest/container/{containerId}", name="container_id", methods={"GET"})
      * @IsGranted("ROLE_USER")
      * @Entity("container", expr="repository.find(containerId)")
@@ -115,6 +115,7 @@ class ContainerController extends AbstractController {
      *     },
      *     @SWG\Response(response="200", description="Return specific container for user."),
      *     @SWG\Response(response="401", description="Return when user is not logged in."),
+     *     @SWG\Response(response="403", description="Return when user has not enought permissions"),
      *     @SWG\Response(response="404", description="Return when container is not found."),
      * )
      */

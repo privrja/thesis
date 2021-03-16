@@ -44,8 +44,17 @@ class FinderController extends AbstractController {
      *
      * @SWG\Post(
      *     tags={"Finder"},
-     *     @SWG\Response(response="200", description="Results"),
-     *     @SWG\Response(response="404", description="Not found"),
+     *     @SWG\Parameter(
+     *          name="body",
+     *          in="body",
+     *          type="string",
+     *          required=true,
+     *          description="Params: sequenceName.",
+     *          @SWG\Schema(type="string",
+     *              example="{""sequenceName"":""pseudacyclin""}")
+     *     ),
+     *     @SWG\Response(response="200", description="Results - even when not found anything -> result is array, so when not found anything, empty array is returned"),
+     *     @SWG\Response(response="404", description="Not found container"),
      *     @SWG\Response(response="403", description="Insuficient rights"),
      * )
      */
@@ -66,9 +75,18 @@ class FinderController extends AbstractController {
      *
      * @SWG\Post(
      *     tags={"Finder"},
-     *     @SWG\Response(response="200", description="Results"),
-     *     @SWG\Response(response="404", description="Not found"),
+     *     @SWG\Parameter(
+     *          name="body",
+     *          in="body",
+     *          type="string",
+     *          required=true,
+     *          description="Params: sequenceFormula.",
+     *          @SWG\Schema(type="string",
+     *              example="{""sequenceFormula"":""C97H139N19O17""}")
+     *     ),
+     *     @SWG\Response(response="200", description="Results - even when not found anything -> result is array, so hwne not found anaything empty array is returned"),
      *     @SWG\Response(response="403", description="Insuficient rights"),
+     *     @SWG\Response(response="404", description="Not found container"),
      * )
      */
     public function formula(Request $request, Container $container, EntityManagerInterface $entityManager, Security $security, LoggerInterface $logger) {
@@ -88,9 +106,18 @@ class FinderController extends AbstractController {
      *
      * @SWG\Post(
      *     tags={"Finder"},
-     *     @SWG\Response(response="200", description="Results"),
-     *     @SWG\Response(response="404", description="Not found"),
+     *     @SWG\Parameter(
+     *          name="body",
+     *          in="body",
+     *          type="string",
+     *          required=true,
+     *          description="Params: array with block SMILES",
+     *          @SWG\Schema(type="string",
+     *              example="{""smiles"":[""NCC(=O)O"",""OC(=O)C(NC=O)C(C)C"",""NC(C)C(=O)O"",""NC(CC(C)C)C(=O)O"",""NC(C)C(=O)O"",""NC(C(C)C)C(=O)O"",""NC(C(C)C)C(=O)O"",""NC(C(C)C)C(=O)O"",""NC(CC2=CNC1=C2C=CC=C1)C(=O)O"",""NC(CC(C)C)C(=O)O"",""NC(CC1=CC=C(O)C=C1)C(=O)O"",""NC(CC(C)C)C(=O)O"",""NC(CC2=CNC1=C2C=CC=C1)C(=O)O"",""NC(CC(C)C)C(=O)O"",""NC(CC2=CNC1=C2C=CC=C1)C(=O)O"",""NCCO""]}")
+     *     ),
+     *     @SWG\Response(response="200", description="Results - even when not found anything -> result is array, so hwne not found anaything empty array is returned"),
      *     @SWG\Response(response="403", description="Insuficient rights"),
+     *     @SWG\Response(response="404", description="Not found container"),
      * )
      */
     public function smiles(Request $request, Container $container, EntityManagerInterface $entityManager, Security $security, LoggerInterface $logger) {
@@ -110,9 +137,18 @@ class FinderController extends AbstractController {
      *
      * @SWG\Post(
      *     tags={"Finder"},
-     *     @SWG\Response(response="200", description="Results"),
-     *     @SWG\Response(response="404", description="Not found"),
+     *     @SWG\Parameter(
+     *          name="body",
+     *          in="body",
+     *          type="string",
+     *          required=true,
+     *          description="Params: id.",
+     *          @SWG\Schema(type="string",
+     *              example="{""id"": 3}")
+     *     ),
+     *     @SWG\Response(response="200", description="Results - even when not found anything -> result is array, so hwne not found anaything empty array is returned"),
      *     @SWG\Response(response="403", description="Insuficient rights"),
+     *     @SWG\Response(response="404", description="Not found container"),
      * )
      */
     public function identifier(Request $request, Container $container, EntityManagerInterface $entityManager, Security $security, LoggerInterface $logger) {

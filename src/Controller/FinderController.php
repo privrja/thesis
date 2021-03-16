@@ -121,36 +121,30 @@ class FinderController extends AbstractController {
 
     private function find(Container $container, Request $request, $structure, string $param, string $method, EntityManagerInterface $entityManager, Security $security, LoggerInterface $logger) {
         if ($container->getVisibility() === ContainerVisibilityEnum::PUBLIC) {
-            /** @var IValue $trans */
-            $trans = RequestHelper::evaluateRequest($request, $structure, $logger);
-            if ($trans instanceof JsonResponse) {
-                return $trans;
-            }
-            if ($method === self::METHOD_DEFAULT) {
-                $sequenceRepository = $entityManager->getRepository(Sequence::class);
-                return new JsonResponse($sequenceRepository->findBy(['container' => $container, $param => $trans->getValue()]));
-            } else {
-                return new JsonResponse($this->$method($container->getId(), $trans->getValue(), $entityManager));
-            }
+            return $this->findBy($container, $request, $structure, $param, $method, $entityManager, $logger);
         }
         if ($this->isGranted("USER_ROLE")) {
             $containerModel = new ContainerModel($entityManager, $this->getDoctrine(), $security->getUser(), $logger);
             if ($containerModel->hasContainer($container->getId())) {
-                /** @var IValue $trans */
-                $trans = RequestHelper::evaluateRequest($request, $structure, $logger);
-                if ($trans instanceof JsonResponse) {
-                    return $trans;
-                }
-                if ($method === self::METHOD_DEFAULT) {
-                    $sequenceRepository = $entityManager->getRepository(Sequence::class);
-                    return new JsonResponse($sequenceRepository->findBy(['container' => $container, $param => $trans->getValue()]));
-                } else {
-                    return new JsonResponse($this->$method($container->getId(), $trans->getValue(), $entityManager));
-                }
+                return $this->findBy($container, $request, $structure, $param, $method, $entityManager, $logger);
             }
             return ResponseHelper::jsonResponse(new Message(ErrorConstants::ERROR_CONTAINER_INSUFIENT_RIGHTS, Response::HTTP_FORBIDDEN));
         }
         return ResponseHelper::jsonResponse(new Message(ErrorConstants::ERROR_CONTAINER_NOT_FOUND, Response::HTTP_FORBIDDEN));
+    }
+
+    private function findBy(Container $container, Request $request, $structure, string $param, string $method, EntityManagerInterface $entityManager, LoggerInterface $logger) {
+        /** @var IValue $trans */
+        $trans = RequestHelper::evaluateRequest($request, $structure, $logger);
+        if ($trans instanceof JsonResponse) {
+            return $trans;
+        }
+        if ($method === self::METHOD_DEFAULT) {
+            $sequenceRepository = $entityManager->getRepository(Sequence::class);
+            return new JsonResponse($sequenceRepository->findBy(['container' => $container, $param => $trans->getValue()]));
+        } else {
+            return new JsonResponse($this->$method($container->getId(), $trans->getValue(), $entityManager));
+        }
     }
 
     private function likeName(int $containerId, string $name, EntityManagerInterface $entityManager) {

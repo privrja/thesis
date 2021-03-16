@@ -110,10 +110,13 @@ class SetupController extends AbstractController {
     /**
      * Get active conditions
      * @Route("/rest/setup/condition", name="setup_condition", methods={"GET"})
-     * @IsGranted("ROLE_ADMIN")
      * @param ConditionRepository $conditionRepository
      * @return JsonResponse
      *
+     * @SWG\Get(
+     *  tags={"Setup"},
+     *  @SWG\Response(response="204", description="Conditions reset."),
+     * )
      */
     public function getLastConditions(ConditionRepository $conditionRepository) {
         $data = $conditionRepository->findActiveCondition();

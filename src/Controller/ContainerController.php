@@ -266,14 +266,15 @@ class ContainerController extends AbstractController {
      *          in="body",
      *          type="string",
      *          required=true,
-     *          description="",
+     *          description="mode - permisions for new user",
      *          @SWG\Schema(type="string",
-     *              example=""),
+     *              example="{""mode"":""RW""}"),
      *      ),
      *     @SWG\Response(response="201", description="Create new container."),
      *     @SWG\Response(response="400", description="Return when input is wrong."),
      *     @SWG\Response(response="401", description="Return when user is not logged in."),
-     *     @SWG\Response(response="403", description="Return when user doesn't have enought permissions.")
+     *     @SWG\Response(response="403", description="Return when user doesn't have enought permissions."),
+     *     @SWG\Response(response="404", description="Return when container or user not found."),
      * )
      */
     public function addNewCollaborator(Container $container, User $collaborator, Request $request, EntityManagerInterface $entityManager, Security $security, LoggerInterface $logger) {
@@ -307,6 +308,7 @@ class ContainerController extends AbstractController {
      *     },
      *     @SWG\Response(response="204", description="Sucessfully removed collaborator."),
      *     @SWG\Response(response="401", description="Return when user is not logged in."),
+     *     @SWG\Response(response="403", description="Return when permissions is insuficient."),
      *     @SWG\Response(response="404", description="Return when container is not found.")
      * )
      */
@@ -335,8 +337,19 @@ class ContainerController extends AbstractController {
      *     security={
      *         {"ApiKeyAuth":{}}
      *     },
+     *     @SWG\Parameter(
+     *          name="body",
+     *          in="body",
+     *          type="string",
+     *          required=true,
+     *          description="mode - permisions for user",
+     *          @SWG\Schema(type="string",
+     *              example="{""mode"":""RW""}"),
+     *      ),
      *     @SWG\Response(response="204", description="Sucessfully removed collaborator."),
+     *     @SWG\Response(response="400", description="Return when input is bad"),
      *     @SWG\Response(response="401", description="Return when user is not logged in."),
+     *     @SWG\Response(response="403", description="Return when permissions is insuficient."),
      *     @SWG\Response(response="404", description="Return when container is not found.")
      * )
      */

@@ -45,7 +45,7 @@ class BlockController extends AbstractController {
      * @SWG\Get(
      *     tags={"Block"},
      *     @SWG\Response(response="200", description="Return list of blocks in container."),
-     *     @SWG\Response(response="401", description="Return when user has not acces to container."),
+     *     @SWG\Response(response="403", description="Return when user has not acces to container."),
      *     @SWG\Response(response="404", description="Return when container not found."),
      * )
      */
@@ -61,13 +61,10 @@ class BlockController extends AbstractController {
                 $containerModel = new ContainerModel($entityManager, $this->getDoctrine(), $security->getUser(), $logger);
                 if ($containerModel->hasContainer($container->getId())) {
                     return new JsonResponse($blockRepository->findBlocks($container->getId(), $filters, $sort), Response::HTTP_OK);
-                } else {
-                    return ResponseHelper::jsonResponse(new Message(ErrorConstants::ERROR_CONTAINER_NOT_EXISTS_FOR_USER, Response::HTTP_NOT_FOUND));
                 }
-            } else {
-                return ResponseHelper::jsonResponse(new Message(ErrorConstants::ERROR_CONTAINER_NOT_EXISTS_FOR_USER, Response::HTTP_UNAUTHORIZED));
             }
         }
+        return ResponseHelper::jsonResponse(new Message(ErrorConstants::ERROR_CONTAINER_NOT_EXISTS_FOR_USER, Response::HTTP_UNAUTHORIZED));
     }
 
     /**
@@ -147,7 +144,7 @@ class BlockController extends AbstractController {
     }
 
     /**
-     * Add new container for logged user
+     * Add new block for logged user to container
      * @Route("/rest/container/{containerId}/block", name="block_new", methods={"POST"})
      * @IsGranted("ROLE_USER")
      * @Entity("container", expr="repository.find(containerId)")
@@ -170,12 +167,13 @@ class BlockController extends AbstractController {
      *          required=true,
      *          description="Paramas: blockName, acronym, formula, mass, losses, smiles, source, identifier.",
      *          @SWG\Schema(type="string",
-     *              example=""),
-     *      ),
+     *              example="{""blockName"": ""cyclohexane"", ""acronym"": ""Chx"", ""formula"": ""C6H12"", ""mass"": 84.093900, ""smiles"": ""C1CCCCC1"", ""source"": 0, ""identifier"": "8078"}")
+     *     ),
      *     @SWG\Response(response="201", description="Create new container."),
      *     @SWG\Response(response="400", description="Return when input is wrong."),
      *     @SWG\Response(response="401", description="Return when user is not logged in."),
-     *     @SWG\Response(response="403", description="Return when permisions is insufient.")
+     *     @SWG\Response(response="403", description="Return when permisions is insufient."),
+     *     @SWG\Response(response="404", description="Return when not found container.")
      * )
      */
     public function addNewBlock(Container $container, Request $request, EntityManagerInterface $entityManager, Security $security, LoggerInterface $logger) {
@@ -249,7 +247,7 @@ class BlockController extends AbstractController {
      * )
      */
     public function usageBlock(Container $container, Block $block, Request $request, BlockRepository $blockRepository, EntityManagerInterface $entityManager, Security $security, LoggerInterface $logger) {
-        $possibleFilters = ['id', 'sequenceName', 'sequence', 'sequenceType', 'sequenceFormula', 'sequenceMassFrom', 'sequenceMassTo', 'nModification', 'cModification', 'bModification','identifier', 'family', 'usages'];
+        $possibleFilters = ['id', 'sequenceName', 'sequence', 'sequenceType', 'sequenceFormula', 'sequenceMassFrom', 'sequenceMassTo', 'nModification', 'cModification', 'bModification', 'identifier', 'family', 'usages'];
         $filters = RequestHelper::getFiltering($request, $possibleFilters);
         $filters = RequestHelper::transformIdentifier($filters);
         $sort = RequestHelper::getSorting($request);

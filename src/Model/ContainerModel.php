@@ -33,6 +33,7 @@ use App\Structure\SequenceCloneExport;
 use App\Structure\SequenceTransformed;
 use App\Structure\Sort;
 use App\Structure\UpdateContainerTransformed;
+use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
 use InvalidArgumentException;
@@ -242,8 +243,12 @@ class ContainerModel {
 
     private function saveBlock(Container $container, Block $block, BlockTransformed $trans, Message $message) {
         $block = $this->setupBlock($container, $block, $trans);
-        $this->entityManager->persist($block);
-        $this->entityManager->flush();
+        try {
+            $this->entityManager->persist($block);
+            $this->entityManager->flush();
+        } catch (UniqueConstraintViolationException $exception) {
+            return new Message('Block with this acronym is already in container');
+        }
         return $message;
     }
 

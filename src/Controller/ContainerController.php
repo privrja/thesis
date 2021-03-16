@@ -529,7 +529,7 @@ class ContainerController extends AbstractController {
      *          in="body",
      *          type="string",
      *          required=true,
-     *          description="Array with modification to import",
+     *          description="Array with modifications to import",
      *          @SWG\Schema(type="string",
      *              example="[{""modificationName"":""Acetyl"",""formula"":""H2C2O"",""mass"":42.0105646863,""nTerminal"":true,""cTerminal"":false},{""modificationName"":""Amidated"",""formula"":""HNO-1"",""mass"":-0.9840155848,""nTerminal"":false,""cTerminal"":false},{""modificationName"":""Ethanolamine"",""formula"":""H5C2N"",""mass"":43.0421991657,""nTerminal"":false,""cTerminal"":false},{""modificationName"":""Formyl"",""formula"":""CO"",""mass"":27.9949146221,""nTerminal"":true,""cTerminal"":false}]"),
      *      ),
@@ -560,6 +560,15 @@ class ContainerController extends AbstractController {
      *     security={
      *         {"ApiKeyAuth":{}}
      *     },
+     *     @SWG\Parameter(
+     *          name="body",
+     *          in="body",
+     *          type="string",
+     *          required=true,
+     *          description="Array with blocs to import",
+     *          @SWG\Schema(type="string",
+     *              example="[{""blockName"":""Tryptophan"",""acronym"":""Trp"",""formula"":""C11H10N20"",""mass"":186.079313,""losses"":null,""smiles"":""C1=CC=C2C(=C1)C(=CN2)CC(C(=O)O)N"",""source"":0,""identifier"":""6305""},{""blockName"":""Glycine"",""acronym"":""Gly"",""formula"":""C2H3NO"",""mass"":57.021464,""losses"":null,""smiles"":""C(C(=O)O)N"",""source"":0,""identifier"":""750""},{""blockName"":""Alanine"",""acronym"":""Ala"",""formula"":""C3H5NO"",""mass"":71.037114,""losses"":null,""smiles"":""CC(C(=O)O)N"",""source"":0,""identifier"":""5950""},{""blockName"":""Serine"",""acronym"":""Ser"",""formula"":""C3H5NO2"",""mass"":87.032028,""losses"":null,""smiles"":""C(C(C(=O)O)N)O"",""source"":0,""identifier"":""5951""},{""blockName"":""Cysteine"",""acronym"":""Cys"",""formula"":""C3H5NOS"",""mass"":103.009184,""losses"":null,""smiles"":""C(C(C(=O)O)N)S"",""source"":0,""identifier"":""5862""},{""blockName"":""Aspartic acid"",""acronym"":""Asp"",""formula"":""C4H5NO3"",""mass"":115.026943,""losses"":null,""smiles"":""C(C(C(=O)O)N)C(=O)O"",""source"":0,""identifier"":""5960""},{""blockName"":""Asparagine"",""acronym"":""Asn"",""formula"":""C4H6N2O2"",""mass"":114.042927,""losses"":null,""smiles"":""C(C(C(=O)O)N)C(=O)N"",""source"":0,""identifier"":""6267""},{""blockName"":""Threonine"",""acronym"":""Thr"",""formula"":""C4H7NO2"",""mass"":101.047678,""losses"":null,""smiles"":""CC(C(C(=O)O)N)O"",""source"":0,""identifier"":""6288""}]")
+     *      ),
      *     @SWG\Response(response="200", description="Return list of not imported blocks."),
      *     @SWG\Response(response="403", description="Forbidden"),
      *     @SWG\Response(response="404", description="Not found."),
@@ -587,6 +596,15 @@ class ContainerController extends AbstractController {
      *     security={
      *         {"ApiKeyAuth":{}}
      *     },
+     *     @SWG\Parameter(
+     *          name="body",
+     *          in="body",
+     *          type="string",
+     *          required=true,
+     *          description="Array with sequences to import",
+     *          @SWG\Schema(type="string",
+     *              example="[{""sequenceType"":""cyclic"",""sequenceName"":""cyclosporin A"",""formula"":""C62H111N11O12"",""mass"":1201.8413680855,""sequence"":""[NMe-Bmt]-[Abu]-[NMe-Gly]-[NMe-Leu]-[Val]-[NMe-Leu]-[Ala]-[Ala]-[NMe-Leu]-[NMe-Leu]-[NMe-Val]"",""nModification"":null,""cModification"":null,""bModification"":null,""smiles"":null,""source"":1,""identifier"":""25027415""},{""sequenceType"":""branched"",""sequenceName"":""dau 677 T2"",""formula"":""C61H91N15O20"",""mass"":1353.6564804411,""sequence"":""[Glu]-[Ser]-[Leu]\\([Lys]-[Asn]-[Phe]-[Ile]\\)[Asp]-[Gln]-[Tyr]-[Gly]"",""nModification"":""Acetyl"",""cModification"":""Acetyl"",""bModification"":null,""smiles"":null,""source"":null,""identifier"":null},{""sequenceType"":""branched"",""sequenceName"":""linearized pseudacyclin A"",""formula"":""C39H63N7O8"",""mass"":757.4738120355,""sequence"":""[Pro]-[Ile]-[Ile]\\([Orn]-[NAc-Ile]\\)[Phe]"",""nModification"":null,""cModification"":null,""bModification"":null,""smiles"":null,""source"":null,""identifier"":null},{""sequenceType"":""cyclic"",""sequenceName"":""pseudacyclin A"",""formula"":""C39H61N7O7"",""mass"":739.4632473492,""sequence"":""[Phe]-[Pro]-[Ile]-[Ile]-[Orn]-[NAc-Ile]"",""nModification"":null,""cModification"":null,""bModification"":null,""smiles"":null,""source"":1,""identifier"":""25028474""}]")
+     *      ),
      *     @SWG\Response(response="200", description="Return list of not imported sequences."),
      *     @SWG\Response(response="403", description="Forbidden"),
      *     @SWG\Response(response="404", description="Not found."),

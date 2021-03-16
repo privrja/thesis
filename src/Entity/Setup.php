@@ -31,7 +31,7 @@ class Setup {
 
     public function setSimilarity(string $similarity): self {
         $this->similarity = $similarity;
-
         return $this;
     }
+
 }

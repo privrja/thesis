@@ -5,8 +5,12 @@ namespace App\Controller;
 use App\Base\Message;
 use App\Base\RequestHelper;
 use App\Base\ResponseHelper;
+use App\Entity\Condition;
+use App\Repository\ConditionRepository;
 use App\Repository\SetupRepository;
 use App\Repository\UserRepository;
+use App\Structure\ConditionStructure;
+use App\Structure\ConditionTransformed;
 use App\Structure\SetupSimilarityStructure;
 use App\Structure\SetupSimilarityTransformed;
 use Doctrine\ORM\EntityManagerInterface;
@@ -65,8 +69,11 @@ class SetupController extends AbstractController {
 
     /**
      * Reset conditions
-     * @Route("/rest/setup/condition", name="setup_condition", methods={"POST"})
+     * @Route("/rest/setup/condition", name="setup_condition_reset", methods={"POST"})
      * @IsGranted("ROLE_ADMIN")
+     * @param Request $request
+     * @param LoggerInterface $logger
+     * @param EntityManagerInterface $entityManager
      * @param UserRepository $userRepository
      * @return JsonResponse
      *
@@ -80,12 +87,40 @@ class SetupController extends AbstractController {
      *     @SWG\Response(response="403", description="Return when you don't have right for operation.")
      * )
      */
-    public function resetConditions(UserRepository $userRepository) {
+    public function resetConditions(Request $request, LoggerInterface $logger, EntityManagerInterface $entityManager, UserRepository $userRepository) {
+        /** @var ConditionTransformed $trans */
+        $trans = RequestHelper::evaluateRequest($request, new ConditionStructure(), $logger);
+        if ($trans instanceof JsonResponse) {
+            return $trans;
+        }
+        $condition = new Condition();
+        $condition->setText($trans->text);
+        $entityManager->beginTransaction();
+        $entityManager->persist($condition);
+        $entityManager->flush();
         $res = $userRepository->resetConditions();
+        $entityManager->commit();
         if (!$res) {
             return ResponseHelper::jsonResponse(new Message('Failure', Response::HTTP_INTERNAL_SERVER_ERROR));
         }
-        return ResponseHelper::jsonResponse(Message::createNoContent());
+        return ResponseHelper::jsonResponse(Message::createOkMessage());
+    }
+
+
+    /**
+     * Get active conditions
+     * @Route("/rest/setup/condition", name="setup_condition", methods={"GET"})
+     * @IsGranted("ROLE_ADMIN")
+     * @param ConditionRepository $conditionRepository
+     * @return JsonResponse
+     *
+     */
+    public function getLastConditions(ConditionRepository $conditionRepository) {
+        $data = $conditionRepository->findActiveCondition();
+        if (isset($data) && sizeof($data) > 0) {
+            return new JsonResponse($data[0]);
+        }
+        return new JsonResponse(['text' => '']);
     }
 
 }

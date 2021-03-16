@@ -10,7 +10,7 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20210313144600 extends AbstractMigration
+final class Version20210316170222 extends AbstractMigration
 {
     public function getDescription() : string
     {
@@ -24,6 +24,7 @@ final class Version20210313144600 extends AbstractMigration
         $this->addSql('CREATE TABLE b2s (id INT AUTO_INCREMENT NOT NULL, sequence_id INT NOT NULL, block_id INT NOT NULL, next_block_id INT DEFAULT NULL, branch_reference_id INT DEFAULT NULL, is_branch TINYINT(1) DEFAULT \'0\' NOT NULL, block_original_id INT NOT NULL, sort INT NOT NULL, INDEX IDX_906EB2AB98FB19AE (sequence_id), INDEX IDX_906EB2ABE9ED820C (block_id), INDEX IDX_906EB2ABD1F7CEE2 (next_block_id), INDEX IDX_906EB2AB4BA1090F (branch_reference_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
         $this->addSql('CREATE TABLE block (id INT AUTO_INCREMENT NOT NULL, container_id INT NOT NULL, block_name VARCHAR(255) NOT NULL, acronym VARCHAR(30) NOT NULL, residue VARCHAR(255) NOT NULL, block_mass DOUBLE PRECISION DEFAULT NULL, losses VARCHAR(255) DEFAULT NULL, block_smiles VARCHAR(255) DEFAULT NULL, usmiles VARCHAR(255) DEFAULT NULL, source SMALLINT DEFAULT NULL, identifier VARCHAR(255) DEFAULT NULL, is_polyketide TINYINT(1) DEFAULT \'0\' NOT NULL, INDEX IDX_831B9722BC21F742 (container_id), UNIQUE INDEX UX_BLOCK_ACRONYM (acronym, container_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
         $this->addSql('CREATE TABLE block_family (id INT AUTO_INCREMENT NOT NULL, container_id INT NOT NULL, block_family_name VARCHAR(255) NOT NULL, INDEX IDX_EC4877D0BC21F742 (container_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
+        $this->addSql('CREATE TABLE `condition` (id INT AUTO_INCREMENT NOT NULL, text TEXT NOT NULL, PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
         $this->addSql('CREATE TABLE container (id INT AUTO_INCREMENT NOT NULL, container_name VARCHAR(255) NOT NULL, visibility VARCHAR(10) NOT NULL, INDEX IDX_CONTAINER_ID (id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
         $this->addSql('CREATE TABLE modification (id INT AUTO_INCREMENT NOT NULL, container_id INT NOT NULL, modification_name VARCHAR(255) NOT NULL, modification_formula VARCHAR(255) NOT NULL, modification_mass DOUBLE PRECISION DEFAULT NULL, n_terminal TINYINT(1) DEFAULT \'0\' NOT NULL, c_terminal TINYINT(1) DEFAULT \'0\' NOT NULL, INDEX IDX_EF6425D2BC21F742 (container_id), UNIQUE INDEX UX_MODIFICATION_NAME (modification_name, container_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
         $this->addSql('CREATE TABLE organism (id INT AUTO_INCREMENT NOT NULL, sequence_id INT NOT NULL, organism_id INT NOT NULL, container_id INT NOT NULL, INDEX IDX_D538A2C98FB19AE (sequence_id), INDEX IDX_D538A2C64180A36 (organism_id), INDEX IDX_D538A2CBC21F742 (container_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
@@ -87,6 +88,7 @@ final class Version20210313144600 extends AbstractMigration
         $this->addSql('DROP TABLE b2s');
         $this->addSql('DROP TABLE block');
         $this->addSql('DROP TABLE block_family');
+        $this->addSql('DROP TABLE `condition`');
         $this->addSql('DROP TABLE container');
         $this->addSql('DROP TABLE modification');
         $this->addSql('DROP TABLE organism');

@@ -28,7 +28,7 @@ use Swagger\Annotations as SWG;
 class ModificationController extends AbstractController {
 
     /**
-     * Return modifications for logged user
+     * Return modifications for container
      * @Route("/rest/container/{containerId}/modification", name="modification", methods={"GET"})
      * @Entity("container", expr="repository.find(containerId)")
      * @param Container $container
@@ -41,6 +41,8 @@ class ModificationController extends AbstractController {
      * @SWG\Get(
      *     tags={"Modification"},
      *     @SWG\Response(response="200", description="Return list of containers for logged user."),
+     *     @SWG\Response(response="403", description="Return when permisions is insuficient."),
+     *     @SWG\Response(response="404", description="Return when container is not found."),
      * )
      *
      */
@@ -86,8 +88,8 @@ class ModificationController extends AbstractController {
      *     },
      *     @SWG\Response(response="204", description="Sucessfully deleted container."),
      *     @SWG\Response(response="401", description="Return when user is not logged in."),
+     *     @SWG\Response(response="403", description="Return when permisions is insuficient."),
      *     @SWG\Response(response="404", description="Return when container is not found."),
-     *     @SWG\Response(response="403", description="Return when permisions is insufient.")
      * )
      */
     public function deleteModification(Container $container, Modification $modification, EntityManagerInterface $entityManager, Security $security, LoggerInterface $logger) {
@@ -120,15 +122,15 @@ class ModificationController extends AbstractController {
      *          in="body",
      *          type="string",
      *          required=true,
-     *          description="Paramas: blockName, acronym, formula, mass, losses, smiles, source, identifier.",
+     *          description="Paramas: modificationName, formula, nTerminal, cTerminal.",
      *          @SWG\Schema(type="string",
-     *              example=""),
+     *              example="{""modificationName"":""Modif"",""formula"":""CH2O"",""nTerminal"":false,""cTerminal"":true}"),
      *      ),
      *     @SWG\Response(response="204", description="Sucessfully update container."),
      *     @SWG\Response(response="400", description="Return when input is wrong."),
      *     @SWG\Response(response="401", description="Return when user is not logged in."),
-     *     @SWG\Response(response="403", description="Return when permisions is insufient."),
-     *     @SWG\Response(response="404", description="Return when container is not found.")
+     *     @SWG\Response(response="403", description="Return when permisions is insuficient."),
+     *     @SWG\Response(response="404", description="Return when container or modification is not found.")
      * )
      */
     public function updateModification(Container $container, Modification $modification, Request $request, EntityManagerInterface $entityManager, Security $security, LoggerInterface $logger) {
@@ -164,14 +166,14 @@ class ModificationController extends AbstractController {
      *          in="body",
      *          type="string",
      *          required=true,
-     *          description="Paramas: blockName, acronym, formula, mass, losses, smiles, source, identifier.",
+     *          description="Paramas: modificationName, formula, nTerminal, cTerminal.",
      *          @SWG\Schema(type="string",
-     *              example=""),
+     *              example="{""modificationName"":""Modif"",""formula"":""CH2O"",""nTerminal"":false,""cTerminal"":true}"),
      *      ),
      *     @SWG\Response(response="201", description="Create new container."),
      *     @SWG\Response(response="400", description="Return when input is wrong."),
      *     @SWG\Response(response="401", description="Return when user is not logged in."),
-     *     @SWG\Response(response="403", description="Return when permisions is insufient.")
+     *     @SWG\Response(response="403", description="Return when permisions is insuficient.")
      * )
      */
     public function addNewBlock(Container $container, Request $request, EntityManagerInterface $entityManager, Security $security, LoggerInterface $logger) {

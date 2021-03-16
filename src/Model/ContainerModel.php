@@ -421,8 +421,12 @@ class ContainerModel {
         $sequence->setUniqueBlockCount($cntUniqueBlocks);
         $sequence->setBlockCount($cntBlocks);
 
-        $this->entityManager->persist($sequence);
-        $this->entityManager->flush();
+        try {
+            $this->entityManager->persist($sequence);
+            $this->entityManager->flush();
+        } catch (UniqueConstraintViolationException $exception) {
+            return new Message('Sequence with this name is already in container');
+        }
         return $message;
     }
 

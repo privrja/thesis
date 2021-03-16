@@ -242,7 +242,6 @@ class Sequence implements JsonSerializable {
             $this->b2s[] = $b2;
             $b2->setSequence($this);
         }
-
         return $this;
     }
 
@@ -254,7 +253,6 @@ class Sequence implements JsonSerializable {
                 $b2->setSequence(null);
             }
         }
-
         return $this;
     }
 
@@ -264,7 +262,6 @@ class Sequence implements JsonSerializable {
 
     public function setContainer(?Container $container): self {
         $this->container = $container;
-
         return $this;
     }
 
@@ -280,7 +277,6 @@ class Sequence implements JsonSerializable {
             $this->s2families[] = $s2family;
             $s2family->setSequence($this);
         }
-
         return $this;
     }
 

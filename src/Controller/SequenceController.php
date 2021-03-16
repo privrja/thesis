@@ -51,14 +51,15 @@ class SequenceController extends AbstractController {
      *          in="body",
      *          type="string",
      *          required=true,
-     *          description="",
+     *          description="Many params: sequenceName, formula, mass, smiles, source, identifier, sequence - string record with block acronyms, decays - array from SmilesDrawer with id of decays edges, sequenceOriginal - same as sequence, but with id of numeric blocks, sequenceType - values: linear, branched, cyclic, branch-cyclic, linear-polyketide, cyclic-polyketide, other, nModification - id of modification in database, or new modification to create, cModification, bModification, family - array with id of sequence famillies, or families to create, blocks - array of blocks - id for blocks in database, or new blocks to create",
      *          @SWG\Schema(type="string",
-     *              example="4545"),
+     *              example="{""sequenceName"":""pseudacyclin a"",""formula"":""C39H61N7O7"",""mass"":739.463247,""smiles"":""CCC(C)C1C(=O)NC(C(=O)NCCCC(C(=O)NC(C(=O)N2CCCC2C(=O)N1)CC3=CC=CC=C3)NC(=O)C(C(C)CC)NC(=O)C)C(C)CC"",""source"":0,""identifier"":""46848855"",""sequence"":""[Ile]-[Pro]-[Phe]\\([Orn]-[NAc-Ile]\\)[Ile]"",""decays"":""[6,10,17,21,28,37]"",""sequenceOriginal"":""[0]-[4]-[3]\\([2]-[5]\\)[1]"",""sequenceType"":""branch-cyclic"",""nModification"":null,""cModification"":null,""bModification"":null,""family"":[""4""],""blocks"":[{""databaseId"":15,""originalId"":0,""sameAs"":null,""acronym"":""Ile"",""blockName"":""Isoleucine"",""smiles"":""CCC(C)C(N)C(O)=O"",""formula"":""C6H11NO"",""mass"":113.084064,""source"":0,""identifier"":""6306""},{""databaseId"":15,""originalId"":1,""sameAs"":0,""acronym"":""Ile"",""blockName"":""Isoleucine"",""smiles"":""CCC(C)C(N)C(O)=O"",""formula"":""C6H11NO"",""mass"":113.084064,""source"":0,""identifier"":""6306""},{""databaseId"":39,""originalId"":2,""sameAs"":null,""acronym"":""Orn"",""blockName"":""Ornithine"",""smiles"":""NCCCC(N)C(O)=O"",""formula"":""C5H10N2O"",""mass"":114.079313,""source"":0,""identifier"":""389""},{""databaseId"":19,""originalId"":3,""sameAs"":null,""acronym"":""Phe"",""blockName"":""Phenylalanine"",""smiles"":""NC(CC1=CC=CC=C1)C(O)=O"",""formula"":""C9H9NO"",""mass"":147.068414,""source"":0,""identifier"":""6140""},{""databaseId"":9,""originalId"":4,""sameAs"":null,""acronym"":""Pro"",""blockName"":""Proline"",""smiles"":""OC(=O)C1CCCN1"",""formula"":""C5H7NO"",""mass"":97.052764,""source"":0,""identifier"":""145742""},{""databaseId"":26,""originalId"":5,""sameAs"":null,""acronym"":""NAc-Ile"",""blockName"":""N-Acetyl-Isoleucine"",""smiles"":""CCC(C)C(NC(C)=O)C(O)=O"",""formula"":""C8H13NO2"",""mass"":155.094629,""source"":0,""identifier"":""306109""}]}")
      *      ),
      *     @SWG\Response(response="201", description="Create new sequence."),
      *     @SWG\Response(response="400", description="Return when input is wrong."),
      *     @SWG\Response(response="401", description="Return when user is not logged in."),
-     *     @SWG\Response(response="403", description="Return when permisions is insufient.")
+     *     @SWG\Response(response="403", description="Return when permisions is insufient."),
+     *     @SWG\Response(response="404", description="Return when container not found.")
      * )
      */
     public function addNewSequence(Container $container, Request $request, EntityManagerInterface $entityManager, Security $security, LoggerInterface $logger) {
@@ -87,7 +88,7 @@ class SequenceController extends AbstractController {
      * @SWG\Get(
      *     tags={"Sequence"},
      *     @SWG\Response(response="200", description="Return list of blocks in container."),
-     *     @SWG\Response(response="401", description="Return when user has not acces to container."),
+     *     @SWG\Response(response="403", description="Return when permisions is insufient."),
      *     @SWG\Response(response="404", description="Return when sequence not found."),
      * )
      */
@@ -107,7 +108,7 @@ class SequenceController extends AbstractController {
                     return ResponseHelper::jsonResponse(new Message(ErrorConstants::ERROR_CONTAINER_INSUFIENT_RIGHTS, Response::HTTP_FORBIDDEN));
                 }
             } else {
-                return ResponseHelper::jsonResponse(new Message(ErrorConstants::ERROR_CONTAINER_NOT_EXISTS_FOR_USER, Response::HTTP_UNAUTHORIZED));
+                return ResponseHelper::jsonResponse(new Message(ErrorConstants::ERROR_CONTAINER_INSUFIENT_RIGHTS, Response::HTTP_UNAUTHORIZED));
             }
         }
     }
@@ -133,7 +134,7 @@ class SequenceController extends AbstractController {
      *     @SWG\Response(response="204", description="Sucessfully deleted sequence."),
      *     @SWG\Response(response="401", description="Return when user is not logged in."),
      *     @SWG\Response(response="403", description="Return when permisions is insufient."),
-     *     @SWG\Response(response="404", description="Return when sequence is not found.")
+     *     @SWG\Response(response="404", description="Return when container or sequence not found.")
      * )
      */
     public function deleteSequence(Container $container, Sequence $sequence, EntityManagerInterface $entityManager, Security $security, LoggerInterface $logger) {
@@ -166,14 +167,15 @@ class SequenceController extends AbstractController {
      *          in="body",
      *          type="string",
      *          required=true,
-     *          description="",
+     *          description="Many params: sequenceName, formula, mass, smiles, source, identifier, sequence - string record with block acronyms, decays - array from SmilesDrawer with id of decays edges, sequenceOriginal - same as sequence, but with id of numeric blocks, sequenceType - values: linear, branched, cyclic, branch-cyclic, linear-polyketide, cyclic-polyketide, other, nModification - id of modification in database, or new modification to create, cModification, bModification, family - array with id of sequence famillies, or families to create, blocks - array of blocks - id for blocks in database, or new blocks to create",
      *          @SWG\Schema(type="string",
-     *              example="4545"),
+     *              example="{""sequenceName"":""pseudacyclin a"",""formula"":""C39H61N7O7"",""mass"":739.463247,""smiles"":""CCC(C)C1C(=O)NC(C(=O)NCCCC(C(=O)NC(C(=O)N2CCCC2C(=O)N1)CC3=CC=CC=C3)NC(=O)C(C(C)CC)NC(=O)C)C(C)CC"",""source"":0,""identifier"":""46848855"",""sequence"":""[Ile]-[Pro]-[Phe]\\([Orn]-[NAc-Ile]\\)[Ile]"",""decays"":""[6,10,17,21,28,37]"",""sequenceOriginal"":""[0]-[4]-[3]\\([2]-[5]\\)[1]"",""sequenceType"":""branch-cyclic"",""nModification"":null,""cModification"":null,""bModification"":null,""family"":[""4""],""blocks"":[{""databaseId"":15,""originalId"":0,""sameAs"":null,""acronym"":""Ile"",""blockName"":""Isoleucine"",""smiles"":""CCC(C)C(N)C(O)=O"",""formula"":""C6H11NO"",""mass"":113.084064,""source"":0,""identifier"":""6306""},{""databaseId"":15,""originalId"":1,""sameAs"":0,""acronym"":""Ile"",""blockName"":""Isoleucine"",""smiles"":""CCC(C)C(N)C(O)=O"",""formula"":""C6H11NO"",""mass"":113.084064,""source"":0,""identifier"":""6306""},{""databaseId"":39,""originalId"":2,""sameAs"":null,""acronym"":""Orn"",""blockName"":""Ornithine"",""smiles"":""NCCCC(N)C(O)=O"",""formula"":""C5H10N2O"",""mass"":114.079313,""source"":0,""identifier"":""389""},{""databaseId"":19,""originalId"":3,""sameAs"":null,""acronym"":""Phe"",""blockName"":""Phenylalanine"",""smiles"":""NC(CC1=CC=CC=C1)C(O)=O"",""formula"":""C9H9NO"",""mass"":147.068414,""source"":0,""identifier"":""6140""},{""databaseId"":9,""originalId"":4,""sameAs"":null,""acronym"":""Pro"",""blockName"":""Proline"",""smiles"":""OC(=O)C1CCCN1"",""formula"":""C5H7NO"",""mass"":97.052764,""source"":0,""identifier"":""145742""},{""databaseId"":26,""originalId"":5,""sameAs"":null,""acronym"":""NAc-Ile"",""blockName"":""N-Acetyl-Isoleucine"",""smiles"":""CCC(C)C(NC(C)=O)C(O)=O"",""formula"":""C8H13NO2"",""mass"":155.094629,""source"":0,""identifier"":""306109""}]}")
      *      ),
-     *     @SWG\Response(response="201", description="Edit sequence success."),
+     *     @SWG\Response(response="201", description="Update sequence."),
      *     @SWG\Response(response="400", description="Return when input is wrong."),
      *     @SWG\Response(response="401", description="Return when user is not logged in."),
-     *     @SWG\Response(response="403", description="Return when permisions is insufient.")
+     *     @SWG\Response(response="403", description="Return when permisions is insufient."),
+     *     @SWG\Response(response="404", description="Return when container or sequence is not found.")
      * )
      */
     public function editSequence(Container $container, Sequence $sequence, Request $request, EntityManagerInterface $entityManager, Security $security, LoggerInterface $logger) {
@@ -207,7 +209,7 @@ class SequenceController extends AbstractController {
      *     @SWG\Response(response="200", description="Sucessfully found sequence."),
      *     @SWG\Response(response="401", description="Return when user is not logged in."),
      *     @SWG\Response(response="403", description="Return when permisions is insufient."),
-     *     @SWG\Response(response="404", description="Return when sequence is not found.")
+     *     @SWG\Response(response="404", description="Return when container or sequence is not found.")
      * )
      */
     public function detailSequence(Container $container, Sequence $sequence, EntityManagerInterface $entityManager, Security $security, LoggerInterface $logger) {
@@ -248,7 +250,7 @@ class SequenceController extends AbstractController {
      *     @SWG\Response(response="204", description="Sucessfully deleted sequence."),
      *     @SWG\Response(response="401", description="Return when user is not logged in."),
      *     @SWG\Response(response="403", description="Return when permisions is insufient."),
-     *     @SWG\Response(response="404", description="Return when sequence is not found.")
+     *     @SWG\Response(response="404", description="Return when container or sequence is not found.")
      * )
      */
     public function cloneSequence(Container $container, Sequence $sequence, EntityManagerInterface $entityManager, Security $security, LoggerInterface $logger) {

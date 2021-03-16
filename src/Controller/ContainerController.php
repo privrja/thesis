@@ -600,7 +600,7 @@ class ContainerController extends AbstractController {
      * @return JsonResponse
      *
      * @SWG\Post(
-     *     tags={"Sequence"},
+     *     tags={"Container"},
      *     security={
      *         {"ApiKeyAuth":{}}
      *     },

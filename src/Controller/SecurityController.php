@@ -220,7 +220,7 @@ class SecurityController extends AbstractController {
     }
 
     /**
-     * Set ChemSpider key from database
+     * Delete user
      * @Route("/rest/user", name="user_delete", methods={"DELETE"})
      * @IsGranted("ROLE_USER")
      * @param U2cRepository $u2cRepository
@@ -228,6 +228,15 @@ class SecurityController extends AbstractController {
      * @param Security $security
      * @param EntityManagerInterface $entityManager
      * @return JsonResponse
+     *
+     * @SWG\Delete(
+     *  tags={"Auth"},
+     *     security={
+     *         {"ApiKeyAuth":{}}
+     *     },
+     *     @SWG\Response(response="204", description="User deleted."),
+     * )
+     *
      */
     public function deleteUser(U2cRepository $u2cRepository, ContainerRepository $containerRepository, UserRepository $userRepository, Security $security, EntityManagerInterface $entityManager) {
         /** @var User $usr */

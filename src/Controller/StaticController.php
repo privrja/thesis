@@ -29,13 +29,10 @@ class StaticController {
                 $containerModel = new ContainerModel($entityManager, $doctrine, $user, $logger);
                 if ($containerModel->hasContainer($container->getId())) {
                     return self::$callOk($container, $request, $repository);
-                } else {
-                    return ResponseHelper::jsonResponse(new Message(ErrorConstants::ERROR_CONTAINER_NOT_EXISTS_FOR_USER, Response::HTTP_NOT_FOUND));
                 }
-            } else {
-                return ResponseHelper::jsonResponse(new Message(ErrorConstants::ERROR_CONTAINER_NOT_EXISTS_FOR_USER, Response::HTTP_UNAUTHORIZED));
             }
         }
+        return ResponseHelper::jsonResponse(new Message(ErrorConstants::ERROR_CONTAINER_NOT_EXISTS_FOR_USER, Response::HTTP_FORBIDDEN));
     }
 
     static function findFamily(Container $container, Request $request, ServiceEntityRepository $repository) {

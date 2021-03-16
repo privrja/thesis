@@ -103,7 +103,7 @@ class SetupController extends AbstractController {
         if (!$res) {
             return ResponseHelper::jsonResponse(new Message('Failure', Response::HTTP_INTERNAL_SERVER_ERROR));
         }
-        return ResponseHelper::jsonResponse(Message::createOkMessage());
+        return ResponseHelper::jsonResponse(Message::createNoContent());
     }
 
 

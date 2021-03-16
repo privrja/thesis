@@ -85,7 +85,7 @@ class BlockController extends AbstractController {
      *     security={
      *         {"ApiKeyAuth":{}}
      *     },
-     *     @SWG\Response(response="204", description="Sucessfully deleted container."),
+     *     @SWG\Response(response="204", description="Sucessfully deleted block."),
      *     @SWG\Response(response="401", description="Return when user is not logged in."),
      *     @SWG\Response(response="403", description="Return when permisions is insufient."),
      *     @SWG\Response(response="404", description="Return when container is not found.")
@@ -123,9 +123,9 @@ class BlockController extends AbstractController {
      *          required=true,
      *          description="Paramas: blockName, acronym, formula, mass, losses, smiles, source, identifier.",
      *          @SWG\Schema(type="string",
-     *              example=""),
+     *              example="{""blockName"": ""cyclohexane"", ""acronym"": ""Chx"", ""formula"": ""C6H12"", ""mass"": 84.093900, ""smiles"": ""C1CCCCC1"", ""source"": 0, ""identifier"": ""8078""}")
      *      ),
-     *     @SWG\Response(response="204", description="Sucessfully update container."),
+     *     @SWG\Response(response="204", description="Sucessfully update block."),
      *     @SWG\Response(response="400", description="Return when input is wrong."),
      *     @SWG\Response(response="401", description="Return when user is not logged in."),
      *     @SWG\Response(response="403", description="Return when permisions is insufient."),
@@ -167,7 +167,7 @@ class BlockController extends AbstractController {
      *          required=true,
      *          description="Paramas: blockName, acronym, formula, mass, losses, smiles, source, identifier.",
      *          @SWG\Schema(type="string",
-     *              example="{""blockName"": ""cyclohexane"", ""acronym"": ""Chx"", ""formula"": ""C6H12"", ""mass"": 84.093900, ""smiles"": ""C1CCCCC1"", ""source"": 0, ""identifier"": "8078"}")
+     *              example="{""blockName"": ""cyclohexane"", ""acronym"": ""Chx"", ""formula"": ""C6H12"", ""mass"": 84.093900, ""smiles"": ""C1CCCCC1"", ""source"": 0, ""identifier"": ""8078""}")
      *     ),
      *     @SWG\Response(response="201", description="Create new container."),
      *     @SWG\Response(response="400", description="Return when input is wrong."),
@@ -203,10 +203,9 @@ class BlockController extends AbstractController {
      *     security={
      *         {"ApiKeyAuth":{}}
      *     },
-     *     @SWG\Response(response="204", description="Sucessfully deleted container."),
-     *     @SWG\Response(response="401", description="Return when user is not logged in."),
+     *     @SWG\Response(response="200", description="Return block data."),
      *     @SWG\Response(response="403", description="Return when permisions is insufient."),
-     *     @SWG\Response(response="404", description="Return when container is not found.")
+     *     @SWG\Response(response="404", description="Return when container or block is not found.")
      * )
      */
     public function detailBlock(Container $container, Block $block, EntityManagerInterface $entityManager, Security $security, LoggerInterface $logger) {
@@ -240,10 +239,10 @@ class BlockController extends AbstractController {
      *     security={
      *         {"ApiKeyAuth":{}}
      *     },
-     *     @SWG\Response(response="204", description="Sucessfully deleted container."),
+     *     @SWG\Response(response="204", description="Return data of sequence with block use."),
      *     @SWG\Response(response="401", description="Return when user is not logged in."),
      *     @SWG\Response(response="403", description="Return when permisions is insufient."),
-     *     @SWG\Response(response="404", description="Return when container is not found.")
+     *     @SWG\Response(response="404", description="Return when container or block is not found.")
      * )
      */
     public function usageBlock(Container $container, Block $block, Request $request, BlockRepository $blockRepository, EntityManagerInterface $entityManager, Security $security, LoggerInterface $logger) {
@@ -280,8 +279,17 @@ class BlockController extends AbstractController {
      *     security={
      *         {"ApiKeyAuth":{}}
      *     },
+     *     @SWG\Parameter(
+     *          name="body",
+     *          in="body",
+     *          type="string",
+     *          required=true,
+     *          description="Paramas: array of object with smiles (string, required) and isPolyketide (boolean).",
+     *          @SWG\Schema(type="string",
+     *              example="[{""smiles"":""OC(C(C(CC)C)N)=O"",""isPolyketide"":false},{""smiles"":""NC(C(=O)O)C(C)CC"",""isPolyketide"":false},{""smiles"":""NCCCC(C(=O)O)N"",""isPolyketide"":false},{""smiles"":""NC(C(=O)O)CC1=CC=CC=C1"",""isPolyketide"":false},{""smiles"":""N1CCCC1C(=O)O"",""isPolyketide"":false},{""smiles"":""OC(=O)C(C(C)CC)NC(=O)C"",""isPolyketide"":false}]")
+     *     ),
      *     @SWG\Response(response="200", description="Return list of blocks in container."),
-     *     @SWG\Response(response="401", description="Return when user has not acces to container."),
+     *     @SWG\Response(response="403", description="Return when user has not acces to container."),
      *     @SWG\Response(response="404", description="Return when container not found."),
      * )
      */

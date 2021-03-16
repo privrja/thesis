@@ -56,7 +56,7 @@ class SmilesHelper {
         $smilesFirst->smiles = $smilesInput[0]->smiles;
         $smilesFirst->sameAs = null;
         $smilesFirst->smiles = $smilesInput[0]->smiles;
-        if (isset($smilesInput[0]->isPolyketide)) {
+        if (property_exists($smilesInput[0], 'isPolyketide') && isset($smilesInput[0]->isPolyketide)) {
             $smilesFirst->isPolyketide = $smilesInput[0]->isPolyketide;
         }
         try {
@@ -71,7 +71,9 @@ class SmilesHelper {
             $smiles = new UniqueSmilesStructure();
             $smiles->id = $i;
             $smiles->smiles = $smilesInput[$i]->smiles;
-            $smiles->isPolyketide = $smilesInput[$i]->isPolyketide;
+            if (property_exists($smilesInput[$i], 'isPolyketide') && isset($smilesInput[$i]->isPolyketide)) {
+                $smiles->isPolyketide = $smilesInput[$i]->isPolyketide;
+            }
             try {
                 $graph = new Graph(SmilesHelper::canonicalSmiles($smiles->smiles));
                 $smiles->unique = $graph->getUniqueSmiles();

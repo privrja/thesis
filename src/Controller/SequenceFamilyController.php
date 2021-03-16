@@ -38,7 +38,7 @@ class SequenceFamilyController extends AbstractController {
      * @SWG\Get(
      *     tags={"Sequence Family"},
      *     @SWG\Response(response="200", description="Return list of sequence families in container."),
-     *     @SWG\Response(response="401", description="Return when user has not acces to container."),
+     *     @SWG\Response(response="403", description="Return when user has not acces to container."),
      *     @SWG\Response(response="404", description="Return when container not found."),
      * )
      */
@@ -70,12 +70,13 @@ class SequenceFamilyController extends AbstractController {
      *          required=true,
      *          description="",
      *          @SWG\Schema(type="string",
-     *              example=""),
+     *              example="{""family"": ""Peptides""}"),
      *      ),
      *     @SWG\Response(response="201", description="Create new sequence family."),
      *     @SWG\Response(response="400", description="Return when input is wrong."),
      *     @SWG\Response(response="401", description="Return when user is not logged in."),
-     *     @SWG\Response(response="403", description="Return when permisions is insufient.")
+     *     @SWG\Response(response="403", description="Return when permisions is insufient."),
+     *     @SWG\Response(response="404", description="Return when container is not found.")
      * )
      */
     public function addNewBlock(Container $container, Request $request, EntityManagerInterface $entityManager, Security $security, LoggerInterface $logger) {
@@ -110,7 +111,7 @@ class SequenceFamilyController extends AbstractController {
      *     @SWG\Response(response="204", description="Sucessfully deleted sequence family."),
      *     @SWG\Response(response="401", description="Return when user is not logged in."),
      *     @SWG\Response(response="403", description="Return when permisions is insufient."),
-     *     @SWG\Response(response="404", description="Return when container is not found.")
+     *     @SWG\Response(response="404", description="Return when container or sequence family is not found.")
      * )
      */
     public function deleteBlock(Container $container, SequenceFamily $sequenceFamily, EntityManagerInterface $entityManager, Security $security, LoggerInterface $logger) {
@@ -145,13 +146,13 @@ class SequenceFamilyController extends AbstractController {
      *          required=true,
      *          description="Params: family",
      *          @SWG\Schema(type="string",
-     *              example=""),
+     *              example="{""family"": ""Peptides""}"),
      *      ),
      *     @SWG\Response(response="204", description="Sucessfully update sequence family."),
      *     @SWG\Response(response="400", description="Return when input is wrong."),
      *     @SWG\Response(response="401", description="Return when user is not logged in."),
      *     @SWG\Response(response="403", description="Return when permisions is insufient."),
-     *     @SWG\Response(response="404", description="Return when container is not found.")
+     *     @SWG\Response(response="404", description="Return when container or sequence family is not found.")
      * )
      */
     public function updateBlock(Container $container, SequenceFamily $sequenceFamily, Request $request, EntityManagerInterface $entityManager, Security $security, LoggerInterface $logger) {

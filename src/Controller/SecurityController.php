@@ -175,7 +175,7 @@ class SecurityController extends AbstractController {
      *         {"ApiKeyAuth":{}}
      *     },
      *     @SWG\Response(response="200", description="Return Chemspider apikey."),
-     *     @SWG\Response(response="401", description="Return when user is not logged in."),
+     *     @SWG\Response(response="401", description="Return when user is not logged in.")
      * )
      */
     public function chemSpiderKey(Security $security) {
@@ -201,8 +201,17 @@ class SecurityController extends AbstractController {
      *     security={
      *         {"ApiKeyAuth":{}}
      *     },
+     *     @SWG\Parameter(
+     *          name="body",
+     *          in="body",
+     *          type="string",
+     *          required=true,
+     *          description="Apikey for ChemSpider, you need to obtain this on your Chemspider account",
+     *          @SWG\Schema(type="string",
+     *              example="{""apiKey"":""YyFGYKE4rVH886ywQs8kwKDEBeBo1fAO""}")
+     *      ),
      *     @SWG\Response(response="204", description="Add new Chemspider apikey."),
-     *     @SWG\Response(response="401", description="Return when user is not logged in."),
+     *     @SWG\Response(response="401", description="Return when user is not logged in.")
      * )
      */
     public function createChemSpiderKey(Request $request, EntityManagerInterface $entityManager, Security $security, LoggerInterface $logger) {

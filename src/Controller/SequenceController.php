@@ -93,7 +93,7 @@ class SequenceController extends AbstractController {
      * )
      */
     public function index(Container $container, Request $request, EntityManagerInterface $entityManager, Security $security, LoggerInterface $logger, SequenceRepository $sequenceRepository) {
-        $possibleFilters = ['id', 'sequenceName', 'sequence', 'sequenceType', 'sequenceFormula', 'sequenceMassFrom', 'sequenceMassTo', 'nModification', 'cModification', 'bModification','identifier', 'family'];
+        $possibleFilters = ['id', 'sequenceName', 'sequence', 'sequenceType', 'sequenceFormula', 'sequenceMassFrom', 'sequenceMassTo', 'nModification', 'cModification', 'bModification','identifier', 'family', 'organism'];
         $filters = RequestHelper::getFiltering($request, $possibleFilters);
         $filters = RequestHelper::transformIdentifier($filters);
         $sort = RequestHelper::getSorting($request);
@@ -276,6 +276,9 @@ class SequenceController extends AbstractController {
         $sequenceExport->bModification = $sequence->getBModification();
         foreach ($sequence->getS2families() as $s2f) {
             array_push($sequenceExport->family, $s2f->getFamily());
+        }
+        foreach ($sequence->getS2Organism() as $s2o) {
+            array_push($sequenceExport->organism, $s2o->getOrganism());
         }
         $length = 0;
         foreach ($sequence->getB2s() as $b2s) {

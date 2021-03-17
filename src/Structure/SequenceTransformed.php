@@ -52,6 +52,9 @@ class SequenceTransformed extends AbstractTransformed implements JsonSerializabl
     private $family;
 
     /** @var array */
+    public $organism;
+
+    /** @var array */
     private $blocks;
 
     /**

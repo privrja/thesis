@@ -117,14 +117,15 @@ class Sequence implements JsonSerializable {
     private $s2families;
 
     /**
-     * @ORM\OneToMany(targetEntity=Organism::class, mappedBy="sequence", orphanRemoval=true)
+     * @ORM\OneToMany(targetEntity=S2o::class, mappedBy="sequence", orphanRemoval=true, cascade={"persist", "remove"})
      */
-    private $S2Organisms;
+    private $s2Organism;
 
     public function __construct() {
         $this->b2s = new ArrayCollection();
         $this->s2families = new ArrayCollection();
         $this->S2Organisms = new ArrayCollection();
+        $this->s2Organism = new ArrayCollection();
     }
 
     public function getId(): ?int {
@@ -295,6 +296,10 @@ class Sequence implements JsonSerializable {
         $this->s2families = new ArrayCollection();
     }
 
+    public function emptyS2Organism() {
+        $this->s2Organism = new ArrayCollection();
+    }
+
     public function emptyB2s() {
         $this->b2s = new ArrayCollection();
     }
@@ -391,32 +396,27 @@ class Sequence implements JsonSerializable {
     }
 
     /**
-     * @return Collection|Organism[]
+     * @return Collection|S2o[]
      */
-    public function getS2Organisms(): Collection
-    {
-        return $this->S2Organisms;
+    public function getS2Organism(): Collection {
+        return $this->s2Organism;
     }
 
-    public function addS2Organism(Organism $s2Organism): self
-    {
-        if (!$this->S2Organisms->contains($s2Organism)) {
-            $this->S2Organisms[] = $s2Organism;
+    public function addS2Organism(S2o $s2Organism): self {
+        if (!$this->s2Organism->contains($s2Organism)) {
+            $this->s2Organism[] = $s2Organism;
             $s2Organism->setSequence($this);
         }
-
         return $this;
     }
 
-    public function removeS2Organism(Organism $s2Organism): self
-    {
-        if ($this->S2Organisms->removeElement($s2Organism)) {
+    public function removeS2Organism(S2o $s2Organism): self {
+        if ($this->s2Organism->removeElement($s2Organism)) {
             // set the owning side to null (unless already changed)
             if ($s2Organism->getSequence() === $this) {
                 $s2Organism->setSequence(null);
             }
         }
-
         return $this;
     }
 

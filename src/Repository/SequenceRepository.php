@@ -22,9 +22,11 @@ class SequenceRepository extends ServiceEntityRepository {
 
     public function findSequences($containerId, array $filters, Sort $sort) {
         $qb = $this->createQueryBuilder('seq')
-            ->select('seq.id, seq.sequenceType, seq.sequenceName, seq.sequence, seq.sequenceFormula as formula, seq.sequenceMass as mass, seq.sequenceSmiles as smiles, seq.source, seq.identifier, seq.decays, nmd.modificationName as nModification, cmd.modificationName as cModification, bmd.modificationName as bModification, group_concat(fam.sequenceFamilyName order by fam.sequenceFamilyName asc) as family')
+            ->select('seq.id, seq.sequenceType, seq.sequenceName, seq.sequence, seq.sequenceFormula as formula, seq.sequenceMass as mass, seq.sequenceSmiles as smiles, seq.source, seq.identifier, seq.decays, nmd.modificationName as nModification, cmd.modificationName as cModification, bmd.modificationName as bModification, group_concat(fam.sequenceFamilyName order by fam.sequenceFamilyName asc) as family, group_concat(org.organism order by org.organism asc) as organism')
             ->leftJoin('seq.s2families', 's2f')
+            ->leftJoin('seq.s2Organism', 's2o')
             ->leftJoin('s2f.family', 'fam', Join::WITH, 'fam.container = seq.container')
+            ->leftJoin('s2o.organism', 'org', Join::WITH, 'org.container = seq.container')
             ->leftJoin('seq.nModification', 'nmd', Join::WITH, 'nmd.container = seq.container')
             ->leftJoin('seq.cModification', 'cmd', Join::WITH, 'cmd.container = seq.container')
             ->leftJoin('seq.bModification', 'bmd', Join::WITH, 'bmd.container = seq.container')
@@ -85,13 +87,25 @@ class SequenceRepository extends ServiceEntityRepository {
                 ->setParameter('bModification', $filters['bModification']);
         }
         $qb->groupBy('seq.id, seq.sequenceType, seq.sequenceName, seq.sequence, seq.sequenceFormula, seq.sequenceMass, seq.sequenceSmiles, seq.source, seq.identifier, seq.decays, nmd.modificationName, cmd.modificationName, bmd.modificationName');
-        if (isset($filters['family'])) {
-            $qb->having('group_concat(fam.sequenceFamilyName) like concat(\'%\', :family, \'%\')')
-                ->setParameter('family', $filters['family']);
+        if (isset($filters['family']) || isset($filters['organism'])) {
+            if (isset($filters['family']) && isset($filters['organism'])) {
+                $qb->having('group_concat(fam.sequenceFamilyName) like concat(\'%\', :family, \'%\') and group_concat(org.organism) like concat(\'%\', :organism, \'%\')')
+                    ->setParameter('family', $filters['family'])
+                    ->setParameter('organism', $filters['organism']);
+            } else if (isset($filters['family'])) {
+                $qb->having('group_concat(fam.sequenceFamilyName) like concat(\'%\', :family, \'%\')')
+                    ->setParameter('family', $filters['family']);
+            } else if (isset($filters['organism'])) {
+                $qb->having('group_concat(org.organism) like concat(\'%\', :organism, \'%\')')
+                    ->setParameter('organism', $filters['organism']);
+            }
         }
         if ($sort->sort === 'family') {
             $qb->addOrderBy('case when fam.sequenceFamilyName is null then 1 else 0 end', $sort->order)
                 ->addOrderBy('fam.sequenceFamilyName', $sort->order);
+        } else if ($sort->sort === 'organism') {
+            $qb->addOrderBy('case when org.organism is null then 1 else 0 end', $sort->order)
+                ->addOrderBy('org.organism', $sort->order);
         } else if ($sort->sort === 'nModification') {
             $qb->addOrderBy('case when nmd.modificationName is null then 1 else 0 end', $sort->order)
                 ->addOrderBy('nmd.modificationName', $sort->order);

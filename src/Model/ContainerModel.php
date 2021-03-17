@@ -16,6 +16,7 @@ use App\Entity\Container;
 use App\Entity\Modification;
 use App\Entity\Organism;
 use App\Entity\S2f;
+use App\Entity\S2o;
 use App\Entity\Sequence;
 use App\Entity\SequenceFamily;
 use App\Entity\U2c;
@@ -59,6 +60,7 @@ class ContainerModel {
     private $blockFamilyRepository;
     private $modificationRepository;
     private $sequenceRepository;
+    private $organismRepository;
 
     /**
      * ContainerModel constructor.
@@ -80,6 +82,7 @@ class ContainerModel {
         $this->blockFamilyRepository = $doctrine->getRepository(BlockFamily::class);
         $this->modificationRepository = $doctrine->getRepository(Modification::class);
         $this->sequenceRepository = $doctrine->getRepository(Sequence::class);
+        $this->organismRepository = $doctrine->getRepository(Organism::class);
     }
 
     public function concreteContainer(Container $container) {
@@ -317,6 +320,7 @@ class ContainerModel {
             $this->entityManager->remove($s2f);
         }
         $sequence->emptyS2Family();
+        $sequence->emptyS2Organism();
         return $this->saveSequence($sequence, $container, $trans, Message::createNoContent());
     }
 
@@ -399,6 +403,22 @@ class ContainerModel {
             $s2f = new S2f();
             $s2f->setFamily($sFamily);
             $sequence->addS2family($s2f);
+        }
+
+        foreach ($trans->organism as $organism) {
+            if (is_numeric($organism)) {
+                $sOrganism = $this->organismRepository->findOneBy(['id' => $organism, 'container' => $container->getId()]);
+                if (!isset($sOrganism)) {
+                    return new Message(ErrorConstants::ERROR_ORGANISM_NOT_FOUND);
+                }
+            } else {
+                $sOrganism = new Organism();
+                $sOrganism->setContainer($container);
+                $sOrganism->setOrganism($organism);
+            }
+            $s2o = new S2o();
+            $s2o->setOrganism($sOrganism);
+            $sequence->addS2Organism($s2o);
         }
 
         /** @var Block[] $blockArray */
@@ -674,6 +694,11 @@ class ContainerModel {
             $cloneFamily->setFamily($family->getFamily());
             $clone->addS2family($cloneFamily);
         }
+        foreach ($sequence->getS2Organism() as $organism) {
+            $cloneOrganism = new S2o();
+            $cloneOrganism->setOrganism($organism->getOrganism());
+            $clone->addS2Organism($cloneOrganism);
+        }
         foreach ($sequence->getB2s() as $block) {
             $cloneBlock = new B2s();
             $cloneBlock->setBlockOriginalId($block->getBlockOriginalId());
@@ -715,6 +740,14 @@ class ContainerModel {
             $cloneBlockFamily->setContainer($cloneContainer);
             $cloneBlockFamily->setBlockFamilyName($b2f->getBlockFamilyName());
             $this->entityManager->persist($cloneBlockFamily);
+            $this->entityManager->flush();
+        }
+
+        foreach ($container->getOrganisms() as $s2o) {
+            $cloneOrganism = new Organism();
+            $cloneOrganism->setContainer($container);
+            $cloneOrganism->setOrganism($s2o->getOrganism());
+            $this->entityManager->persist($cloneOrganism);
             $this->entityManager->flush();
         }
 
@@ -810,6 +843,15 @@ class ContainerModel {
                 $fam = $this->sequenceFamilyRepository->findOneBy(['container' => $cloneContainer, 'sequenceFamilyName' => $family->getFamily()->getSequenceFamilyName()]);
                 $cloneFamily->setFamily($fam);
                 $this->entityManager->persist($cloneFamily);
+                $this->entityManager->flush();
+            }
+
+            foreach ($sequence->getS2Organism() as $organism) {
+                $cloneOrganism = new S2o();
+                $cloneOrganism->setSequence($cloneSequence);
+                $org = $this->organismRepository->findOneBy(['container' => $cloneContainer, 'organism' => $organism->getOrganism()->getOrganism()]);
+                $cloneOrganism->setOrganism($org);
+                $this->entityManager->persist($cloneOrganism);
                 $this->entityManager->flush();
             }
 

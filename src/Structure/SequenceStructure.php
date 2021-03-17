@@ -57,6 +57,9 @@ class SequenceStructure extends AbstractStructure implements JsonSerializable {
     public $family;
 
     /** @var array */
+    public $organism;
+
+    /** @var array */
     public $blocks;
 
     public function checkInput(): Message {
@@ -151,6 +154,11 @@ class SequenceStructure extends AbstractStructure implements JsonSerializable {
             $trans->setFamily([]);
         } else {
             $trans->setFamily($this->family);
+        }
+        if ($this->organism === null) {
+            $trans->organism = [];
+        } else {
+            $trans->organism = $this->organism;
         }
         if ($this->blocks === null) {
             $trans->setBlocks([]);

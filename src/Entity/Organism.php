@@ -54,13 +54,13 @@ class Organism implements JsonSerializable {
     }
 
     /**
-     * @return Collection|S2O[]
+     * @return Collection|S2o[]
      */
     public function getO2Seqeunces(): Collection {
         return $this->O2Seqeunces;
     }
 
-    public function addO2Seqeunce(S2O $o2Seqeunce): self {
+    public function addO2Seqeunce(S2o $o2Seqeunce): self {
         if (!$this->O2Seqeunces->contains($o2Seqeunce)) {
             $this->O2Seqeunces[] = $o2Seqeunce;
             $o2Seqeunce->setOrganism($this);
@@ -68,7 +68,7 @@ class Organism implements JsonSerializable {
         return $this;
     }
 
-    public function removeO2Seqeunce(S2O $o2Seqeunce): self {
+    public function removeO2Seqeunce(S2o $o2Seqeunce): self {
         if ($this->O2Seqeunces->removeElement($o2Seqeunce)) {
             // set the owning side to null (unless already changed)
             if ($o2Seqeunce->getOrganism() === $this) {

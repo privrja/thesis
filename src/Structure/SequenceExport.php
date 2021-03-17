@@ -3,6 +3,7 @@
 namespace App\Structure;
 
 use App\Entity\Modification;
+use App\Entity\Organism;
 use App\Entity\SequenceFamily;
 use JsonSerializable;
 
@@ -41,6 +42,9 @@ class SequenceExport implements JsonSerializable {
     /** @var SequenceFamily[] */
     public $family = [];
 
+    /** @var Organism[] */
+    public $organism = [];
+
     /** @var Modification */
     public $nModification;
 
@@ -73,6 +77,7 @@ class SequenceExport implements JsonSerializable {
             'source' => $this->source,
             'identifier' => $this->identifier,
             'family' => $this->family,
+            'organism' => $this->organism,
             'nModification' => $this->nModification,
             'cModification' => $this->cModification,
             'bModification' => $this->bModification,

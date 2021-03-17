@@ -8,8 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * @ORM\Entity(repositoryClass=S2ORepository::class)
  */
-class S2O
-{
+class S2O {
     /**
      * @ORM\Id
      * @ORM\GeneratedValue
@@ -23,20 +22,32 @@ class S2O
      */
     private $sequence;
 
-    public function getId(): ?int
-    {
+    /**
+     * @ORM\ManyToOne(targetEntity=Organism::class, inversedBy="O2Seqeunces")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $organism;
+
+    public function getId(): ?int {
         return $this->id;
     }
 
-    public function getSequence(): ?Sequence
-    {
+    public function getSequence(): ?Sequence {
         return $this->sequence;
     }
 
-    public function setSequence(?Sequence $sequence): self
-    {
+    public function setSequence(?Sequence $sequence): self {
         $this->sequence = $sequence;
-
         return $this;
     }
+
+    public function getOrganism(): ?Organism {
+        return $this->organism;
+    }
+
+    public function setOrganism(?Organism $organism): self {
+        $this->organism = $organism;
+        return $this;
+    }
+
 }

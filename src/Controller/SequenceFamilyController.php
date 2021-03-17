@@ -43,7 +43,7 @@ class SequenceFamilyController extends AbstractController {
      * )
      */
     public function index(Container $container, Request $request, EntityManagerInterface $entityManager, Security $security, LoggerInterface $logger, SequenceFamilyRepository $sequenceFamilyRepository) {
-        return StaticController::containerGetData($container, $request, $sequenceFamilyRepository, $this->getDoctrine(), $entityManager, $security->getUser(), $logger, 'findFamily');
+        return StaticController::containerGetData($container, $request, $sequenceFamilyRepository, $this->getDoctrine(), $entityManager, $security->getUser(), $logger, 'findData');
     }
 
     /**

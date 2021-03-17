@@ -35,7 +35,7 @@ class StaticController {
         return ResponseHelper::jsonResponse(new Message(ErrorConstants::ERROR_CONTAINER_NOT_EXISTS_FOR_USER, Response::HTTP_FORBIDDEN));
     }
 
-    static function findFamily(Container $container, Request $request, ServiceEntityRepository $repository) {
+    static function findData(Container $container, Request $request, ServiceEntityRepository $repository) {
         return new JsonResponse($repository->findBy([EntityColumnsEnum::CONTAINER => $container->getId()], RequestHelper::getSorting($request)->asArray()), Response::HTTP_OK);
     }
 

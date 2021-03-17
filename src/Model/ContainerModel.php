@@ -14,6 +14,7 @@ use App\Entity\Block;
 use App\Entity\BlockFamily;
 use App\Entity\Container;
 use App\Entity\Modification;
+use App\Entity\Organism;
 use App\Entity\S2f;
 use App\Entity\Sequence;
 use App\Entity\SequenceFamily;
@@ -29,6 +30,7 @@ use App\Structure\FamilyTransformed;
 use App\Structure\ModificationTransformed;
 use App\Structure\NewContainerTransformed;
 use App\Structure\BlockTransformed;
+use App\Structure\OrganismTransformed;
 use App\Structure\SequenceCloneExport;
 use App\Structure\SequenceTransformed;
 use App\Structure\Sort;
@@ -837,6 +839,40 @@ class ContainerModel {
         $this->entityManager->flush();
         $this->entityManager->commit();
         return Message::createCreated();
+    }
+
+    public function createNewOrganism(Container $container, OrganismTransformed $trans): Message {
+        $hasContainerRW = $this->hasContainerRW($container->getId());
+        if (empty($hasContainerRW)) {
+            return new Message(ErrorConstants::ERROR_CONTAINER_INSUFIENT_RIGHTS, Response::HTTP_FORBIDDEN);
+        }
+        $organism = new Organism();
+        $organism->setContainer($container);
+        $organism->setOrganism($trans->organism);
+        $this->entityManager->persist($organism);
+        $this->entityManager->flush();
+        return Message::createCreated();
+    }
+
+    public function updateOrganism(OrganismTransformed $trans, Container $container, Organism $organism): Message {
+        $hasContainerRW = $this->hasContainerRW($container->getId());
+        if (empty($hasContainerRW) || $container->getId() !== $organism->getContainer()->getId()) {
+            return new Message(ErrorConstants::ERROR_CONTAINER_INSUFIENT_RIGHTS, Response::HTTP_FORBIDDEN);
+        }
+        $organism->setOrganism($trans->organism);
+        $this->entityManager->persist($organism);
+        $this->entityManager->flush();
+        return Message::createNoContent();
+    }
+
+    public function deleteOrganism(Container $container, Organism $organism): Message {
+        $hasContainerRW = $this->hasContainerRW($container->getId());
+        if (empty($hasContainerRW) || $container->getId() !== $organism->getContainer()->getId()) {
+            return new Message(ErrorConstants::ERROR_CONTAINER_INSUFIENT_RIGHTS, Response::HTTP_FORBIDDEN);
+        }
+        $this->entityManager->remove($organism);
+        $this->entityManager->flush();
+        return Message::createNoContent();
     }
 
 }

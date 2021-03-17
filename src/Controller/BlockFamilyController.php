@@ -43,7 +43,7 @@ class BlockFamilyController extends AbstractController {
      * )
      */
     public function index(Container $container, Request $request, EntityManagerInterface $entityManager, Security $security, LoggerInterface $logger, BlockFamilyRepository $blockFamilyRepository) {
-        return StaticController::containerGetData($container, $request, $blockFamilyRepository, $this->getDoctrine(), $entityManager, $security->getUser(), $logger, 'findFamily');
+        return StaticController::containerGetData($container, $request, $blockFamilyRepository, $this->getDoctrine(), $entityManager, $security->getUser(), $logger, 'findData');
     }
 
     /**

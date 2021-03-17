@@ -10,7 +10,7 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20210316170222 extends AbstractMigration
+final class Version20210317071446 extends AbstractMigration
 {
     public function getDescription() : string
     {
@@ -27,8 +27,8 @@ final class Version20210316170222 extends AbstractMigration
         $this->addSql('CREATE TABLE `condition` (id INT AUTO_INCREMENT NOT NULL, text TEXT NOT NULL, PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
         $this->addSql('CREATE TABLE container (id INT AUTO_INCREMENT NOT NULL, container_name VARCHAR(255) NOT NULL, visibility VARCHAR(10) NOT NULL, INDEX IDX_CONTAINER_ID (id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
         $this->addSql('CREATE TABLE modification (id INT AUTO_INCREMENT NOT NULL, container_id INT NOT NULL, modification_name VARCHAR(255) NOT NULL, modification_formula VARCHAR(255) NOT NULL, modification_mass DOUBLE PRECISION DEFAULT NULL, n_terminal TINYINT(1) DEFAULT \'0\' NOT NULL, c_terminal TINYINT(1) DEFAULT \'0\' NOT NULL, INDEX IDX_EF6425D2BC21F742 (container_id), UNIQUE INDEX UX_MODIFICATION_NAME (modification_name, container_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
-        $this->addSql('CREATE TABLE organism (id INT AUTO_INCREMENT NOT NULL, sequence_id INT NOT NULL, organism_id INT NOT NULL, container_id INT NOT NULL, INDEX IDX_D538A2C98FB19AE (sequence_id), INDEX IDX_D538A2C64180A36 (organism_id), INDEX IDX_D538A2CBC21F742 (container_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
-        $this->addSql('CREATE TABLE s2_o (id INT AUTO_INCREMENT NOT NULL, sequence_id INT NOT NULL, INDEX IDX_9F0FDCC298FB19AE (sequence_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
+        $this->addSql('CREATE TABLE organism (id INT AUTO_INCREMENT NOT NULL, container_id INT NOT NULL, organism VARCHAR(255) NOT NULL, INDEX IDX_D538A2CBC21F742 (container_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
+        $this->addSql('CREATE TABLE s2_o (id INT AUTO_INCREMENT NOT NULL, sequence_id INT NOT NULL, organism_id INT NOT NULL, INDEX IDX_9F0FDCC298FB19AE (sequence_id), INDEX IDX_9F0FDCC264180A36 (organism_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
         $this->addSql('CREATE TABLE s2f (id INT AUTO_INCREMENT NOT NULL, sequence_id INT NOT NULL, family_id INT NOT NULL, INDEX IDX_E0579F0798FB19AE (sequence_id), INDEX IDX_E0579F07C35E566A (family_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
         $this->addSql('CREATE TABLE sequence (id INT AUTO_INCREMENT NOT NULL, n_modification_id INT DEFAULT NULL, c_modification_id INT DEFAULT NULL, b_modification_id INT DEFAULT NULL, container_id INT NOT NULL, sequence_type VARCHAR(255) DEFAULT \'other\' NOT NULL, sequence_name VARCHAR(255) NOT NULL, sequence VARCHAR(500) NOT NULL, sequence_original VARCHAR(500) NOT NULL, sequence_formula VARCHAR(255) NOT NULL, sequence_mass DOUBLE PRECISION DEFAULT NULL, sequence_smiles VARCHAR(4000) DEFAULT NULL, usmiles VARCHAR(4000) DEFAULT NULL, source SMALLINT DEFAULT NULL, identifier VARCHAR(255) DEFAULT NULL, decays VARCHAR(255) DEFAULT NULL, unique_block_count INT NOT NULL, block_count INT NOT NULL, INDEX IDX_5286D72B202EA3BB (n_modification_id), INDEX IDX_5286D72B329000A9 (c_modification_id), INDEX IDX_5286D72BB536CBEA (b_modification_id), INDEX IDX_5286D72BBC21F742 (container_id), UNIQUE INDEX UX_SEQUENCE_NAME (sequence_name, container_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
         $this->addSql('CREATE TABLE sequence_family (id INT AUTO_INCREMENT NOT NULL, container_id INT NOT NULL, sequence_family_name VARCHAR(255) NOT NULL, INDEX IDX_C1F60532BC21F742 (container_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
@@ -44,10 +44,9 @@ final class Version20210316170222 extends AbstractMigration
         $this->addSql('ALTER TABLE block ADD CONSTRAINT FK_831B9722BC21F742 FOREIGN KEY (container_id) REFERENCES container (id)');
         $this->addSql('ALTER TABLE block_family ADD CONSTRAINT FK_EC4877D0BC21F742 FOREIGN KEY (container_id) REFERENCES container (id)');
         $this->addSql('ALTER TABLE modification ADD CONSTRAINT FK_EF6425D2BC21F742 FOREIGN KEY (container_id) REFERENCES container (id)');
-        $this->addSql('ALTER TABLE organism ADD CONSTRAINT FK_D538A2C98FB19AE FOREIGN KEY (sequence_id) REFERENCES sequence (id)');
-        $this->addSql('ALTER TABLE organism ADD CONSTRAINT FK_D538A2C64180A36 FOREIGN KEY (organism_id) REFERENCES organism (id)');
         $this->addSql('ALTER TABLE organism ADD CONSTRAINT FK_D538A2CBC21F742 FOREIGN KEY (container_id) REFERENCES container (id)');
         $this->addSql('ALTER TABLE s2_o ADD CONSTRAINT FK_9F0FDCC298FB19AE FOREIGN KEY (sequence_id) REFERENCES sequence (id)');
+        $this->addSql('ALTER TABLE s2_o ADD CONSTRAINT FK_9F0FDCC264180A36 FOREIGN KEY (organism_id) REFERENCES organism (id)');
         $this->addSql('ALTER TABLE s2f ADD CONSTRAINT FK_E0579F0798FB19AE FOREIGN KEY (sequence_id) REFERENCES sequence (id)');
         $this->addSql('ALTER TABLE s2f ADD CONSTRAINT FK_E0579F07C35E566A FOREIGN KEY (family_id) REFERENCES sequence_family (id)');
         $this->addSql('ALTER TABLE sequence ADD CONSTRAINT FK_5286D72B202EA3BB FOREIGN KEY (n_modification_id) REFERENCES modification (id)');
@@ -77,9 +76,8 @@ final class Version20210316170222 extends AbstractMigration
         $this->addSql('ALTER TABLE sequence DROP FOREIGN KEY FK_5286D72B202EA3BB');
         $this->addSql('ALTER TABLE sequence DROP FOREIGN KEY FK_5286D72B329000A9');
         $this->addSql('ALTER TABLE sequence DROP FOREIGN KEY FK_5286D72BB536CBEA');
-        $this->addSql('ALTER TABLE organism DROP FOREIGN KEY FK_D538A2C64180A36');
+        $this->addSql('ALTER TABLE s2_o DROP FOREIGN KEY FK_9F0FDCC264180A36');
         $this->addSql('ALTER TABLE b2s DROP FOREIGN KEY FK_906EB2AB98FB19AE');
-        $this->addSql('ALTER TABLE organism DROP FOREIGN KEY FK_D538A2C98FB19AE');
         $this->addSql('ALTER TABLE s2_o DROP FOREIGN KEY FK_9F0FDCC298FB19AE');
         $this->addSql('ALTER TABLE s2f DROP FOREIGN KEY FK_E0579F0798FB19AE');
         $this->addSql('ALTER TABLE s2f DROP FOREIGN KEY FK_E0579F07C35E566A');

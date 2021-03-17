@@ -689,6 +689,8 @@ class ContainerModel {
         $clone->setNModification($sequence->getNModification());
         $clone->setCModification($sequence->getCModification());
         $clone->setBModification($sequence->getBModification());
+        $clone->setBlockCount($sequence->getBlockCount());
+        $clone->setUniqueBlockCount($sequence->getUniqueBlockCount());
         foreach ($sequence->getS2families() as $family) {
             $cloneFamily = new S2f();
             $cloneFamily->setFamily($family->getFamily());
@@ -706,6 +708,7 @@ class ContainerModel {
             $cloneBlock->setNextBlock($block->getNextBlock());
             $cloneBlock->setBranchReference($block->getBranchReference());
             $cloneBlock->setIsBranch($block->getIsBranch());
+            $cloneBlock->setSort($block->getSort());
             $clone->addB2($cloneBlock);
         }
         $this->entityManager->persist($clone);
@@ -745,7 +748,7 @@ class ContainerModel {
 
         foreach ($container->getOrganisms() as $s2o) {
             $cloneOrganism = new Organism();
-            $cloneOrganism->setContainer($container);
+            $cloneOrganism->setContainer($cloneContainer);
             $cloneOrganism->setOrganism($s2o->getOrganism());
             $this->entityManager->persist($cloneOrganism);
             $this->entityManager->flush();

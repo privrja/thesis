@@ -4,7 +4,9 @@ namespace App\Security;
 
 use App\Base\GeneratorHelper;
 use App\Entity\User;
+use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
+use Exception;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -76,11 +78,32 @@ class TokenAuthenticator extends AbstractGuardAuthenticator {
         }
     }
 
+    /**
+     * @param mixed $credentials
+     * @param User $user
+     * @return bool
+     * @throws Exception
+     */
     public function checkCredentials($credentials, UserInterface $user) {
         if ($credentials['type']) {
             return $this->passwordEncoder->isPasswordValid($user, $credentials['secret']);
+        } else {
+            $now = new DateTime();
+            if ($now->getTimestamp() - $user->getLastActivity()->getTimestamp() > 3600) {
+                $user->setApiToken(null);
+                $this->em->beginTransaction();
+                $this->em->persist($user);
+                $this->em->commit();
+                $this->em->flush();
+                return false;
+            }
+            $user->setLastActivity($now);
+            $this->em->beginTransaction();
+            $this->em->persist($user);
+            $this->em->commit();
+            $this->em->flush();
+            return true;
         }
-        return true;
     }
 
     public function onAuthenticationSuccess(Request $request, TokenInterface $token, $providerKey) {
@@ -89,6 +112,7 @@ class TokenAuthenticator extends AbstractGuardAuthenticator {
             $genToken = $this->generateToken();
             /** @var User $user */
             $user = $token->getUser()->setApiToken($genToken);
+            $user->setLastActivity(new DateTime());
             $this->em->beginTransaction();
             $this->em->persist($user);
             $this->em->commit();

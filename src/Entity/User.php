@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use DateTimeInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -61,6 +62,11 @@ class User implements UserInterface, JsonSerializable {
      * @ORM\Column(type="string", nullable=true)
      */
     private $chemSpiderToken;
+
+    /**
+     * @ORM\Column(type="datetime", nullable=true)
+     */
+    private $lastActivity;
 
     public function __construct() {
         $this->u2container = new ArrayCollection();
@@ -209,6 +215,18 @@ class User implements UserInterface, JsonSerializable {
      */
     public function jsonSerialize() {
         return ['value' => $this->id, 'label' => $this->nick];
+    }
+
+    public function getLastActivity(): ?DateTimeInterface
+    {
+        return $this->lastActivity;
+    }
+
+    public function setLastActivity(?DateTimeInterface $lastActivity): self
+    {
+        $this->lastActivity = $lastActivity;
+
+        return $this;
     }
 
 }

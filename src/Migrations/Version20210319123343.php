@@ -10,7 +10,7 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20210317084911 extends AbstractMigration
+final class Version20210319123343 extends AbstractMigration
 {
     public function getDescription() : string
     {
@@ -34,7 +34,7 @@ final class Version20210317084911 extends AbstractMigration
         $this->addSql('CREATE TABLE sequence_family (id INT AUTO_INCREMENT NOT NULL, container_id INT NOT NULL, sequence_family_name VARCHAR(255) NOT NULL, INDEX IDX_C1F60532BC21F742 (container_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
         $this->addSql('CREATE TABLE setup (id INT AUTO_INCREMENT NOT NULL, similarity VARCHAR(10) DEFAULT \'name\' NOT NULL, PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
         $this->addSql('CREATE TABLE u2c (id INT AUTO_INCREMENT NOT NULL, user_id INT NOT NULL, container_id INT NOT NULL, mode VARCHAR(10) NOT NULL, INDEX IDX_94B0173AA76ED395 (user_id), INDEX IDX_94B0173ABC21F742 (container_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
-        $this->addSql('CREATE TABLE user (id INT AUTO_INCREMENT NOT NULL, nick VARCHAR(180) NOT NULL, roles JSON NOT NULL, password VARCHAR(255) NOT NULL, mail VARCHAR(255) DEFAULT NULL, api_token VARCHAR(255) DEFAULT NULL, conditions TINYINT(1) DEFAULT \'0\' NOT NULL, chem_spider_token VARCHAR(255) DEFAULT NULL, UNIQUE INDEX UNIQ_8D93D6497BA2F5EB (api_token), UNIQUE INDEX UX_USER_NICK (nick), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
+        $this->addSql('CREATE TABLE user (id INT AUTO_INCREMENT NOT NULL, nick VARCHAR(180) NOT NULL, roles JSON NOT NULL, password VARCHAR(255) NOT NULL, mail VARCHAR(255) DEFAULT NULL, api_token VARCHAR(255) DEFAULT NULL, conditions TINYINT(1) DEFAULT \'0\' NOT NULL, chem_spider_token VARCHAR(255) DEFAULT NULL, last_activity DATETIME DEFAULT NULL, UNIQUE INDEX UNIQ_8D93D6497BA2F5EB (api_token), UNIQUE INDEX UX_USER_NICK (nick), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
         $this->addSql('ALTER TABLE b2f ADD CONSTRAINT FK_FDB35640E9ED820C FOREIGN KEY (block_id) REFERENCES block (id)');
         $this->addSql('ALTER TABLE b2f ADD CONSTRAINT FK_FDB35640C35E566A FOREIGN KEY (family_id) REFERENCES block_family (id)');
         $this->addSql('ALTER TABLE b2s ADD CONSTRAINT FK_906EB2AB98FB19AE FOREIGN KEY (sequence_id) REFERENCES sequence (id)');

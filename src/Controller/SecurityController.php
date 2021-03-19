@@ -141,7 +141,7 @@ class SecurityController extends AbstractController {
     }
 
     /**
-     * Change
+     * Reset
      * @Route("/rest/user/reset", name="reset", methods={"POST"})
      * @IsGranted("ROLE_USER")
      * @param EntityManagerInterface $entityManager

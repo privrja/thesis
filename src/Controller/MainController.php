@@ -2,13 +2,15 @@
 
 namespace App\Controller;
 
-use App\Base\Message;
-use App\Base\ResponseHelper;
+use App\Entity\User;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Swagger\Annotations as SWG;
+use Symfony\Component\Security\Core\Security;
 
 class MainController extends AbstractController {
 
@@ -26,10 +28,13 @@ class MainController extends AbstractController {
      *     @SWG\Response(response="200", description="Return when user is logged in."),
      *     @SWG\Response(response="401", description="Return when user is not logged in."),
      * )
-     *
+     * @param Security $security
+     * @return JsonResponse
      */
-    public function rest() {
-        return ResponseHelper::jsonResponse(Message::createNoContent());
+    public function rest(Security $security) {
+        /** @var User $user */
+        $user = $security->getUser();
+        return new JsonResponse(null, Response::HTTP_NO_CONTENT, ['x-condition' => $user->getConditions()]);
     }
 
     /**

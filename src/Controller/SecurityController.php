@@ -2,6 +2,8 @@
 
 namespace App\Controller;
 
+use App\Base\Cap;
+use App\Base\GeneratorHelper;
 use App\Base\Message;
 use App\Base\RequestHelper;
 use App\Base\ResponseHelper;
@@ -26,6 +28,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
@@ -33,6 +36,31 @@ use Swagger\Annotations as SWG;
 use Symfony\Component\Security\Core\Security;
 
 class SecurityController extends AbstractController {
+
+    private $session;
+
+    public function __construct(SessionInterface $session) {
+        $this->session = $session;
+    }
+
+    const REG_TOKEN = 'reg-token';
+
+    /**
+     * Registration pre-request with captcha
+     * @Route("/rest/cap", name="cap", methods={"GET"})
+     * @return JsonResponse
+     *
+     * @SWG\Get(
+     *     tags={"Auth"},
+     *     @SWG\Response(response="200", description="Return registration token and cap question")
+     * )
+     */
+    public function cap() {
+        $token = GeneratorHelper::generate(32);
+        $question = Cap::getRandomAcid();
+        $this->session->set($token, $question);
+        return new JsonResponse(['question' => $question], Response::HTTP_OK, [self::REG_TOKEN => $token]);
+    }
 
     /**
      * Registration of new user
@@ -67,6 +95,20 @@ class SecurityController extends AbstractController {
         } else if ($userRepository->findOneBy(['nick' => $trans->getName()])) {
             return ResponseHelper::jsonResponse(new Message(ErrorConstants::ERROR_NAME_IS_TAKEN));
         }
+
+        $token = $request->headers->get(self::REG_TOKEN);
+        if (!isset($token)) {
+            return ResponseHelper::jsonResponse(new Message(ErrorConstants::BAD_REGISTRATION_TOKEN_SEND));
+        }
+        $question = $this->session->get($token);
+        if ($question === null) {
+            return ResponseHelper::jsonResponse(new Message(ErrorConstants::BAD_REGISTRATION_TOKEN_SEND));
+        }
+        if (!Cap::verify($question, $trans->cap)) {
+            $this->session->remove($token);
+            return ResponseHelper::jsonResponse(new Message(ErrorConstants::CAP_VERIFY_FAILURE));
+        }
+
         $user = new User();
         $user->setNick($trans->getName());
         $user->setConditions(true);

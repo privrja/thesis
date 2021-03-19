@@ -22,7 +22,7 @@ class SequenceRepository extends ServiceEntityRepository {
 
     public function findSequences($containerId, array $filters, Sort $sort) {
         $qb = $this->createQueryBuilder('seq')
-            ->select('seq.id, seq.sequenceType, seq.sequenceName, seq.sequence, seq.sequenceFormula as formula, seq.sequenceMass as mass, seq.sequenceSmiles as smiles, seq.source, seq.identifier, seq.decays, nmd.modificationName as nModification, cmd.modificationName as cModification, bmd.modificationName as bModification, group_concat(fam.sequenceFamilyName order by fam.sequenceFamilyName asc) as family, group_concat(org.organism order by org.organism asc) as organism')
+            ->select('seq.id, seq.sequenceType, seq.sequenceName, seq.sequence, seq.sequenceFormula as formula, seq.sequenceMass as mass, seq.sequenceSmiles as smiles, seq.source, seq.identifier, seq.decays, nmd.modificationName as nModification, cmd.modificationName as cModification, bmd.modificationName as bModification, group_concat(distinct fam.sequenceFamilyName order by fam.sequenceFamilyName asc) as family, group_concat(distinct org.organism order by org.organism asc) as organism')
             ->leftJoin('seq.s2families', 's2f')
             ->leftJoin('seq.s2Organism', 's2o')
             ->leftJoin('s2f.family', 'fam', Join::WITH, 'fam.container = seq.container')

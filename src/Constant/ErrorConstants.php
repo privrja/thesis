@@ -26,5 +26,7 @@ class ErrorConstants {
     const ERROR_CONTAINER_NOT_FOUND = 'Container not found';
     const ERROR_SIMILARITY_FORMAT = 'Similarity has not supported format! Supported format is name/tanimoto';
     const ERROR_ORGANISM_NOT_FOUND = 'Organism not found';
+    public const BAD_REGISTRATION_TOKEN_SEND = 'Bad registration token send';
+    public const CAP_VERIFY_FAILURE = 'Cap verify failure';
 
 }

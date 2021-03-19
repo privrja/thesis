@@ -2,6 +2,7 @@
 
 namespace App\Repository;
 
+use App\Base\RepositoryHelper;
 use App\Entity\Sequence;
 use App\Structure\Sort;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
@@ -32,96 +33,10 @@ class SequenceRepository extends ServiceEntityRepository {
             ->leftJoin('seq.bModification', 'bmd', Join::WITH, 'bmd.container = seq.container')
             ->where('seq.container = :containerId')
             ->setParameter('containerId', $containerId);
-        if (isset($filters['id'])) {
-            $qb->andWhere('seq.id = :id')
-                ->setParameter('id', $filters['id']);
-        }
-        if (isset($filters['sequenceType'])) {
-            $qb->andWhere('seq.sequenceType = :sequenceType')
-                ->setParameter('sequenceType', $filters['sequenceType']);
-        }
-        if (isset($filters['sequenceName'])) {
-            $qb->andWhere('seq.sequenceName like concat(\'%\', :sequenceName, \'%\')')
-                ->setParameter('sequenceName', $filters['sequenceName']);
-        }
-        if (isset($filters['sequence'])) {
-            $qb->andWhere('seq.sequence like concat(\'%\', :sequence, \'%\')')
-                ->setParameter('sequence', $filters['sequence']);
-        }
-        if (isset($filters['sequenceFormula'])) {
-            $qb->andWhere('seq.sequenceFormula like concat(\'%\', :sequenceFormula, \'%\')')
-                ->setParameter('sequenceFormula', $filters['sequenceFormula']);
-        }
-        if (isset($filters['sequenceMassFrom']) && isset($filters['sequenceMassTo'])) {
-            $qb->andWhere('seq.sequenceMass between :sequenceMassFrom and :sequenceMassTo')
-                ->setParameter('sequenceMassFrom', $filters['sequenceMassFrom'])
-                ->setParameter('sequenceMassTo', $filters['sequenceMassTo']);
-        } else {
-            if (isset($filters['sequenceMassFrom'])) {
-                $qb->andWhere('seq.sequenceMass >= :sequenceMassFrom')
-                    ->setParameter('sequenceMassFrom', $filters['sequenceMassFrom']);
-            }
-            if (isset($filters['sequenceMassTo'])) {
-                $qb->andWhere('seq.sequenceMass <= :sequenceMassTo')
-                    ->setParameter('sequenceMassTo', $filters['sequenceMassTo']);
-            }
-        }
-        if (isset($filters['source'])) {
-            $qb->andWhere('seq.source = :source')
-                ->setParameter('source', $filters['source']);
-        }
-        if (isset($filters['identifier'])) {
-            $qb->setParameter('identifier', $filters['identifier'])
-                ->andWhere('seq.identifier = :identifier');
-        }
-        if (isset($filters['nModification'])) {
-            $qb->andWhere('nmd.modificationName like concat(\'%\', :nModification, \'%\')')
-                ->setParameter('nModification', $filters['nModification']);
-        }
-        if (isset($filters['cModification'])) {
-            $qb->andWhere('cmd.modificationName like concat(\'%\', :cModification, \'%\')')
-                ->setParameter('cModification', $filters['cModification']);
-        }
-        if (isset($filters['bModification'])) {
-            $qb->andWhere('bmd.modificationName like concat(\'%\', :bModification, \'%\')')
-                ->setParameter('bModification', $filters['bModification']);
-        }
+        $qb = RepositoryHelper::addSequenceFilter($qb, $filters);
         $qb->groupBy('seq.id, seq.sequenceType, seq.sequenceName, seq.sequence, seq.sequenceFormula, seq.sequenceMass, seq.sequenceSmiles, seq.source, seq.identifier, seq.decays, nmd.modificationName, cmd.modificationName, bmd.modificationName');
-        if (isset($filters['family']) || isset($filters['organism'])) {
-            if (isset($filters['family']) && isset($filters['organism'])) {
-                $qb->having('group_concat(fam.sequenceFamilyName) like concat(\'%\', :family, \'%\') and group_concat(org.organism) like concat(\'%\', :organism, \'%\')')
-                    ->setParameter('family', $filters['family'])
-                    ->setParameter('organism', $filters['organism']);
-            } else if (isset($filters['family'])) {
-                $qb->having('group_concat(fam.sequenceFamilyName) like concat(\'%\', :family, \'%\')')
-                    ->setParameter('family', $filters['family']);
-            } else if (isset($filters['organism'])) {
-                $qb->having('group_concat(org.organism) like concat(\'%\', :organism, \'%\')')
-                    ->setParameter('organism', $filters['organism']);
-            }
-        }
-        if ($sort->sort === 'family') {
-            $qb->addOrderBy('case when fam.sequenceFamilyName is null then 1 else 0 end', $sort->order)
-                ->addOrderBy('fam.sequenceFamilyName', $sort->order);
-        } else if ($sort->sort === 'organism') {
-            $qb->addOrderBy('case when org.organism is null then 1 else 0 end', $sort->order)
-                ->addOrderBy('org.organism', $sort->order);
-        } else if ($sort->sort === 'nModification') {
-            $qb->addOrderBy('case when nmd.modificationName is null then 1 else 0 end', $sort->order)
-                ->addOrderBy('nmd.modificationName', $sort->order);
-        } else if ($sort->sort === 'cModification') {
-            $qb->addOrderBy('case when cmd.modificationName is null then 1 else 0 end', $sort->order)
-                ->addOrderBy('cmd.modificationName', $sort->order);
-        } else if ($sort->sort === 'bModification') {
-            $qb->addOrderBy('case when bmd.modificationName is null then 1 else 0 end', $sort->order)
-                ->addOrderBy('bmd.modificationName', $sort->order);
-        } else if ($sort->sort === 'identifier') {
-            $qb->addOrderBy('seq.source', $sort->order)
-                ->addOrderBy('seq.identifier', $sort->order);
-        } else {
-            $qb->addOrderBy('case when seq.' . $sort->sort . ' is null then 1 else 0 end', $sort->order)
-                ->addOrderBy('seq.' . $sort->sort, $sort->order);
-        }
+        $qb = RepositoryHelper::addHaving($qb, $filters);
+        $qb = RepositoryHelper::addSort($qb, $sort);
         return $qb->getQuery()
             ->getArrayResult();
     }

@@ -246,7 +246,7 @@ class BlockController extends AbstractController {
      * )
      */
     public function usageBlock(Container $container, Block $block, Request $request, BlockRepository $blockRepository, EntityManagerInterface $entityManager, Security $security, LoggerInterface $logger) {
-        $possibleFilters = ['id', 'sequenceName', 'sequence', 'sequenceType', 'sequenceFormula', 'sequenceMassFrom', 'sequenceMassTo', 'nModification', 'cModification', 'bModification', 'identifier', 'family', 'usages'];
+        $possibleFilters = ['id', 'sequenceName', 'sequence', 'sequenceType', 'sequenceFormula', 'sequenceMassFrom', 'sequenceMassTo', 'nModification', 'cModification', 'bModification', 'identifier', 'family', 'usages', 'organism'];
         $filters = RequestHelper::getFiltering($request, $possibleFilters);
         $filters = RequestHelper::transformIdentifier($filters);
         $sort = RequestHelper::getSorting($request);

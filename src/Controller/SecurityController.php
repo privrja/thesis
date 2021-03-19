@@ -381,7 +381,11 @@ class SecurityController extends AbstractController {
         } catch (Exception $exception) {
             return ResponseHelper::jsonResponse(new Message(ErrorConstants::ERROR_SOMETHING_GO_WRONG, Response::HTTP_INTERNAL_SERVER_ERROR));
         }
-        mail($user->getMail(), 'Mass Spec Block - password reset', 'You request a new password for Mass Spec Blocks. We generated new for you. After first login with new password we recommended you to change it. You\'re new generated password: ' . $pass . '\n Thanks');
+        try {
+            mail($user->getMail(), 'Mass Spec Block - password reset', 'You request a new password for Mass Spec Blocks. We generated new for you. After first login with new password we recommended you to change it. You\'re new generated password: ' . $pass . '\n Thanks');
+        } catch (Exception $exception) {
+            return ResponseHelper::jsonResponse(new Message('Server doesn\'t support sending mails'));
+        }
         $pass = '';
         return ResponseHelper::jsonResponse(new Message('Mail sent to address: ' . $user->getMail(), Response::HTTP_OK));
     }

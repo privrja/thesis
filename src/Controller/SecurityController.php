@@ -105,7 +105,6 @@ class SecurityController extends AbstractController {
             return ResponseHelper::jsonResponse(new Message(ErrorConstants::BAD_REGISTRATION_TOKEN_SEND));
         }
         if (!Cap::verify($question, $trans->cap)) {
-            $this->session->remove($token);
             return ResponseHelper::jsonResponse(new Message(ErrorConstants::CAP_VERIFY_FAILURE));
         }
 

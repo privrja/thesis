@@ -386,7 +386,7 @@ class SecurityController extends AbstractController {
         } catch (Exception $exception) {
             return ResponseHelper::jsonResponse(new Message('Server doesn\'t support sending mails'));
         }
-        $pass = '';
+        $pass = '12345678';
         return ResponseHelper::jsonResponse(new Message('Mail sent to address: ' . $user->getMail(), Response::HTTP_OK));
     }
 

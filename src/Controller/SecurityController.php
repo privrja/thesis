@@ -349,5 +349,41 @@ class SecurityController extends AbstractController {
         $entityManager->commit();
         return ResponseHelper::jsonResponse(Message::createNoContent());
     }
+    /**
+     * Reset
+     * @Route("/rest/user/reset", name="reset", methods={"POST"})
+     * @IsGranted("ROLE_USER")
+     * @param EntityManagerInterface $entityManager
+     * @param Security $security
+     * @param UserPasswordEncoderInterface $passwordEncoder
+     * @return JsonResponse
+     *
+     * @SWG\Post(
+     *     tags={"Auth"},
+     *     @SWG\Response(response="200", description="Mail send"),
+     *     @SWG\Response(response="500", description="Internal server Error"),
+     *     @SWG\Response(response="400", description="Name is taken")
+     * )
+     */
+    public function reset(EntityManagerInterface $entityManager, Security $security, UserPasswordEncoderInterface $passwordEncoder) {
+        /** @var User $user */
+        $user = $security->getUser();
+        $pass = null;
+        try {
+            $pass = bin2hex(random_bytes(8));
+        } catch (Exception $e) {
+            $pass = rand(1000000, 999999999999);
+        }
+        try {
+            $user->setPassword($passwordEncoder->encodePassword($user, $pass));
+            $entityManager->persist($user);
+            $entityManager->flush();
+        } catch (Exception $exception) {
+            return ResponseHelper::jsonResponse(new Message(ErrorConstants::ERROR_SOMETHING_GO_WRONG, Response::HTTP_INTERNAL_SERVER_ERROR));
+        }
+        mail($user->getMail(), 'Mass Spec Block - password reset', 'You request a new password for Mass Spec Blocks. We generated new for you. After first login with new password we recommended you to change it. You\'re new generated password: ' . $pass . '\n Thanks');
+        $pass = '';
+        return ResponseHelper::jsonResponse(new Message('Mail sent to address: ' . $user->getMail(), Response::HTTP_OK));
+    }
 
 }

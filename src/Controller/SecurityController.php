@@ -3,7 +3,6 @@
 namespace App\Controller;
 
 use App\Base\Cap;
-use App\Base\GeneratorHelper;
 use App\Base\Message;
 use App\Base\RequestHelper;
 use App\Base\ResponseHelper;
@@ -37,13 +36,14 @@ use Symfony\Component\Security\Core\Security;
 
 class SecurityController extends AbstractController {
 
+    const QUESTION = 'question';
     private $session;
 
     public function __construct(SessionInterface $session) {
         $this->session = $session;
     }
 
-    const REG_TOKEN = 'reg-token';
+    const REG_TOKEN = 'x-reg-token';
 
     /**
      * Registration pre-request with captcha
@@ -56,10 +56,9 @@ class SecurityController extends AbstractController {
      * )
      */
     public function cap() {
-        $token = GeneratorHelper::generate(32);
         $question = Cap::getRandomAcid();
-        $this->session->set($token, $question);
-        return new JsonResponse(['question' => $question], Response::HTTP_OK, [self::REG_TOKEN => $token]);
+        $this->session->set(self::QUESTION, $question);
+        return new JsonResponse([self::QUESTION => $question]);
     }
 
     /**
@@ -96,11 +95,7 @@ class SecurityController extends AbstractController {
             return ResponseHelper::jsonResponse(new Message(ErrorConstants::ERROR_NAME_IS_TAKEN));
         }
 
-        $token = $request->headers->get(self::REG_TOKEN);
-        if (!isset($token)) {
-            return ResponseHelper::jsonResponse(new Message(ErrorConstants::BAD_REGISTRATION_TOKEN_SEND));
-        }
-        $question = $this->session->get($token);
+        $question = $this->session->get(self::QUESTION);
         if ($question === null) {
             return ResponseHelper::jsonResponse(new Message(ErrorConstants::BAD_REGISTRATION_TOKEN_SEND));
         }

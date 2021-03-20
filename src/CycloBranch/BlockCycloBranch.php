@@ -54,6 +54,7 @@ class BlockCycloBranch extends AbstractCycloBranch {
             $block->setIdentifier($item->getIdentifier());
             $block->setBlockSmiles($item->getSmiles());
             $block->setUsmiles($item->getUSmiles());
+            $block->setIsPolyketide($item->isPolyketide);
             $entityManager->persist($block);
         }
         $entityManager->flush();

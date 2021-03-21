@@ -16,6 +16,8 @@ use App\Repository\UserRepository;
 use App\Structure\ChemSpiderKeyExport;
 use App\Structure\ChemSpiderKeyStructure;
 use App\Structure\ChemSpiderKeyTransformed;
+use App\Structure\MailStructure;
+use App\Structure\MailTransformed;
 use App\Structure\NewRegistrationStructure;
 use App\Structure\NewRegistrationTransformed;
 use App\Structure\PassStructure;
@@ -187,7 +189,7 @@ class SecurityController extends AbstractController {
      *          in="body",
      *          type="string",
      *          required=true,
-     *          description="Setup similarity method computing for application, values: name or tanimoto",
+     *          description="Change password",
      *          @SWG\Schema(type="string",
      *              example="{""password"":""H6saf@sd%sdp2""}")
      *      ),
@@ -212,6 +214,49 @@ class SecurityController extends AbstractController {
         } catch (Exception $exception) {
             return ResponseHelper::jsonResponse(new Message(ErrorConstants::ERROR_SOMETHING_GO_WRONG, Response::HTTP_INTERNAL_SERVER_ERROR));
         }
+        return ResponseHelper::jsonResponse(Message::createNoContent());
+    }
+
+    /**
+     * Change mail
+     * @Route("/rest/user/mail", name="change_mail", methods={"PUT"})
+     * @IsGranted("ROLE_USER")
+     * @param Request $request
+     * @param EntityManagerInterface $entityManager
+     * @param Security $security
+     * @param LoggerInterface $logger
+     * @return MailTransformed|JsonResponse
+     *
+     * @SWG\Put(
+     *     tags={"Auth"},
+     *     security={
+     *         {"ApiKeyAuth":{}}
+     *     },
+     *     @SWG\Parameter(
+     *          name="body",
+     *          in="body",
+     *          type="string",
+     *          required=true,
+     *          description="Set new value for email",
+     *          @SWG\Schema(type="string",
+     *              example="{""mail"":""kokos@xx.cz""}")
+     *      ),
+     *     @SWG\Response(response="201", description="Mail changed"),
+     *     @SWG\Response(response="400", description="Name is taken")
+     * )
+     *
+     */
+    public function changeMail(Request $request, EntityManagerInterface $entityManager, Security $security, LoggerInterface $logger) {
+        /** @var MailTransformed $trans */
+        $trans = RequestHelper::evaluateRequest($request, new MailStructure(), $logger);
+        if ($trans instanceof JsonResponse) {
+            return $trans;
+        }
+        /** @var User $user */
+        $user = $security->getUser();
+        $user->setMail($trans->mail);
+        $entityManager->persist($user);
+        $entityManager->flush();
         return ResponseHelper::jsonResponse(Message::createNoContent());
     }
 
@@ -349,6 +394,7 @@ class SecurityController extends AbstractController {
         $entityManager->commit();
         return ResponseHelper::jsonResponse(Message::createNoContent());
     }
+
     /**
      * Reset
      * @Route("/rest/user/reset", name="reset", methods={"POST"})

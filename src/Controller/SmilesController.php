@@ -11,6 +11,7 @@ use App\Exception\IllegalStateException;
 use App\Repository\SequenceFamilyRepository;
 use App\Repository\SequenceRepository;
 use App\Repository\SetupRepository;
+use App\Smiles\Enum\LossesEnum;
 use App\Smiles\SmilesHelper;
 use App\Structure\FormulaMass;
 use App\Structure\SimilarityStructure;
@@ -94,9 +95,11 @@ class SmilesController extends AbstractController {
         }
         $res = [];
         foreach ($smilesInput as $smiles) {
+            // TODO better check for polyketide, then form mass with losses and maybe seting to not removing any losses?
+            $polyketide = str_contains(strtoupper($smilesInput->smiles), 'O');
             $resObject = new FormulaMass();
             $resObject->smiles = $smiles->smiles;
-            $resObject->formula = FormulaHelper::formulaFromSmiles($smiles->smiles);
+            $resObject->formula = FormulaHelper::formulaFromSmiles($smiles->smiles, $polyketide ? LossesEnum::H2 : LossesEnum::H2O);
             try {
                 $resObject->mass = FormulaHelper::computeMass($resObject->formula);
             } catch (IllegalStateException $e) {

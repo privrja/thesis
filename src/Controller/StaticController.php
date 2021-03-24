@@ -21,7 +21,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 class StaticController {
 
-    static function containerGetData(Container $container, Request $request, ServiceEntityRepository $repository, ManagerRegistry $doctrine, EntityManagerInterface $entityManager, User $user, LoggerInterface $logger, string $callOk): JsonResponse {
+    static function containerGetData(Container $container, Request $request, ServiceEntityRepository $repository, ManagerRegistry $doctrine, EntityManagerInterface $entityManager, $user, LoggerInterface $logger, string $callOk): JsonResponse {
         if ($container->getVisibility() === ContainerVisibilityEnum::PUBLIC) {
             return self::$callOk($container, $request, $repository);
         } else {

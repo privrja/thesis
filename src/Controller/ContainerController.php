@@ -25,6 +25,8 @@ use App\Structure\AbstractStructure;
 use App\Structure\BlockStructure;
 use App\Structure\CollaboratorStructure;
 use App\Structure\CollaboratorTransformed;
+use App\Structure\CollaboratorUpdateStructure;
+use App\Structure\CollaboratorUpdateTransformed;
 use App\Structure\ConcreateContainer;
 use App\Structure\ModificationStructure;
 use App\Structure\NewContainerStructure;
@@ -244,12 +246,11 @@ class ContainerController extends AbstractController {
 
     /**
      * Add new user to container
-     * @Route("/rest/container/{containerId}/collaborator/{userId}", name="collaborator_new", methods={"POST"})
+     * @Route("/rest/container/{containerId}/collaborator", name="collaborator_new", methods={"POST"})
      * @Entity("container", expr="repository.find(containerId)")
      * @Entity("collaborator", expr="repository.find(userId)")
      * @IsGranted("ROLE_USER")
      * @param Container $container
-     * @param User $collaborator
      * @param Request $request
      * @param EntityManagerInterface $entityManager
      * @param Security $security
@@ -268,7 +269,7 @@ class ContainerController extends AbstractController {
      *          required=true,
      *          description="mode - permisions for new user",
      *          @SWG\Schema(type="string",
-     *              example="{""mode"":""RW""}"),
+     *              example="{""user"":""kokos"", ""mode"":""RW""}"),
      *      ),
      *     @SWG\Response(response="201", description="Create new container."),
      *     @SWG\Response(response="400", description="Return when input is wrong."),
@@ -277,14 +278,14 @@ class ContainerController extends AbstractController {
      *     @SWG\Response(response="404", description="Return when container or user not found."),
      * )
      */
-    public function addNewCollaborator(Container $container, User $collaborator, Request $request, EntityManagerInterface $entityManager, Security $security, LoggerInterface $logger) {
+    public function addNewCollaborator(Container $container, Request $request, EntityManagerInterface $entityManager, Security $security, LoggerInterface $logger) {
         /** @var CollaboratorTransformed $trans */
         $trans = RequestHelper::evaluateRequest($request, new CollaboratorStructure(), $logger);
         if ($trans instanceof JsonResponse) {
             return $trans;
         }
         $model = new ContainerModel($entityManager, $this->getDoctrine(), $security->getUser(), $logger);
-        $modelMessage = $model->createNewCollaborator($collaborator, $container, $trans);
+        $modelMessage = $model->createNewCollaborator($container, $trans);
         return ResponseHelper::jsonResponse($modelMessage);
     }
 
@@ -354,8 +355,8 @@ class ContainerController extends AbstractController {
      * )
      */
     public function updateCollaborator(Container $container, User $collaborator, Request $request, EntityManagerInterface $entityManager, Security $security, LoggerInterface $logger) {
-        /** @var CollaboratorTransformed $trans */
-        $trans = RequestHelper::evaluateRequest($request, new CollaboratorStructure(), $logger);
+        /** @var CollaboratorUpdateTransformed $trans */
+        $trans = RequestHelper::evaluateRequest($request, new CollaboratorUpdateStructure(), $logger);
         if ($trans instanceof JsonResponse) {
             return $trans;
         }

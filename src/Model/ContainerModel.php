@@ -27,6 +27,7 @@ use App\Enum\SequenceEnum;
 use App\Exception\IllegalStateException;
 use App\Smiles\Graph;
 use App\Structure\CollaboratorTransformed;
+use App\Structure\CollaboratorUpdateTransformed;
 use App\Structure\FamilyTransformed;
 use App\Structure\ModificationTransformed;
 use App\Structure\NewContainerTransformed;
@@ -611,10 +612,14 @@ class ContainerModel {
         return Message::createNoContent();
     }
 
-    public function createNewCollaborator(User $collaborator, Container $container, CollaboratorTransformed $trans) {
+    public function createNewCollaborator(Container $container, CollaboratorTransformed $trans) {
         $hasContainerRWM = $this->hasContainerRWM($container->getId());
         if (empty($hasContainerRWM)) {
             return new Message(ErrorConstants::ERROR_CONTAINER_INSUFIENT_RIGHTS, Response::HTTP_FORBIDDEN);
+        }
+        $collaborator = $this->userRepository->findOneBy(['nick' => $trans->user]);
+        if ($collaborator === null) {
+            return new Message(ErrorConstants::USER_NOT_FOUND);
         }
         $u2c = $this->u2cRepository->findOneBy(['user' => $collaborator->getId(), 'container' => $container->getId()]);
         if ($u2c !== null) {
@@ -623,7 +628,7 @@ class ContainerModel {
         $u2c = new U2c();
         $u2c->setContainer($container);
         $u2c->setUser($collaborator);
-        $u2c->setMode($trans->getMode());
+        $u2c->setMode($trans->mode);
         $this->entityManager->persist($u2c);
         $this->entityManager->flush();
         return Message::createCreated();
@@ -639,12 +644,12 @@ class ContainerModel {
         return Message::createNoContent();
     }
 
-    public function updateCollaborator(User $collaborator, Container $container, CollaboratorTransformed $trans) {
+    public function updateCollaborator(User $collaborator, Container $container, CollaboratorUpdateTransformed $trans) {
         $u2c = $this->collaboratorCheck($container, $collaborator);
         if ($u2c instanceof Message) {
             return $u2c;
         }
-        $u2c->setMode($trans->getMode());
+        $u2c->setMode($trans->mode);
         $this->entityManager->persist($u2c);
         $this->entityManager->flush();
         return Message::createNoContent();

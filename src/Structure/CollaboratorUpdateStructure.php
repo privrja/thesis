@@ -6,16 +6,13 @@ use App\Base\Message;
 use App\Constant\ErrorConstants;
 use App\Enum\ContainerModeEnum;
 
-class CollaboratorStructure extends AbstractStructure {
-
-    /** @var string */
-    public $user;
+class CollaboratorUpdateStructure extends AbstractStructure {
 
     /** @var string */
     public $mode;
 
     public function checkInput(): Message {
-        if (empty($this->mode) || empty($this->user)) {
+        if (empty($this->mode)) {
             return new Message(ErrorConstants::ERROR_EMPTY_PARAMS);
         }
         if (!ContainerModeEnum::isOneOf($this->mode)) {
@@ -25,8 +22,7 @@ class CollaboratorStructure extends AbstractStructure {
     }
 
     public function transform(): AbstractTransformed {
-        $trans = new CollaboratorTransformed();
-        $trans->user = $this->user;
+        $trans = new CollaboratorUpdateTransformed();
         $trans->mode = $this->mode;
         return $trans;
     }

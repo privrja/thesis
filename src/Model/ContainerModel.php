@@ -37,6 +37,7 @@ use App\Structure\SequenceCloneExport;
 use App\Structure\SequenceTransformed;
 use App\Structure\Sort;
 use App\Structure\UpdateContainerTransformed;
+use Doctrine\DBAL\Exception\ForeignKeyConstraintViolationException;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
@@ -563,8 +564,12 @@ class ContainerModel {
         if (empty($hasContainerRW) || $container->getId() !== $blockFamily->getContainer()->getId()) {
             return new Message(ErrorConstants::ERROR_CONTAINER_INSUFIENT_RIGHTS, Response::HTTP_FORBIDDEN);
         }
-        $this->entityManager->remove($blockFamily);
-        $this->entityManager->flush();
+        try {
+            $this->entityManager->remove($blockFamily);
+            $this->entityManager->flush();
+        } catch (ForeignKeyConstraintViolationException $exception) {
+            return new Message('Family is used');
+        }
         return Message::createNoContent();
     }
 
@@ -586,8 +591,12 @@ class ContainerModel {
         if (empty($hasContainerRW) || $container->getId() !== $sequenceFamily->getContainer()->getId()) {
             return new Message(ErrorConstants::ERROR_CONTAINER_INSUFIENT_RIGHTS, Response::HTTP_FORBIDDEN);
         }
-        $this->entityManager->remove($sequenceFamily);
-        $this->entityManager->flush();
+        try {
+            $this->entityManager->remove($sequenceFamily);
+            $this->entityManager->flush();
+        } catch (ForeignKeyConstraintViolationException $exception) {
+            return new Message('Family is used');
+        }
         return Message::createNoContent();
     }
 
@@ -920,8 +929,12 @@ class ContainerModel {
         if (empty($hasContainerRW) || $container->getId() !== $organism->getContainer()->getId()) {
             return new Message(ErrorConstants::ERROR_CONTAINER_INSUFIENT_RIGHTS, Response::HTTP_FORBIDDEN);
         }
-        $this->entityManager->remove($organism);
-        $this->entityManager->flush();
+        try {
+            $this->entityManager->remove($organism);
+            $this->entityManager->flush();
+        } catch (ForeignKeyConstraintViolationException $exception) {
+            return new Message('Organism is used');
+        }
         return Message::createNoContent();
     }
 

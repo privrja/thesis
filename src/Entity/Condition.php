@@ -7,9 +7,10 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity(repositoryClass=ConditionRepository::class)
- * @ORM\Table(name="`condition`")
+ * @ORM\Table(name="`msb_condition`")
  */
 class Condition {
+
     /**
      * @ORM\Id
      * @ORM\GeneratedValue

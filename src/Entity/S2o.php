@@ -6,8 +6,10 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity(repositoryClass=S2oRepository::class)
+ * @ORM\Table(name="`msb_s2o`")
  */
 class S2o {
+
     /**
      * @ORM\Id
      * @ORM\GeneratedValue

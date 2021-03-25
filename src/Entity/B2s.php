@@ -6,8 +6,10 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\B2sRepository")
+ * @ORM\Table(name="`msb_b2s`")
  */
 class B2s {
+
     /**
      * @ORM\Id()
      * @ORM\GeneratedValue()
@@ -63,7 +65,6 @@ class B2s {
 
     public function setSequence(?Sequence $sequence): self {
         $this->sequence = $sequence;
-
         return $this;
     }
 
@@ -73,7 +74,6 @@ class B2s {
 
     public function setBlock(?Block $block): self {
         $this->block = $block;
-
         return $this;
     }
 
@@ -83,7 +83,6 @@ class B2s {
 
     public function setNextBlock(?Block $nextBlock): self {
         $this->nextBlock = $nextBlock;
-
         return $this;
     }
 
@@ -93,7 +92,6 @@ class B2s {
 
     public function setIsBranch(bool $isBranch): self {
         $this->isBranch = $isBranch;
-
         return $this;
     }
 
@@ -103,7 +101,6 @@ class B2s {
 
     public function setBranchReference(?Block $branchReference): self {
         $this->branchReference = $branchReference;
-
         return $this;
     }
 

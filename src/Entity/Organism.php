@@ -10,6 +10,7 @@ use JsonSerializable;
 
 /**
  * @ORM\Entity(repositoryClass=OrganismRepository::class)
+ * @ORM\Table(name="`msb_organism`")
  */
 class Organism implements JsonSerializable {
 
@@ -93,4 +94,5 @@ class Organism implements JsonSerializable {
     public function jsonSerialize() {
         return ['id' => $this->id, 'organism' => $this->organism];
     }
+
 }

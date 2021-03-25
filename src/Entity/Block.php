@@ -12,8 +12,10 @@ use JsonSerializable;
 /**
  * @ORM\Entity(repositoryClass="App\Repository\BlockRepository")
  * @ORM\Table(uniqueConstraints={@UniqueConstraint(name="UX_BLOCK_ACRONYM", columns={"acronym", "container_id"})})
+ * @ORM\Table(name="`msb_block`")
  */
 class Block implements JsonSerializable {
+
     /**
      * @ORM\Id()
      * @ORM\GeneratedValue()
@@ -227,7 +229,6 @@ class Block implements JsonSerializable {
                 $b2family->setBlock(null);
             }
         }
-
         return $this;
     }
 

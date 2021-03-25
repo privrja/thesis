@@ -13,8 +13,10 @@ use Symfony\Component\Security\Core\User\UserInterface;
 /**
  * @ORM\Entity(repositoryClass="App\Repository\UserRepository")
  * @ORM\Table(uniqueConstraints={@UniqueConstraint(name="UX_USER_NICK", columns={"nick"})})
+ * @ORM\Table(name="`msb_user`")
  */
 class User implements UserInterface, JsonSerializable {
+
     /**
      * @ORM\Id()
      * @ORM\GeneratedValue()

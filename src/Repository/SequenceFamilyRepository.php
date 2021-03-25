@@ -22,7 +22,7 @@ class SequenceFamilyRepository extends ServiceEntityRepository {
         $conn = $this->getEntityManager()->getConnection();
         $sql = '
             select fam.id as value, fam.sequence_family_name as label
-            from msb.sequence_family fam
+            from msb_sequence_family fam
             where :sequenceName like concat(\'%\', fam.sequence_family_name, \'%\')
 	            and container_id = :containerId
         ';

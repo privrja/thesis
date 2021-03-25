@@ -157,7 +157,6 @@ class FinderController extends AbstractController {
         return $this->find($container, $request, new SequenceIdStructure, 'id', self::METHOD_DEFAULT, $entityManager, $security, $logger);
     }
 
-
     /**
      * Find by identifier
      * @Route("/rest/container/{containerId}/mass", name="find_mass", methods={"POST"})
@@ -193,7 +192,7 @@ class FinderController extends AbstractController {
         if ($container->getVisibility() === ContainerVisibilityEnum::PUBLIC) {
             return $this->findBy($container, $request, $structure, $param, $method, $entityManager, $logger);
         }
-        if ($this->isGranted("USER_ROLE")) {
+        if ($this->isGranted("ROLE_USER")) {
             $containerModel = new ContainerModel($entityManager, $this->getDoctrine(), $security->getUser(), $logger);
             if ($containerModel->hasContainer($container->getId())) {
                 return $this->findBy($container, $request, $structure, $param, $method, $entityManager, $logger);

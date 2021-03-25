@@ -9,8 +9,10 @@ use JsonSerializable;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\BlockFamilyRepository")
+ * @ORM\Table(name="`msb_block_family`")
  */
 class BlockFamily implements JsonSerializable {
+
     /**
      * @ORM\Id()
      * @ORM\GeneratedValue()
@@ -48,7 +50,6 @@ class BlockFamily implements JsonSerializable {
 
     public function setBlockFamilyName(string $blockFamilyName): self {
         $this->blockFamilyName = $blockFamilyName;
-
         return $this;
     }
 
@@ -76,7 +77,6 @@ class BlockFamily implements JsonSerializable {
                 $f2block->setFamily(null);
             }
         }
-
         return $this;
     }
 
@@ -86,7 +86,6 @@ class BlockFamily implements JsonSerializable {
 
     public function setContainer(?Container $container): self {
         $this->container = $container;
-
         return $this;
     }
 

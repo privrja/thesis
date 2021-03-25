@@ -27,14 +27,14 @@ class U2cRepository extends ServiceEntityRepository {
                 when sum(case when rol.mode in (\'R\', \'RW\') then 1 else 0 end) > 0 then \'ADMIN\'
                 else \'DELETE\'
             end as operation_todo
-        from u2c rol
+        from msb_u2c rol
 	        join (
 		        select rol.container_id, count(1) as COUNT_RWM
-		        from u2c rol
+		        from msb_u2c rol
 			        join (
 				        select rol.container_id
-				        from msb.u2c rol
-					        join user usr on usr.id = rol.user_id and usr.nick <> \'admin\'
+				        from msb_u2c rol
+					        join msb_user usr on usr.id = rol.user_id and usr.nick <> \'admin\'
 				        where rol.mode = \'RWM\' and rol.user_id = :userId
 			        ) src on src.container_id = rol.container_id and rol.mode = \'RWM\'
 		        group by rol.container_id

@@ -11,8 +11,10 @@ use JsonSerializable;
 /**
  * @ORM\Entity(repositoryClass="App\Repository\SequenceRepository")
  * @ORM\Table(uniqueConstraints={@UniqueConstraint(name="UX_SEQUENCE_NAME", columns={"sequence_name", "container_id"})})
+ * @ORM\Table(name="`msb_sequence`")
  */
 class Sequence implements JsonSerializable {
+
     /**
      * @ORM\Id()
      * @ORM\GeneratedValue()
@@ -375,27 +377,6 @@ class Sequence implements JsonSerializable {
     }
 
     /**
-     * @inheritDoc
-     */
-    public function jsonSerialize() {
-        return [
-            'id' => $this->id,
-            'sequenceName' => $this->sequenceName,
-            'sequenceType' => $this->sequenceType,
-            'sequence' => $this->sequence,
-            'formula' => $this->sequenceFormula,
-            'mass' => $this->sequenceMass,
-            'smiles' => $this->sequenceSmiles,
-            'uniqueSmiles' => $this->usmiles,
-            'source' => $this->source,
-            'identifier' => $this->identifier,
-            'nModification' => $this->nModification,
-            'cModification' => $this->cModification,
-            'bModification' => $this->bModification,
-        ];
-    }
-
-    /**
      * @return Collection|S2o[]
      */
     public function getS2Organism(): Collection {
@@ -418,6 +399,27 @@ class Sequence implements JsonSerializable {
             }
         }
         return $this;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function jsonSerialize() {
+        return [
+            'id' => $this->id,
+            'sequenceName' => $this->sequenceName,
+            'sequenceType' => $this->sequenceType,
+            'sequence' => $this->sequence,
+            'formula' => $this->sequenceFormula,
+            'mass' => $this->sequenceMass,
+            'smiles' => $this->sequenceSmiles,
+            'uniqueSmiles' => $this->usmiles,
+            'source' => $this->source,
+            'identifier' => $this->identifier,
+            'nModification' => $this->nModification,
+            'cModification' => $this->cModification,
+            'bModification' => $this->bModification,
+        ];
     }
 
 }

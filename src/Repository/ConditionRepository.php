@@ -22,8 +22,8 @@ class ConditionRepository extends ServiceEntityRepository {
         $conn = $this->getEntityManager()->getConnection();
         $sql = '
         select cnd.text
-        from msb.condition cnd
-        where cnd.id = (select max(id) from msb.condition)
+        from msb_condition cnd
+        where cnd.id = (select max(id) from msb_condition)
         ';
         $stmt = $conn->prepare($sql);
         $stmt->execute();

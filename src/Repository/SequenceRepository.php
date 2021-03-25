@@ -49,20 +49,20 @@ class SequenceRepository extends ServiceEntityRepository {
         	select
         		seq.id as sequence_id,
         		row_number() over (order by count(distinct b2s.block_id) / (:blockLengthUnique + seq.unique_block_count - count(distinct b2s.block_id)) desc, abs(:blockLength - seq.block_count) asc) as RN
-        	from sequence seq
-        		left join msb.b2s b2s on b2s.sequence_id = seq.id and b2s.block_id in ' . $blockIds . '
+        	from msb_sequence seq
+        		left join msb_b2s b2s on b2s.sequence_id = seq.id and b2s.block_id in ' . $blockIds . '
         		join (
         			select seq.id
-        			from msb.sequence seq
-        				join msb.s2f on s2f.sequence_id = seq.id and s2f.family_id is not null
+        			from msb_sequence seq
+        				join msb_s2f s2f on s2f.sequence_id = seq.id and s2f.family_id is not null
         			group by seq.id
                 ) fam on fam.id = seq.id
             where seq.container_id = :containerId
         	group by seq.sequence_name, seq.id, seq.unique_block_count
             having count(distinct b2s.block_id) / (:blockLengthUnique + seq.unique_block_count - count(distinct b2s.block_id)) >= 0.4
         ) src
-        	join msb.s2f on s2f.sequence_id = src.sequence_id
-            join msb.sequence_family fam on fam.id = s2f.family_id and fam.container_id = :containerId and fam.sequence_family_name <> \'synthetic\'
+        	join msb_s2f s2f on s2f.sequence_id = src.sequence_id
+            join msb_sequence_family fam on fam.id = s2f.family_id and fam.container_id = :containerId and fam.sequence_family_name <> \'synthetic\'
         where src.RN = 1
         ';
         $stmt = $conn->prepare($sql);
@@ -82,12 +82,12 @@ class SequenceRepository extends ServiceEntityRepository {
         	    seq.sequence_formula as formula,
         	    seq.sequence_mass as mass,
         		row_number() over (order by count(distinct b2s.block_id) / (:blockLengthUnique + seq.unique_block_count - count(distinct b2s.block_id)) desc, abs(:blockLength - seq.block_count) asc) as RN
-        	from sequence seq
-        		left join msb.b2s b2s on b2s.sequence_id = seq.id and b2s.block_id in ' . $blockIds . '
+        	from msb_sequence seq
+        		left join msb_b2s b2s on b2s.sequence_id = seq.id and b2s.block_id in ' . $blockIds . '
         		join (
         			select seq.id
-        			from msb.sequence seq
-        				join msb.s2f on s2f.sequence_id = seq.id and s2f.family_id is not null
+        			from msb_sequence seq
+        				join msb_s2f s2f on s2f.sequence_id = seq.id and s2f.family_id is not null
         			group by seq.id
                 ) fam on fam.id = seq.id
             where seq.container_id = :containerId
@@ -105,7 +105,7 @@ class SequenceRepository extends ServiceEntityRepository {
         $conn = $this->getEntityManager()->getConnection();
         $sql = '
         select seq.sequence_name as sequenceName, seq.sequence_smiles as smiles, seq.sequence_formula as formula, seq.sequence_mass as mass, seq.id
-        from msb.sequence seq
+        from msb_sequence seq
         where seq.sequence_name like concat(\'%\', :sequenceName, \'%\') and seq.container_id = :containerId
         ';
         $stmt = $conn->prepare($sql);
@@ -121,9 +121,9 @@ class SequenceRepository extends ServiceEntityRepository {
 	        select seq.id, blc.acronym, b2s.sort,
 	            case when seq.sequence_type not in (\'branched\', \'branch-cyclic\') then 0 else row_number() over (order by case when branch_reference_id is not null then 0 else 1 end asc, is_branch asc, sort asc) end as BRANCH_START,
 	            case when seq.sequence_type not in (\'branched\', \'branch-cyclic\') then 0 else row_number() over (order by is_branch desc, sort desc) end as BRANCH_END
-	        from msb.sequence seq
-		        join msb.b2s b2s on b2s.sequence_id = seq.id
-		        join msb.block blc on blc.id = b2s.block_id
+	        from msb_sequence seq
+		        join msb_b2s b2s on b2s.sequence_id = seq.id
+		        join msb_block blc on blc.id = b2s.block_id
 	        where seq.id = :sequenceId
         ) src
         ';

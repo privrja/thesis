@@ -12,9 +12,10 @@ use JsonSerializable;
 /**
  * @ORM\Entity(repositoryClass="App\Repository\ContainerRepository")
  * @ORM\Table(indexes={@Index(name="IDX_CONTAINER_ID", columns={"id"})})
+ * @ORM\Table(name="`msb_Container`")
  */
-class Container implements JsonSerializable
-{
+class Container implements JsonSerializable {
+
     /**
      * @ORM\Id()
      * @ORM\GeneratedValue()
@@ -67,8 +68,7 @@ class Container implements JsonSerializable
      */
     private $organisms;
 
-    public function __construct()
-    {
+    public function __construct() {
         $this->sequenceId = new ArrayCollection();
         $this->blockId = new ArrayCollection();
         $this->modificationId = new ArrayCollection();
@@ -78,45 +78,36 @@ class Container implements JsonSerializable
         $this->organisms = new ArrayCollection();
     }
 
-    public function getId(): ?int
-    {
+    public function getId(): ?int {
         return $this->id;
     }
 
-    public function getContainerName(): ?string
-    {
+    public function getContainerName(): ?string {
         return $this->containerName;
     }
 
-    public function setContainerName(string $containerName): self
-    {
+    public function setContainerName(string $containerName): self {
         $this->containerName = $containerName;
-
         return $this;
     }
 
-    public function getVisibility(): string
-    {
+    public function getVisibility(): string {
         return $this->visibility;
     }
 
-    public function setVisibility(string $visibility): self
-    {
+    public function setVisibility(string $visibility): self {
         $this->visibility = $visibility;
-
         return $this;
     }
 
     /**
      * @return Collection|Block[]
      */
-    public function getBlockId(): Collection
-    {
+    public function getBlockId(): Collection {
         return $this->blockId;
     }
 
-    public function addBlockId(Block $blockId): self
-    {
+    public function addBlockId(Block $blockId): self {
         if (!$this->blockId->contains($blockId)) {
             $this->blockId[] = $blockId;
             $blockId->setContainer($this);
@@ -125,8 +116,7 @@ class Container implements JsonSerializable
         return $this;
     }
 
-    public function removeBlockId(Block $blockId): self
-    {
+    public function removeBlockId(Block $blockId): self {
         if ($this->blockId->contains($blockId)) {
             $this->blockId->removeElement($blockId);
             // set the owning side to null (unless already changed)
@@ -134,30 +124,25 @@ class Container implements JsonSerializable
                 $blockId->setContainer(null);
             }
         }
-
         return $this;
     }
 
     /**
      * @return Collection|Modification[]
      */
-    public function getModificationId(): Collection
-    {
+    public function getModificationId(): Collection {
         return $this->modificationId;
     }
 
-    public function addModificationId(Modification $modificationId): self
-    {
+    public function addModificationId(Modification $modificationId): self {
         if (!$this->modificationId->contains($modificationId)) {
             $this->modificationId[] = $modificationId;
             $modificationId->setContainer($this);
         }
-
         return $this;
     }
 
-    public function removeModificationId(Modification $modificationId): self
-    {
+    public function removeModificationId(Modification $modificationId): self {
         if ($this->modificationId->contains($modificationId)) {
             $this->modificationId->removeElement($modificationId);
             // set the owning side to null (unless already changed)
@@ -165,30 +150,25 @@ class Container implements JsonSerializable
                 $modificationId->setContainer(null);
             }
         }
-
         return $this;
     }
 
     /**
      * @return Collection|Sequence[]
      */
-    public function getSequenceId(): Collection
-    {
+    public function getSequenceId(): Collection {
         return $this->sequenceId;
     }
 
-    public function addSequenceId(Sequence $sequenceId): self
-    {
+    public function addSequenceId(Sequence $sequenceId): self {
         if (!$this->sequenceId->contains($sequenceId)) {
             $this->sequenceId[] = $sequenceId;
             $sequenceId->setContainer($this);
         }
-
         return $this;
     }
 
-    public function removeSequenceId(Sequence $sequenceId): self
-    {
+    public function removeSequenceId(Sequence $sequenceId): self {
         if ($this->sequenceId->contains($sequenceId)) {
             $this->sequenceId->removeElement($sequenceId);
             // set the owning side to null (unless already changed)
@@ -196,30 +176,25 @@ class Container implements JsonSerializable
                 $sequenceId->setContainer(null);
             }
         }
-
         return $this;
     }
 
     /**
      * @return Collection|BlockFamily[]
      */
-    public function getBlockFamilies(): Collection
-    {
+    public function getBlockFamilies(): Collection {
         return $this->blockFamilies;
     }
 
-    public function addBlockFamily(BlockFamily $blockFamily): self
-    {
+    public function addBlockFamily(BlockFamily $blockFamily): self {
         if (!$this->blockFamilies->contains($blockFamily)) {
             $this->blockFamilies[] = $blockFamily;
             $blockFamily->setContainer($this);
         }
-
         return $this;
     }
 
-    public function removeBlockFamily(BlockFamily $blockFamily): self
-    {
+    public function removeBlockFamily(BlockFamily $blockFamily): self {
         if ($this->blockFamilies->contains($blockFamily)) {
             $this->blockFamilies->removeElement($blockFamily);
             // set the owning side to null (unless already changed)
@@ -227,30 +202,25 @@ class Container implements JsonSerializable
                 $blockFamily->setContainer(null);
             }
         }
-
         return $this;
     }
 
     /**
      * @return Collection|SequenceFamily[]
      */
-    public function getSequenceFamilies(): Collection
-    {
+    public function getSequenceFamilies(): Collection {
         return $this->sequenceFamilies;
     }
 
-    public function addSequenceFamily(SequenceFamily $sequenceFamily): self
-    {
+    public function addSequenceFamily(SequenceFamily $sequenceFamily): self {
         if (!$this->sequenceFamilies->contains($sequenceFamily)) {
             $this->sequenceFamilies[] = $sequenceFamily;
             $sequenceFamily->setContainer($this);
         }
-
         return $this;
     }
 
-    public function removeSequenceFamily(SequenceFamily $sequenceFamily): self
-    {
+    public function removeSequenceFamily(SequenceFamily $sequenceFamily): self {
         if ($this->sequenceFamilies->contains($sequenceFamily)) {
             $this->sequenceFamilies->removeElement($sequenceFamily);
             // set the owning side to null (unless already changed)
@@ -258,30 +228,25 @@ class Container implements JsonSerializable
                 $sequenceFamily->setContainer(null);
             }
         }
-
         return $this;
     }
 
     /**
      * @return Collection|U2c[]
      */
-    public function getC2users(): Collection
-    {
+    public function getC2users(): Collection {
         return $this->c2users;
     }
 
-    public function addC2user(U2c $c2user): self
-    {
+    public function addC2user(U2c $c2user): self {
         if (!$this->c2users->contains($c2user)) {
             $this->c2users[] = $c2user;
             $c2user->setContainer($this);
         }
-
         return $this;
     }
 
-    public function removeC2user(U2c $c2user): self
-    {
+    public function removeC2user(U2c $c2user): self {
         if ($this->c2users->contains($c2user)) {
             $this->c2users->removeElement($c2user);
             // set the owning side to null (unless already changed)
@@ -289,7 +254,31 @@ class Container implements JsonSerializable
                 $c2user->setContainer(null);
             }
         }
+        return $this;
+    }
 
+    /**
+     * @return Collection|Organism[]
+     */
+    public function getOrganisms(): Collection {
+        return $this->organisms;
+    }
+
+    public function addOrganism(Organism $organism): self {
+        if (!$this->organisms->contains($organism)) {
+            $this->organisms[] = $organism;
+            $organism->setContainer($this);
+        }
+        return $this;
+    }
+
+    public function removeOrganism(Organism $organism): self {
+        if ($this->organisms->removeElement($organism)) {
+            // set the owning side to null (unless already changed)
+            if ($organism->getContainer() === $this) {
+                $organism->setContainer(null);
+            }
+        }
         return $this;
     }
 
@@ -298,36 +287,6 @@ class Container implements JsonSerializable
      */
     public function jsonSerialize() {
         return [EntityColumnsEnum::ID => $this->id, EntityColumnsEnum::CONTAINER_NAME => $this->containerName, EntityColumnsEnum::CONTAINER_VISIBILITY => $this->visibility];
-    }
-
-    /**
-     * @return Collection|Organism[]
-     */
-    public function getOrganisms(): Collection
-    {
-        return $this->organisms;
-    }
-
-    public function addOrganism(Organism $organism): self
-    {
-        if (!$this->organisms->contains($organism)) {
-            $this->organisms[] = $organism;
-            $organism->setContainer($this);
-        }
-
-        return $this;
-    }
-
-    public function removeOrganism(Organism $organism): self
-    {
-        if ($this->organisms->removeElement($organism)) {
-            // set the owning side to null (unless already changed)
-            if ($organism->getContainer() === $this) {
-                $organism->setContainer(null);
-            }
-        }
-
-        return $this;
     }
 
 }

@@ -9,8 +9,10 @@ use JsonSerializable;
 /**
  * @ORM\Entity(repositoryClass="App\Repository\ModificationRepository")
  * @ORM\Table(uniqueConstraints={@UniqueConstraint(name="UX_MODIFICATION_NAME", columns={"modification_name", "container_id"})})
+ * @ORM\Table(name="`msb_modification`")
  */
 class Modification implements JsonSerializable {
+
     /**
      * @ORM\Id()
      * @ORM\GeneratedValue()

@@ -12,10 +12,9 @@ use Doctrine\Persistence\ManagerRegistry;
  * @method B2f[]    findAll()
  * @method B2f[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class B2fRepository extends ServiceEntityRepository
-{
-    public function __construct(ManagerRegistry $registry)
-    {
+class B2fRepository extends ServiceEntityRepository {
+
+    public function __construct(ManagerRegistry $registry) {
         parent::__construct($registry, B2f::class);
     }
 

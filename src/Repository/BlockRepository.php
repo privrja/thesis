@@ -115,7 +115,7 @@ class BlockRepository extends ServiceEntityRepository {
 			            end, case when src.source > 3 then src.usmiles else src.identifier end)
                     else \'\' end
                     order by src.block_name separator \'/\') as ref
-            from msb.block src
+            from msb_block src
             where src.container_id = :containerId
             group by src.residue, src.block_mass';
         $stmt = $conn->prepare($sql);

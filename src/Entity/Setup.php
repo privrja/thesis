@@ -7,8 +7,10 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity(repositoryClass=SetupRepository::class)
+ * @ORM\Table(name="`msb_setup`")
  */
 class Setup {
+
     /**
      * @ORM\Id
      * @ORM\GeneratedValue

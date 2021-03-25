@@ -7,6 +7,7 @@ use App\Base\Message;
 use App\Base\RequestHelper;
 use App\Base\ResponseHelper;
 use App\Constant\ErrorConstants;
+use App\Entity\Container;
 use App\Exception\IllegalStateException;
 use App\Repository\SequenceFamilyRepository;
 use App\Repository\SequenceRepository;
@@ -17,6 +18,8 @@ use App\Structure\FormulaMass;
 use App\Structure\SimilarityStructure;
 use App\Structure\SimilarityTransformed;
 use Psr\Log\LoggerInterface;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -111,7 +114,10 @@ class SmilesController extends AbstractController {
     }
 
     /**
-     * @Route("/rest/smiles/similarity", name="similarity", methods={"POST"})
+     * @Route("/rest/container/{containerId}/sim", name="similarity_container", methods={"POST"})
+     * @IsGranted("ROLE_USER")
+     * @Entity("container", expr="repository.find(containerId)")
+     * @param Container $container
      * @param Request $request
      * @param LoggerInterface $logger
      * @param SetupRepository $setupRepository
@@ -133,8 +139,9 @@ class SmilesController extends AbstractController {
      *     @SWG\Response(response="200", description="Return Unique SMILES."),
      *     @SWG\Response(response="400", description="Return when input is wrong."),
      *)
+     *
      */
-    public function similarity(Request $request, LoggerInterface $logger, SetupRepository$setupRepository, SequenceFamilyRepository $sequenceFamilyRepository, SequenceRepository $sequenceRepository) {
+    public function similarityContainer(Container $container, Request $request, LoggerInterface $logger, SetupRepository$setupRepository, SequenceFamilyRepository $sequenceFamilyRepository, SequenceRepository $sequenceRepository) {
         /** @var SimilarityTransformed $trans */
         $trans = RequestHelper::evaluateRequest($request, new SimilarityStructure(), $logger);
         if ($trans instanceof JsonResponse) {
@@ -147,7 +154,7 @@ class SmilesController extends AbstractController {
             if ($trans->blockLengthUnique === 0) {
                 return ResponseHelper::jsonResponse(new Message(ErrorConstants::ERROR_EMPTY_PARAMS, Response::HTTP_BAD_REQUEST));
             }
-            return new JsonResponse($sequenceRepository->similarity(1, $trans->blocks, $trans->blockLengthUnique, $trans->blockLength));
+            return new JsonResponse($sequenceRepository->similarity($container->getId(), $trans->blocks, $trans->blockLengthUnique, $trans->blockLength));
         }
     }
 

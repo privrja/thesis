@@ -6,9 +6,10 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\U2cRepository")
+ * @ORM\Table(name="`msb_u2c`")
  */
-class U2c
-{
+class U2c {
+
     /**
      * @ORM\Id()
      * @ORM\GeneratedValue()
@@ -33,43 +34,35 @@ class U2c
      */
     private $mode;
 
-    public function getId(): ?int
-    {
+    public function getId(): ?int {
         return $this->id;
     }
 
-    public function getUser(): ?User
-    {
+    public function getUser(): ?User {
         return $this->user;
     }
 
-    public function setUser(?User $user): self
-    {
+    public function setUser(?User $user): self {
         $this->user = $user;
-
         return $this;
     }
 
-    public function getContainer(): ?Container
-    {
+    public function getContainer(): ?Container {
         return $this->container;
     }
 
-    public function setContainer(?Container $container): self
-    {
+    public function setContainer(?Container $container): self {
         $this->container = $container;
-
         return $this;
     }
 
-    public function getMode(): ?string
-    {
+    public function getMode(): ?string {
         return $this->mode;
     }
 
-    public function setMode(string $mode): self
-    {
+    public function setMode(string $mode): self {
         $this->mode = $mode;
         return $this;
     }
+
 }

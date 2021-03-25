@@ -13,8 +13,8 @@ use Doctrine\Persistence\ManagerRegistry;
  * @method Container[]    findAll()
  * @method Container[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class ContainerRepository extends ServiceEntityRepository
-{
+class ContainerRepository extends ServiceEntityRepository {
+
     public function __construct(ManagerRegistry $registry) {
         parent::__construct($registry, Container::class);
     }
@@ -35,18 +35,5 @@ class ContainerRepository extends ServiceEntityRepository
             ->getQuery()
             ->getArrayResult();
     }
-
-//    public function getContainerModifications(int $containerId, array $filters, Sort $sort) {
-//        $qb = $this->createQueryBuilder('cnt')
-//            ->select('mdf.id', 'cnt.id as containerId', 'mdf.modificationName', 'mdf.modificationFormula', 'mdf.modificationMass', 'mdf.nTerminal', 'mdf.cTerminal')
-//            ->innerJoin('cnt.modificationId', 'mdf')
-//            ->where('cnt.id = :containerId')
-//            ->setParameter('containerId', $containerId)
-//            ->addOrderBy('mdf.' . $sort->sort, $sort->order)
-//
-//            return $qb->getQuery()
-//            ->getArrayResult();
-//    }
-
 
 }

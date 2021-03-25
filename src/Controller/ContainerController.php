@@ -167,9 +167,13 @@ class ContainerController extends AbstractController {
         if ($trans instanceof JsonResponse) {
             return $trans;
         }
-        $model = new ContainerModel($entityManager, $this->getDoctrine(), $security->getUser(), $logger);
-        $modelMessage = $model->createNew($trans);
-        return ResponseHelper::jsonResponse($modelMessage);
+        if (($trans->getVisibility() === ContainerVisibilityEnum::PUBLIC && $this->isGranted("ROLE_ADMIN")) || $trans->getVisibility() === ContainerVisibilityEnum::PRIVATE) {
+            $model = new ContainerModel($entityManager, $this->getDoctrine(), $security->getUser(), $logger);
+            $modelMessage = $model->createNew($trans);
+            return ResponseHelper::jsonResponse($modelMessage);
+        } else {
+            return ResponseHelper::jsonResponse(new Message('Only admin can create PUBLIC container'));
+        }
     }
 
     /**
@@ -239,9 +243,13 @@ class ContainerController extends AbstractController {
         if ($trans instanceof JsonResponse) {
             return $trans;
         }
-        $model = new ContainerModel($entityManager, $this->getDoctrine(), $security->getUser(), $logger);
-        $modelMessage = $model->update($trans, $container);
-        return ResponseHelper::jsonResponse($modelMessage);
+        if (($trans->getVisibility() === ContainerVisibilityEnum::PUBLIC && $this->isGranted("ROLE_ADMIN")) || $trans->getVisibility() === ContainerVisibilityEnum::PRIVATE) {
+            $model = new ContainerModel($entityManager, $this->getDoctrine(), $security->getUser(), $logger);
+            $modelMessage = $model->update($trans, $container);
+            return ResponseHelper::jsonResponse($modelMessage);
+        } else {
+            return ResponseHelper::jsonResponse(new Message('Only admin can change PRIVATE container to PUBLIC'));
+        }
     }
 
     /**

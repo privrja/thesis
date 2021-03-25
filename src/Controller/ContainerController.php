@@ -243,7 +243,7 @@ class ContainerController extends AbstractController {
         if ($trans instanceof JsonResponse) {
             return $trans;
         }
-        if (($trans->getVisibility() === ContainerVisibilityEnum::PUBLIC && $this->isGranted("ROLE_ADMIN")) || $trans->getVisibility() === ContainerVisibilityEnum::PRIVATE) {
+        if (($trans->getVisibility() === ContainerVisibilityEnum::PUBLIC && $this->isGranted("ROLE_ADMIN")) || $trans->getVisibility() === ContainerVisibilityEnum::PRIVATE || empty($trans->getVisibility())) {
             $model = new ContainerModel($entityManager, $this->getDoctrine(), $security->getUser(), $logger);
             $modelMessage = $model->update($trans, $container);
             return ResponseHelper::jsonResponse($modelMessage);

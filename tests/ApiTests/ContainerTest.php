@@ -94,7 +94,7 @@ class ContainerTest extends LoginTest {
 
     public function testUpdateContainerSuccessVisibility() {
         $client = self::loginClient();
-        $client->request('PUT', '/rest/container/3', [], [], [], json_encode(['visibility' => 'PUBLIC']));
+        $client->request('PUT', '/rest/container/3', [], [], [], json_encode(['visibility' => 'PRIVATE']));
         $this->assertEquals(204, $client->getResponse()->getStatusCode());
         $client->request('GET', '/rest/container/3');
         $this->assertEquals(200, $client->getResponse()->getStatusCode());

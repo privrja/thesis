@@ -141,9 +141,19 @@ class BlockRepository extends ServiceEntityRepository {
         $qb = RepositoryHelper::addSequenceFilter($qb, $filters);
         $qb->groupBy('seq.id, seq.sequenceType, seq.sequenceName, seq.sequence, seq.sequenceFormula, seq.sequenceMass, seq.sequenceSmiles, seq.source, seq.identifier, seq.decays, nmd.modificationName, cmd.modificationName, bmd.modificationName');
         $qb = RepositoryHelper::addHaving($qb, $filters);
-        if (isset($filters['usages'])) {
-            $qb->andHaving('count(distinct b2s.id) = :usages')
-                ->setParameter('usages', $filters['usages']);
+        if (isset($filters['usagesFrom']) && isset($filters['usagesTo'])) {
+            $qb->andHaving('count(distinct b2s.id) between :usagesFrom and :usagesTo')
+                ->setParameter('usagesFrom', $filters['usagesFrom'])
+                ->setParameter('usagesTo', $filters['usagesTo']);
+        } else {
+            if (isset($filters['usagesFrom'])) {
+                $qb->andHaving('count(distinct b2s.id) >= :usagesFrom')
+                    ->setParameter('usagesFrom', $filters['usagesFrom']);
+            }
+            if (isset($filters['usagesTo'])) {
+                $qb->andHaving('count(distinct b2s.id) <= :usagesTo')
+                    ->setParameter('usagesTo', $filters['usagesTo']);
+            }
         }
         $qb = RepositoryHelper::addSort($qb, $sort);
         return $qb->getQuery()

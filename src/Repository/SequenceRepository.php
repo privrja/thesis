@@ -132,4 +132,14 @@ class SequenceRepository extends ServiceEntityRepository {
         return $stmt->fetchAll();
     }
 
+    public function mass(int $containerId, float $massFrom, float $massTo) {
+        return $this->createQueryBuilder('seq')
+            ->select('seq.id', 'seq.sequenceName', 'seq.sequenceFormula as formula', 'seq.sequenceMass as mass', 'seq.sequenceSmiles as smiles')
+            ->where('seq.container = :container')
+            ->andWhere('seq.sequenceMass between :from and :to')
+            ->setParameters(['container' => $containerId, 'from' => $massFrom, 'to' => $massTo])
+            ->getQuery()
+            ->getArrayResult();
+    }
+
 }

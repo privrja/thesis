@@ -14,6 +14,8 @@ use App\Model\ContainerModel;
 use App\Structure\IValue;
 use App\Structure\SequenceFormulaStructure;
 use App\Structure\SequenceIdStructure;
+use App\Structure\SequenceMassStructure;
+use App\Structure\SequenceMassTransformed;
 use App\Structure\SequenceNameStructure;
 use App\Structure\SequenceSmilesStructure;
 use Doctrine\ORM\EntityManagerInterface;
@@ -155,6 +157,38 @@ class FinderController extends AbstractController {
         return $this->find($container, $request, new SequenceIdStructure, 'id', self::METHOD_DEFAULT, $entityManager, $security, $logger);
     }
 
+
+    /**
+     * Find by identifier
+     * @Route("/rest/container/{containerId}/mass", name="find_mass", methods={"POST"})
+     * @Entity("container", expr="repository.find(containerId)")
+     * @param Request $request
+     * @param Container $container
+     * @param EntityManagerInterface $entityManager
+     * @param Security $security
+     * @param LoggerInterface $logger
+     * @return JsonResponse
+     *
+     * @SWG\Post(
+     *     tags={"Finder"},
+     *     @SWG\Parameter(
+     *          name="body",
+     *          in="body",
+     *          type="string",
+     *          required=true,
+     *          description="Params: mass (required), range",
+     *          @SWG\Schema(type="string",
+     *              example="{""mass"": 1201.84137, ""range"": 0.5}")
+     *     ),
+     *     @SWG\Response(response="200", description="Results - even when not found anything -> result is array, so hwne not found anaything empty array is returned"),
+     *     @SWG\Response(response="403", description="Insuficient rights"),
+     *     @SWG\Response(response="404", description="Not found container"),
+     * )
+     */
+    public function mass(Request $request, Container $container, EntityManagerInterface $entityManager, Security $security, LoggerInterface $logger) {
+        return $this->find($container, $request, new SequenceMassStructure(), '', 'findMass', $entityManager, $security, $logger);
+    }
+
     private function find(Container $container, Request $request, $structure, string $param, string $method, EntityManagerInterface $entityManager, Security $security, LoggerInterface $logger) {
         if ($container->getVisibility() === ContainerVisibilityEnum::PUBLIC) {
             return $this->findBy($container, $request, $structure, $param, $method, $entityManager, $logger);
@@ -198,6 +232,11 @@ class FinderController extends AbstractController {
         $blocIds .= "')";
         $sequenceRepository = $entityManager->getRepository(Sequence::class);
         return $sequenceRepository->similarityMore($containerId, $blocIds, $i, sizeof($smiles));
+    }
+
+    private function findMass(int $containerId, SequenceMassTransformed $trans, EntityManagerInterface $entityManager) {
+        $sequenceRepository = $entityManager->getRepository(Sequence::class);
+        return $sequenceRepository->mass($containerId, $trans->from, $trans->to);
     }
 
 }

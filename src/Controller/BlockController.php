@@ -185,7 +185,7 @@ class BlockController extends AbstractController {
         }
         $model = new ContainerModel($entityManager, $this->getDoctrine(), $security->getUser(), $logger);
         $modelMessage = $model->createNewBlock($container, $trans);
-        return new JsonResponse($modelMessage, $modelMessage->status, Constants::getLocation('container/' . $container->getId() . '/block/', $modelMessage->id));
+        return new JsonResponse($modelMessage, $modelMessage->status, isset($modelMessage->id) ? Constants::getLocation('container/' . $container->getId() . '/block/', $modelMessage->id) : []);
     }
 
     /**

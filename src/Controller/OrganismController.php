@@ -89,7 +89,7 @@ class OrganismController extends AbstractController {
         }
         $model = new ContainerModel($entityManager, $this->getDoctrine(), $security->getUser(), $logger);
         $message = $model->createNewOrganism($container, $trans);
-        return new JsonResponse($message, $message->status, Constants::getLocation('container/' . $container->getId() . '/organism/', $message->id));
+        return new JsonResponse($message, $message->status, isset($message->id) ? Constants::getLocation('container/' . $container->getId() . '/organism/', $message->id) : []);
     }
 
     /**

@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Base\Message;
 use App\Base\RequestHelper;
 use App\Base\ResponseHelper;
+use App\Constant\Constants;
 use App\Constant\ErrorConstants;
 use App\Entity\Block;
 use App\Entity\Container;
@@ -184,7 +185,7 @@ class BlockController extends AbstractController {
         }
         $model = new ContainerModel($entityManager, $this->getDoctrine(), $security->getUser(), $logger);
         $modelMessage = $model->createNewBlock($container, $trans);
-        return ResponseHelper::jsonResponse($modelMessage);
+        return new JsonResponse($modelMessage, $modelMessage->status, Constants::getLocation('container/' . $container->getId() . '/block/', $modelMessage->id));
     }
 
     /**

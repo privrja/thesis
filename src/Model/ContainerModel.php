@@ -119,7 +119,7 @@ class ContainerModel {
         $u2c->setMode(ContainerModeEnum::RWM);
         $this->entityManager->persist($u2c);
         $this->entityManager->flush();
-        return Message::createCreated();
+        return Message::createCreated($container->getId());
     }
 
     public function update(UpdateContainerTransformed $trans, Container $container): Message {
@@ -256,6 +256,7 @@ class ContainerModel {
         } catch (UniqueConstraintViolationException $exception) {
             return new Message('Block with this acronym is already in container');
         }
+        $message->id = $block->getId();
         return $message;
     }
 
@@ -289,6 +290,7 @@ class ContainerModel {
         $modification->setCTerminal($trans->isCTerminal());
         $this->entityManager->persist($modification);
         $this->entityManager->flush();
+        $message->id = $modification->getId();
         return $message;
     }
 
@@ -451,6 +453,7 @@ class ContainerModel {
         } catch (UniqueConstraintViolationException $exception) {
             return new Message('Sequence with this name is already in container');
         }
+        $message->id = $sequence->getId();
         return $message;
     }
 
@@ -544,7 +547,7 @@ class ContainerModel {
         $blockFamily->setBlockFamilyName($trans->getFamily());
         $this->entityManager->persist($blockFamily);
         $this->entityManager->flush();
-        return Message::createCreated();
+        return Message::createCreated($blockFamily->getId());
     }
 
     public function updateBlockFamily(FamilyTransformed $trans, Container $container, BlockFamily $blockFamily): Message {
@@ -578,12 +581,12 @@ class ContainerModel {
         if (empty($hasContainerRW)) {
             return new Message(ErrorConstants::ERROR_CONTAINER_INSUFIENT_RIGHTS, Response::HTTP_FORBIDDEN);
         }
-        $blockFamily = new SequenceFamily();
-        $blockFamily->setContainer($container);
-        $blockFamily->setSequenceFamilyName($trans->getFamily());
-        $this->entityManager->persist($blockFamily);
+        $sequenceFamily = new SequenceFamily();
+        $sequenceFamily->setContainer($container);
+        $sequenceFamily->setSequenceFamilyName($trans->getFamily());
+        $this->entityManager->persist($sequenceFamily);
         $this->entityManager->flush();
-        return Message::createCreated();
+        return Message::createCreated($sequenceFamily->getId());
     }
 
     public function deleteSequenceFamily(Container $container, SequenceFamily $sequenceFamily): Message {
@@ -640,7 +643,7 @@ class ContainerModel {
         $u2c->setMode($trans->mode);
         $this->entityManager->persist($u2c);
         $this->entityManager->flush();
-        return Message::createCreated();
+        return Message::createCreated($collaborator->getId());
     }
 
     public function deleteCollaborator(User $collaborator, Container $container): Message {
@@ -910,7 +913,7 @@ class ContainerModel {
         $organism->setOrganism($trans->organism);
         $this->entityManager->persist($organism);
         $this->entityManager->flush();
-        return Message::createCreated();
+        return Message::createCreated($organism->getId());
     }
 
     public function updateOrganism(OrganismTransformed $trans, Container $container, Organism $organism): Message {

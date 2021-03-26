@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Base\Cap;
+use App\Base\GeneratorHelper;
 use App\Base\Message;
 use App\Base\RequestHelper;
 use App\Base\ResponseHelper;
@@ -421,7 +422,8 @@ class SecurityController extends AbstractController {
             $pass = rand(1000000, 999999999999);
         }
         try {
-            $user->setPassword($passwordEncoder->encodePassword($user, $pass));
+            $user->setApiToken(GeneratorHelper::generate(32));
+//            $user->setPassword($passwordEncoder->encodePassword($user, $pass));
             $entityManager->persist($user);
             $entityManager->flush();
         } catch (Exception $exception) {

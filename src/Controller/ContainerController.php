@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Base\Message;
 use App\Base\RequestHelper;
 use App\Base\ResponseHelper;
+use App\Constant\Constants;
 use App\Constant\EntityColumnsEnum;
 use App\Constant\ErrorConstants;
 use App\CycloBranch\AbstractCycloBranch;
@@ -170,7 +171,7 @@ class ContainerController extends AbstractController {
         if (($trans->getVisibility() === ContainerVisibilityEnum::PUBLIC && $this->isGranted("ROLE_ADMIN")) || $trans->getVisibility() === ContainerVisibilityEnum::PRIVATE) {
             $model = new ContainerModel($entityManager, $this->getDoctrine(), $security->getUser(), $logger);
             $modelMessage = $model->createNew($trans);
-            return ResponseHelper::jsonResponse($modelMessage);
+            return new JsonResponse($modelMessage, $modelMessage->status, Constants::getLocation('container/', $modelMessage->id));
         } else {
             return ResponseHelper::jsonResponse(new Message('Only admin can create PUBLIC container'));
         }
@@ -294,7 +295,7 @@ class ContainerController extends AbstractController {
         }
         $model = new ContainerModel($entityManager, $this->getDoctrine(), $security->getUser(), $logger);
         $modelMessage = $model->createNewCollaborator($container, $trans);
-        return ResponseHelper::jsonResponse($modelMessage);
+        return new JsonResponse($modelMessage, $modelMessage->status, Constants::getLocation('container/' . $container->getId() . '/collaborator/', $modelMessage->id));
     }
 
     /**

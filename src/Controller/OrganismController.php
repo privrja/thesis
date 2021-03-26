@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Base\RequestHelper;
 use App\Base\ResponseHelper;
+use App\Constant\Constants;
 use App\Entity\Container;
 use App\Entity\Organism;
 use App\Model\ContainerModel;
@@ -87,7 +88,8 @@ class OrganismController extends AbstractController {
             return $trans;
         }
         $model = new ContainerModel($entityManager, $this->getDoctrine(), $security->getUser(), $logger);
-        return ResponseHelper::jsonResponse($model->createNewOrganism($container, $trans));
+        $message = $model->createNewOrganism($container, $trans);
+        return new JsonResponse($message, $message->status, Constants::getLocation('container/' . $container->getId() . '/organism/', $message->id));
     }
 
     /**

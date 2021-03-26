@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Base\Message;
 use App\Base\RequestHelper;
 use App\Base\ResponseHelper;
+use App\Constant\Constants;
 use App\Constant\ErrorConstants;
 use App\Entity\Container;
 use App\Entity\Modification;
@@ -184,7 +185,7 @@ class ModificationController extends AbstractController {
         }
         $model = new ContainerModel($entityManager, $this->getDoctrine(), $security->getUser(), $logger);
         $modelMessage = $model->createNewModification($container, $trans);
-        return ResponseHelper::jsonResponse($modelMessage);
+        return new JsonResponse($modelMessage, $modelMessage->status, Constants::getLocation('container/' . $container->getId() . '/modification/', $modelMessage->id));
     }
 
 }

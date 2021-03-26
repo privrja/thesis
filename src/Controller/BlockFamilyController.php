@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Base\RequestHelper;
 use App\Base\ResponseHelper;
+use App\Constant\Constants;
 use App\Entity\BlockFamily;
 use App\Entity\Container;
 use App\Model\ContainerModel;
@@ -87,7 +88,7 @@ class BlockFamilyController extends AbstractController {
         }
         $model = new ContainerModel($entityManager, $this->getDoctrine(), $security->getUser(), $logger);
         $modelMessage = $model->createNewBlockFamily($container, $trans);
-        return ResponseHelper::jsonResponse($modelMessage);
+        return new JsonResponse($modelMessage, $modelMessage->status, Constants::getLocation('container/' . $container->getId() . '/block/family/', $modelMessage->id));
     }
 
     /**

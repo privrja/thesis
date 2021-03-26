@@ -30,5 +30,6 @@ class ErrorConstants {
     public const CAP_VERIFY_FAILURE = 'Cap verify failure';
     public const MASS_POSITIVE = 'Mass or range have to be positive numbers';
     public const USER_NOT_FOUND = 'User not found';
+    public const ALREADY_IN_DATABASE = 'Already in database';
 
 }

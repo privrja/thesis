@@ -49,6 +49,7 @@ use Symfony\Component\HttpFoundation\Response;
 class ContainerModel {
 
     const CLONE_LENGTH = 2;
+    const ALREADY_IN_DATABASE = ErrorConstants::ALREADY_IN_DATABASE;
 
     private $usr;
     private $doctrine;
@@ -545,8 +546,12 @@ class ContainerModel {
         $blockFamily = new BlockFamily();
         $blockFamily->setContainer($container);
         $blockFamily->setBlockFamilyName($trans->getFamily());
-        $this->entityManager->persist($blockFamily);
-        $this->entityManager->flush();
+        try {
+            $this->entityManager->persist($blockFamily);
+            $this->entityManager->flush();
+        } catch (UniqueConstraintViolationException $e) {
+            return new Message(ErrorConstants::ALREADY_IN_DATABASE);
+        }
         return Message::createCreated($blockFamily->getId());
     }
 
@@ -584,8 +589,12 @@ class ContainerModel {
         $sequenceFamily = new SequenceFamily();
         $sequenceFamily->setContainer($container);
         $sequenceFamily->setSequenceFamilyName($trans->getFamily());
-        $this->entityManager->persist($sequenceFamily);
-        $this->entityManager->flush();
+        try {
+            $this->entityManager->persist($sequenceFamily);
+            $this->entityManager->flush();
+        } catch (UniqueConstraintViolationException $e) {
+            return new Message(ErrorConstants::ALREADY_IN_DATABASE);
+        }
         return Message::createCreated($sequenceFamily->getId());
     }
 
@@ -911,8 +920,12 @@ class ContainerModel {
         $organism = new Organism();
         $organism->setContainer($container);
         $organism->setOrganism($trans->organism);
-        $this->entityManager->persist($organism);
-        $this->entityManager->flush();
+        try {
+            $this->entityManager->persist($organism);
+            $this->entityManager->flush();
+        } catch (UniqueConstraintViolationException $e) {
+            return new Message(ErrorConstants::ALREADY_IN_DATABASE);
+        }
         return Message::createCreated($organism->getId());
     }
 

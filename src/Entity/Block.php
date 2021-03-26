@@ -11,8 +11,7 @@ use JsonSerializable;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\BlockRepository")
- * @ORM\Table(uniqueConstraints={@UniqueConstraint(name="UX_BLOCK_ACRONYM", columns={"acronym", "container_id"})})
- * @ORM\Table(name="`msb_block`")
+ * @ORM\Table(uniqueConstraints={@UniqueConstraint(name="UX_BLOCK_ACRONYM", columns={"acronym", "container_id"})}, name="`msb_block`")
  */
 class Block implements JsonSerializable {
 

@@ -6,11 +6,12 @@ use App\Repository\OrganismRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\Mapping\UniqueConstraint;
 use JsonSerializable;
 
 /**
  * @ORM\Entity(repositoryClass=OrganismRepository::class)
- * @ORM\Table(name="`msb_organism`")
+ * @ORM\Table(uniqueConstraints={@UniqueConstraint(name="UX_ORGANISM_NAME", columns={"organism", "container_id"})}, name="`msb_organism`")
  */
 class Organism implements JsonSerializable {
 

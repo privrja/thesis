@@ -10,8 +10,7 @@ use JsonSerializable;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\SequenceRepository")
- * @ORM\Table(uniqueConstraints={@UniqueConstraint(name="UX_SEQUENCE_NAME", columns={"sequence_name", "container_id"})})
- * @ORM\Table(name="`msb_sequence`")
+ * @ORM\Table(uniqueConstraints={@UniqueConstraint(name="UX_SEQUENCE_NAME", columns={"sequence_name", "container_id"})}, name="`msb_sequence`")
  */
 class Sequence implements JsonSerializable {
 

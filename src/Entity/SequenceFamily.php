@@ -5,11 +5,12 @@ namespace App\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\Mapping\UniqueConstraint;
 use JsonSerializable;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\SequenceFamilyRepository")
- * @ORM\Table(name="`msb_sequence_family`")
+ * @ORM\Table(uniqueConstraints={@UniqueConstraint(name="UX_SEQUENCE_FAMILY_NAME", columns={"sequence_family_name", "container_id"})}, name="`msb_sequence_family`")
  */
 class SequenceFamily implements JsonSerializable {
 

@@ -84,7 +84,9 @@ class BlockStructure extends AbstractStructure implements JsonSerializable {
                     try {
                         $trans->setMass(FormulaHelper::computeMass($trans->getFormula()));
                     } catch (IllegalStateException $e) {
-                        /* Empty on purpose - mass can be null */
+                        $trans->mass = 0;
+                    } catch (InvalidArgumentException $e) {
+                        $trans->mass = 0;
                     }
                 } else {
                     $trans->setMass($this->mass);
@@ -102,7 +104,9 @@ class BlockStructure extends AbstractStructure implements JsonSerializable {
                 try {
                     $trans->setMass(FormulaHelper::computeMass($trans->getFormula()));
                 } catch (IllegalStateException $e) {
-                    /* Empty on purpose - mass can be null */
+                    $trans->mass = 0;
+                } catch (InvalidArgumentException $e) {
+                    $trans->mass = 0;
                 }
             } else {
                 $trans->setMass($this->mass);
@@ -118,7 +122,9 @@ class BlockStructure extends AbstractStructure implements JsonSerializable {
                 try {
                     $trans->setMass(FormulaHelper::computeMass($this->formula));
                 } catch (IllegalStateException $e) {
-                    /* Empty on purpose - mass can be null */
+                    $trans->mass = 0;
+                } catch (InvalidArgumentException $e) {
+                    $trans->mass = 0;
                 }
             } else {
                 $trans->setMass($this->mass);

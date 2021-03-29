@@ -35,10 +35,10 @@ final class Version20210326093530 extends AbstractMigration {
         $this->addSql('ALTER TABLE `msb_b2s` ADD CONSTRAINT FK_B2S_BLOCK_ID FOREIGN KEY (block_id) REFERENCES `msb_block` (id)');
         $this->addSql('ALTER TABLE `msb_b2s` ADD CONSTRAINT FK_B2S_NEXT_BLOCK_ID FOREIGN KEY (next_block_id) REFERENCES `msb_block` (id)');
         $this->addSql('ALTER TABLE `msb_b2s` ADD CONSTRAINT FK_B2S_BRANCH_REFERENCE_ID FOREIGN KEY (branch_reference_id) REFERENCES `msb_block` (id)');
-        $this->addSql('ALTER TABLE `msb_block` ADD CONSTRAINT FK_BLOCK_CONTAINER_ID FOREIGN KEY (container_id) REFERENCES `msb_Container` (id)');
-        $this->addSql('ALTER TABLE `msb_block_family` ADD CONSTRAINT FK_BLOCK_FAMILY_CONTAINER_ID FOREIGN KEY (container_id) REFERENCES `msb_Container` (id)');
-        $this->addSql('ALTER TABLE `msb_modification` ADD CONSTRAINT FK_MODIFICATION_CONTAINER_ID FOREIGN KEY (container_id) REFERENCES `msb_Container` (id)');
-        $this->addSql('ALTER TABLE `msb_organism` ADD CONSTRAINT FK_ORGANISM_CONTAINER_ID FOREIGN KEY (container_id) REFERENCES `msb_Container` (id)');
+        $this->addSql('ALTER TABLE `msb_block` ADD CONSTRAINT FK_BLOCK_CONTAINER_ID FOREIGN KEY (container_id) REFERENCES `msb_container` (id)');
+        $this->addSql('ALTER TABLE `msb_block_family` ADD CONSTRAINT FK_BLOCK_FAMILY_CONTAINER_ID FOREIGN KEY (container_id) REFERENCES `msb_container` (id)');
+        $this->addSql('ALTER TABLE `msb_modification` ADD CONSTRAINT FK_MODIFICATION_CONTAINER_ID FOREIGN KEY (container_id) REFERENCES `msb_container` (id)');
+        $this->addSql('ALTER TABLE `msb_organism` ADD CONSTRAINT FK_ORGANISM_CONTAINER_ID FOREIGN KEY (container_id) REFERENCES `msb_container` (id)');
         $this->addSql('ALTER TABLE `msb_s2f` ADD CONSTRAINT FK_S2F_SEQUENCE_ID FOREIGN KEY (sequence_id) REFERENCES `msb_sequence` (id)');
         $this->addSql('ALTER TABLE `msb_s2f` ADD CONSTRAINT FK_S2F_FAMILY_ID FOREIGN KEY (family_id) REFERENCES `msb_sequence_family` (id)');
         $this->addSql('ALTER TABLE `msb_s2o` ADD CONSTRAINT FK_S2O_ORGANISM_ID FOREIGN KEY (organism_id) REFERENCES `msb_organism` (id)');
@@ -46,10 +46,10 @@ final class Version20210326093530 extends AbstractMigration {
         $this->addSql('ALTER TABLE `msb_sequence` ADD CONSTRAINT FK_SEQUENCE_N_MODIFICATION_ID FOREIGN KEY (n_modification_id) REFERENCES `msb_modification` (id)');
         $this->addSql('ALTER TABLE `msb_sequence` ADD CONSTRAINT FK_SEQUENCE_C_MODIFICATION_ID FOREIGN KEY (c_modification_id) REFERENCES `msb_modification` (id)');
         $this->addSql('ALTER TABLE `msb_sequence` ADD CONSTRAINT FK_SEQUENCE_B_MODIFICATION_ID FOREIGN KEY (b_modification_id) REFERENCES `msb_modification` (id)');
-        $this->addSql('ALTER TABLE `msb_sequence` ADD CONSTRAINT FK_SEQUENCE_CONTAINER_ID FOREIGN KEY (container_id) REFERENCES `msb_Container` (id)');
-        $this->addSql('ALTER TABLE `msb_sequence_family` ADD CONSTRAINT FK_SEQUENCE_FAMILY_CONTAINER_ID FOREIGN KEY (container_id) REFERENCES `msb_Container` (id)');
+        $this->addSql('ALTER TABLE `msb_sequence` ADD CONSTRAINT FK_SEQUENCE_CONTAINER_ID FOREIGN KEY (container_id) REFERENCES `msb_container` (id)');
+        $this->addSql('ALTER TABLE `msb_sequence_family` ADD CONSTRAINT FK_SEQUENCE_FAMILY_CONTAINER_ID FOREIGN KEY (container_id) REFERENCES `msb_container` (id)');
         $this->addSql('ALTER TABLE `msb_u2c` ADD CONSTRAINT FK_U2C_USER_ID FOREIGN KEY (user_id) REFERENCES `msb_user` (id)');
-        $this->addSql('ALTER TABLE `msb_u2c` ADD CONSTRAINT FK_U2C_CONTAINER_ID FOREIGN KEY (container_id) REFERENCES `msb_Container` (id)');
+        $this->addSql('ALTER TABLE `msb_u2c` ADD CONSTRAINT FK_U2C_CONTAINER_ID FOREIGN KEY (container_id) REFERENCES `msb_container` (id)');
     }
 
     public function down(Schema $schema): void {

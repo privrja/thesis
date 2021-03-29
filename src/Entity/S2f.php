@@ -48,7 +48,6 @@ class S2f {
 
     public function setFamily(?SequenceFamily $family): self {
         $this->family = $family;
-
         return $this;
     }
 

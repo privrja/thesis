@@ -12,7 +12,7 @@ use JsonSerializable;
 /**
  * @ORM\Entity(repositoryClass="App\Repository\ContainerRepository")
  * @ORM\Table(indexes={@Index(name="IDX_CONTAINER_ID", columns={"id"})})
- * @ORM\Table(name="`msb_Container`")
+ * @ORM\Table(name="`msb_container`")
  */
 class Container implements JsonSerializable {
 

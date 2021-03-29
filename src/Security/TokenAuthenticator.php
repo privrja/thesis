@@ -3,6 +3,7 @@
 namespace App\Security;
 
 use App\Base\GeneratorHelper;
+use App\Constant\Constants;
 use App\Entity\User;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
@@ -89,7 +90,7 @@ class TokenAuthenticator extends AbstractGuardAuthenticator {
             return $this->passwordEncoder->isPasswordValid($user, $credentials['secret']);
         } else {
             $now = new DateTime();
-            if ($now->getTimestamp() - $user->getLastActivity()->getTimestamp() > 3600) {
+            if ($now->getTimestamp() - $user->getLastActivity()->getTimestamp() > Constants::LOGOUT_TIME) {
                 $user->setApiToken(null);
                 $this->em->beginTransaction();
                 $this->em->persist($user);

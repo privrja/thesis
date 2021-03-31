@@ -435,15 +435,17 @@ class ContainerModel {
         $uniqueBlocks = [];
         $cntUniqueBlocks = 0;
         $cntBlocks = 0;
-        $sequenceHelper = new SequenceHelper($trans->getSequence(), SequenceEnum::$backValues[$trans->getSequenceType()], $blockArray);
-        $b2s = $sequenceHelper->sequenceBlocksStructure($trans->getSequenceOriginal());
-        foreach ($b2s as $connection) {
-            $sequence->addB2($connection);
-            if (!isset($uniqueBlocks[$connection->getBlock()->getId()])) {
-                $uniqueBlocks[$connection->getBlock()->getId()] = 1;
-                $cntUniqueBlocks++;
+        if ($trans->getSequence() !== null) {
+            $sequenceHelper = new SequenceHelper($trans->getSequence(), SequenceEnum::$backValues[$trans->getSequenceType()], $blockArray);
+            $b2s = $sequenceHelper->sequenceBlocksStructure($trans->getSequenceOriginal());
+            foreach ($b2s as $connection) {
+                $sequence->addB2($connection);
+                if (!isset($uniqueBlocks[$connection->getBlock()->getId()])) {
+                    $uniqueBlocks[$connection->getBlock()->getId()] = 1;
+                    $cntUniqueBlocks++;
+                }
+                $cntBlocks++;
             }
-            $cntBlocks++;
         }
         $sequence->setUniqueBlockCount($cntUniqueBlocks);
         $sequence->setBlockCount($cntBlocks);

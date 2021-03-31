@@ -9,10 +9,10 @@ class SequenceTransformed extends AbstractTransformed implements JsonSerializabl
     /** @var string */
     private $sequenceName;
 
-    /** @var string */
+    /** @var string | null */
     private $sequence;
 
-    /** @var string */
+    /** @var string | null */
     private $sequenceOriginal;
 
     /** @var string */
@@ -65,9 +65,9 @@ class SequenceTransformed extends AbstractTransformed implements JsonSerializabl
     }
 
     /**
-     * @param string $sequenceName
+     * @param string | null $sequenceName
      */
-    public function setSequenceName(string $sequenceName): void {
+    public function setSequenceName($sequenceName): void {
         $this->sequenceName = $sequenceName;
     }
 
@@ -170,16 +170,16 @@ class SequenceTransformed extends AbstractTransformed implements JsonSerializabl
     }
 
     /**
-     * @return string
+     * @return string | null
      */
-    public function getSequence(): string {
+    public function getSequence() {
         return $this->sequence;
     }
 
     /**
-     * @param string $sequence
+     * @param string | null $sequence
      */
-    public function setSequence(string $sequence): void {
+    public function setSequence($sequence): void {
         $this->sequence = $sequence;
     }
 
@@ -254,16 +254,16 @@ class SequenceTransformed extends AbstractTransformed implements JsonSerializabl
     }
 
     /**
-     * @return string
+     * @return string | null
      */
-    public function getSequenceOriginal(): string {
+    public function getSequenceOriginal() {
         return $this->sequenceOriginal;
     }
 
     /**
-     * @param string $sequenceOriginal
+     * @param string | null $sequenceOriginal
      */
-    public function setSequenceOriginal(string $sequenceOriginal): void {
+    public function setSequenceOriginal($sequenceOriginal): void {
         $this->sequenceOriginal = $sequenceOriginal;
     }
 

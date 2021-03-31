@@ -32,10 +32,10 @@ class SequenceStructure extends AbstractStructure implements JsonSerializable {
     /** @var string|null */
     public $identifier;
 
-    /** @var string */
+    /** @var string|null */
     public $sequence;
 
-    /** @var string */
+    /** @var string|null */
     public $sequenceOriginal;
 
     /** @var string */

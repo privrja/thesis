@@ -32,12 +32,12 @@ class Sequence implements JsonSerializable {
     private $sequenceName;
 
     /**
-     * @ORM\Column(type="string", length=500)
+     * @ORM\Column(type="string", length=500, nullable=true)
      */
     private $sequence;
 
     /**
-     * @ORM\Column(type="string", length=500)
+     * @ORM\Column(type="string", length=500, nullable=true)
      */
     private $sequenceOriginal;
 
@@ -77,12 +77,12 @@ class Sequence implements JsonSerializable {
     private $decays;
 
     /**
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="integer", options={"default": 0})
      */
     private $uniqueBlockCount;
 
     /**
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="integer", options={"default": 0})
      */
     private $blockCount;
 

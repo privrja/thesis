@@ -63,7 +63,7 @@ class SequenceStructure extends AbstractStructure implements JsonSerializable {
     public $blocks;
 
     public function checkInput(): Message {
-        if (empty($this->sequenceName) || empty($this->sequenceType) || empty($this->sequence)) {
+        if (empty($this->sequenceName) || empty($this->sequenceType)) {
             return new Message(ErrorConstants::ERROR_EMPTY_PARAMS);
         }
         if (!isset(SequenceEnum::$backValues[$this->sequenceType])) {

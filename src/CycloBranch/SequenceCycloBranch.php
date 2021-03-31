@@ -94,26 +94,30 @@ class SequenceCycloBranch extends AbstractCycloBranch {
                 }
             }
             $sequenceHelper = new SequenceHelper($sequence->getSequence(), SequenceEnum::$backValues[$sequence->getSequenceType()], []);
-            $b2s = $sequenceHelper->findBlocks($container, $entityManager->getRepository(Block::class));
-            if (empty($b2s)) {
-                $item->error = 'ERROR: Not all blocks used sequence is in container';
-                array_push($errorStack, $item);
-                continue;
-            }
-            $uniqueBlocks = [];
+            $sequenceSe = $item->getSequence();
             $cntUniqueBlocks = 0;
             $cntBlocks = 0;
-            foreach ($b2s as $connection) {
-                $sequence->addB2($connection);
-                if (!isset($uniqueBlocks[$connection->getBlock()->getId()])) {
-                    $uniqueBlocks[$connection->getBlock()->getId()] = 1;
-                    $cntUniqueBlocks++;
+            if (!empty($sequenceSe)) {
+                $b2s = $sequenceHelper->findBlocks($container, $entityManager->getRepository(Block::class));
+                if (empty($b2s)) {
+                    $item->error = 'ERROR: Not all blocks used sequence is in container';
+                    array_push($errorStack, $item);
+                    continue;
                 }
-                $cntBlocks++;
+                $uniqueBlocks = [];
+                foreach ($b2s as $connection) {
+                    $sequence->addB2($connection);
+                    if (!isset($uniqueBlocks[$connection->getBlock()->getId()])) {
+                        $uniqueBlocks[$connection->getBlock()->getId()] = 1;
+                        $cntUniqueBlocks++;
+                    }
+                    $cntBlocks++;
+                }
             }
             $sequence->setUniqueBlockCount($cntUniqueBlocks);
             $sequence->setBlockCount($cntBlocks);
             $entityManager->persist($sequence);
+            $entityManager->flush();
         }
         $entityManager->flush();
         return $errorStack;

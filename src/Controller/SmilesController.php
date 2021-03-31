@@ -99,7 +99,7 @@ class SmilesController extends AbstractController {
         $res = [];
         foreach ($smilesInput as $smiles) {
             // TODO better check for polyketide, then form mass with losses and maybe seting to not removing any losses?
-            $polyketide = str_contains(strtoupper($smilesInput->smiles), 'O');
+            $polyketide = str_contains(strtoupper($smiles->smiles), 'O');
             $resObject = new FormulaMass();
             $resObject->smiles = $smiles->smiles;
             $resObject->formula = FormulaHelper::formulaFromSmiles($smiles->smiles, $polyketide ? LossesEnum::H2 : LossesEnum::H2O);

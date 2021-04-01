@@ -26,6 +26,7 @@ use App\Enum\ContainerVisibilityEnum;
 use App\Enum\SequenceEnum;
 use App\Exception\IllegalStateException;
 use App\Smiles\Graph;
+use App\Structure\AbstractTransformed;
 use App\Structure\CollaboratorTransformed;
 use App\Structure\CollaboratorUpdateTransformed;
 use App\Structure\FamilyTransformed;
@@ -34,6 +35,7 @@ use App\Structure\NewContainerTransformed;
 use App\Structure\BlockTransformed;
 use App\Structure\OrganismTransformed;
 use App\Structure\SequenceCloneExport;
+use App\Structure\SequencePatchTransformed;
 use App\Structure\SequenceTransformed;
 use App\Structure\Sort;
 use App\Structure\UpdateContainerTransformed;
@@ -64,6 +66,8 @@ class ContainerModel {
     private $modificationRepository;
     private $sequenceRepository;
     private $organismRepository;
+    private $s2fRepository;
+    private $s2oRepository;
 
     /**
      * ContainerModel constructor.
@@ -86,6 +90,8 @@ class ContainerModel {
         $this->modificationRepository = $doctrine->getRepository(Modification::class);
         $this->sequenceRepository = $doctrine->getRepository(Sequence::class);
         $this->organismRepository = $doctrine->getRepository(Organism::class);
+        $this->s2fRepository = $doctrine->getRepository(S2f::class);
+        $this->s2oRepository = $doctrine->getRepository(S2o::class);
     }
 
     public function concreteContainer(Container $container) {
@@ -329,6 +335,58 @@ class ContainerModel {
         return $this->saveSequence($sequence, $container, $trans, Message::createNoContent());
     }
 
+    public function patchSequence(Container $container, Sequence $sequence, SequencePatchTransformed $trans): Message {
+        if ($this->hasContainerRW($container->getId())) {
+            if (!empty($trans->sequenceName)) {
+                $sequence->setSequenceName($trans->sequenceName);
+            }
+            if (!empty($trans->sequenceType)) {
+                $sequence->setSequenceType($trans->sequenceType);
+            }
+            if (!empty($trans->formula)) {
+                $sequence->setSequenceFormula($trans->formula);
+            }
+            if (isset($trans->mass)) {
+                $sequence->setSequenceMass($trans->mass);
+            }
+            if (isset($trans->source)) {
+                $sequence->setSource($trans->source);
+            }
+            if (!empty($trans->identifier)) {
+                $sequence->setIdentifier($trans->identifier);
+            }
+            if (isset($trans->family)) {
+                foreach ($sequence->getS2families() as $s2family) {
+                    $this->entityManager->remove($s2family);
+                }
+                $sequence->emptyS2Family();
+                $message = $this->saveFamily($container, $sequence, $trans);
+                if (!$message->result) {
+                    return $message;
+                }
+            }
+            if (isset($trans->organism)) {
+                foreach ($sequence->getS2Organism() as $s2family) {
+                    $this->entityManager->remove($s2family);
+                }
+                $sequence->emptyS2Organism();
+                $message = $this->saveOrganism($container, $sequence, $trans);
+                if (!$message->result) {
+                    return $message;
+                }
+            }
+            try {
+                $this->entityManager->persist($sequence);
+                $this->entityManager->flush();
+            } catch (UniqueConstraintViolationException $exception) {
+                return new Message('Sequence/family/organism/block with this name/acronym is already in container');
+            }
+            return Message::createNoContent();
+        } else {
+            return new Message(ErrorConstants::ERROR_CONTAINER_INSUFIENT_RIGHTS, Response::HTTP_FORBIDDEN);
+        }
+    }
+
     function setModification($transModification, Container $container) {
         $modification = new Modification();
         $modification->setContainer($container);
@@ -393,37 +451,13 @@ class ContainerModel {
                 $sequence->setCModification($modification);
                 break;
         }
-
-        foreach ($trans->getFamily() as $family) {
-            if (is_numeric($family)) {
-                $sFamily = $this->sequenceFamilyRepository->findOneBy(['id' => $family, 'container' => $container->getId()]);
-                if (!isset($sFamily)) {
-                    return new Message(ErrorConstants::ERROR_SEQUENCE_FAMILY_NOT_FOUND);
-                }
-            } else {
-                $sFamily = new SequenceFamily();
-                $sFamily->setContainer($container);
-                $sFamily->setSequenceFamilyName($family);
-            }
-            $s2f = new S2f();
-            $s2f->setFamily($sFamily);
-            $sequence->addS2family($s2f);
+        $mess = $this->saveFamily($container, $sequence, $trans);
+        if (!$mess->result) {
+            return $mess;
         }
-
-        foreach ($trans->organism as $organism) {
-            if (is_numeric($organism)) {
-                $sOrganism = $this->organismRepository->findOneBy(['id' => $organism, 'container' => $container->getId()]);
-                if (!isset($sOrganism)) {
-                    return new Message(ErrorConstants::ERROR_ORGANISM_NOT_FOUND);
-                }
-            } else {
-                $sOrganism = new Organism();
-                $sOrganism->setContainer($container);
-                $sOrganism->setOrganism($organism);
-            }
-            $s2o = new S2o();
-            $s2o->setOrganism($sOrganism);
-            $sequence->addS2Organism($s2o);
+        $mess = $this->saveOrganism($container, $sequence, $trans);
+        if (!$message->result) {
+            return $mess;
         }
 
         /** @var Block[] $blockArray */
@@ -454,10 +488,48 @@ class ContainerModel {
             $this->entityManager->persist($sequence);
             $this->entityManager->flush();
         } catch (UniqueConstraintViolationException $exception) {
-            return new Message('Sequence with this name is already in container');
+            return new Message('Sequence/block with this name/acronym is already in container');
         }
         $message->id = $sequence->getId();
         return $message;
+    }
+
+    private function saveFamily(Container $container, Sequence $sequence, AbstractTransformed $trans): Message {
+        foreach ($trans->family as $family) {
+            if (is_numeric($family)) {
+                $sFamily = $this->sequenceFamilyRepository->findOneBy(['id' => $family, 'container' => $container->getId()]);
+                if (!isset($sFamily)) {
+                    return new Message(ErrorConstants::ERROR_SEQUENCE_FAMILY_NOT_FOUND);
+                }
+            } else {
+                $sFamily = new SequenceFamily();
+                $sFamily->setContainer($container);
+                $sFamily->setSequenceFamilyName($family);
+            }
+            $s2f = new S2f();
+            $s2f->setFamily($sFamily);
+            $sequence->addS2family($s2f);
+        }
+        return Message::createOkMessage();
+    }
+
+    private function saveOrganism(Container $container, Sequence $sequence, AbstractTransformed $trans): Message {
+        foreach ($trans->organism as $organism) {
+            if (is_numeric($organism)) {
+                $sOrganism = $this->organismRepository->findOneBy(['id' => $organism, 'container' => $container->getId()]);
+                if (!isset($sOrganism)) {
+                    return new Message(ErrorConstants::ERROR_ORGANISM_NOT_FOUND);
+                }
+            } else {
+                $sOrganism = new Organism();
+                $sOrganism->setContainer($container);
+                $sOrganism->setOrganism($organism);
+            }
+            $s2o = new S2o();
+            $s2o->setOrganism($sOrganism);
+            $sequence->addS2Organism($s2o);
+        }
+        return Message::createOkMessage();
     }
 
     private function setBlock($block, $container) {

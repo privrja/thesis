@@ -56,6 +56,7 @@ class AppFixtures extends Fixture implements FixtureGroupInterface {
         $family = FixturesHelper::saveMainBlockFamily($container, $manager);
         FixturesHelper::saveMainBlocks($container, $family, $manager);
         FixturesHelper::saveModifications($container, $manager);
+        FixturesHelper::saveSequenceFamily($container, $manager);
 
         $family = new BlockFamily();
         $family->setContainer($container);

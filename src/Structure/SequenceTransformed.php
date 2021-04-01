@@ -7,55 +7,55 @@ use JsonSerializable;
 class SequenceTransformed extends AbstractTransformed implements JsonSerializable {
 
     /** @var string */
-    private $sequenceName;
+    public $sequenceName;
 
     /** @var string | null */
-    private $sequence;
+    public $sequence;
 
     /** @var string | null */
-    private $sequenceOriginal;
+    public $sequenceOriginal;
 
     /** @var string */
-    private $sequenceType;
+    public $sequenceType;
 
     /** @var string */
-    private $formula;
+    public $formula;
 
     /** @var float|null */
-    private $mass;
+    public $mass;
 
     /** @var string|null */
-    private $smiles;
+    public $smiles;
 
     /** @var string|null */
-    private $usmiles;
+    public $usmiles;
 
     /** @var int|null */
-    private $source;
+    public $source;
 
     /** @var string|null */
-    private $identifier;
+    public $identifier;
 
     /** @var string|null*/
-    private $decays;
+    public $decays;
 
     /** @var mixed|null */
-    private $nModification;
+    public $nModification;
 
     /** @var mixed|null */
-    private $cModification;
+    public $cModification;
 
     /** @var mixed|null */
-    private $bModification;
+    public $bModification;
 
     /** @var array */
-    private $family;
+    public $family;
 
     /** @var array */
     public $organism;
 
     /** @var array */
-    private $blocks;
+    public $blocks;
 
     /**
      * @return string

@@ -14,8 +14,11 @@ use App\Model\ContainerModel;
 use App\Repository\SequenceRepository;
 use App\Structure\BlockExport;
 use App\Structure\SequenceExport;
+use App\Structure\SequencePatchStructure;
+use App\Structure\SequencePatchTransformed;
 use App\Structure\SequenceStructure;
 use App\Structure\SequenceTransformed;
+use Doctrine\Common\Annotations\Annotation\Enum;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
@@ -228,6 +231,40 @@ class SequenceController extends AbstractController {
                 return ResponseHelper::jsonResponse(new Message(ErrorConstants::ERROR_CONTAINER_INSUFIENT_RIGHTS, Response::HTTP_UNAUTHORIZED));
             }
         }
+    }
+
+    /** Patch sequence
+     * @Route("/rest/container/{containerId}/sequence/{sequenceId}", name="sequence_patch", methods={"PATCH"}, requirements={"sequenceId"="\d+"})
+     * @Entity("container", expr="repository.find(containerId)")
+     * @Entity("sequence", expr="repository.find(sequenceId)")
+     * @IsGranted("ROLE_USER")
+     * @param Container $container
+     * @param Sequence $sequence
+     * @param Request $request
+     * @param EntityManagerInterface $entityManager
+     * @param Security $security
+     * @param LoggerInterface $logger
+     *
+     * @return SequencePatchTransformed|JsonResponse
+     * @SWG\Get(
+     *     tags={"Sequence"},
+     *     security={
+     *         {"ApiKeyAuth":{}}
+     *     },
+     *     @SWG\Response(response="200", description="Sucessfully update sequence."),
+     *     @SWG\Response(response="401", description="Return when user is not logged in."),
+     *     @SWG\Response(response="403", description="Return when permisions is insufient."),
+     *     @SWG\Response(response="404", description="Return when container or sequence is not found.")
+     * )
+     */
+    public function patchSequence(Container $container, Sequence $sequence, Request $request, EntityManagerInterface $entityManager, Security $security, LoggerInterface $logger) {
+        /** @var SequencePatchTransformed $trans */
+        $trans = RequestHelper::evaluateRequest($request, new SequencePatchStructure(), $logger);
+        if ($trans instanceof JsonResponse) {
+            return $trans;
+        }
+        $model = new ContainerModel($entityManager, $this->getDoctrine(), $security->getUser(), $logger);
+        return ResponseHelper::jsonResponse($model->patchSequence($container, $sequence, $trans));
     }
 
     /**

@@ -80,6 +80,10 @@ class SequenceTest extends LoginTest {
         $client = self::loginClient();
         $client->request('PATCH', '/rest/container/1/sequence/1', [], [], [], json_encode(['family' => ['Kokos', 2]]));
         $this->assertEquals(204, $client->getResponse()->getStatusCode());
+        $client->request('GET', '/rest/container/1/sequence/1');
+        $this->assertEquals(200, $client->getResponse()->getStatusCode());
+        $this->assertStringContainsString('"sequenceName":"roseotoxin A"', $client->getResponse()->getContent());
+        $this->assertStringContainsString('"family":[{"id":5,"family":"Kokos"},{"id":2,"family":"destruxins"}]', $client->getResponse()->getContent());
     }
 
     public function testPutSequenceEmpty() {
@@ -87,5 +91,27 @@ class SequenceTest extends LoginTest {
         $client->request('PATCH', '/rest/container/1/sequence/1');
         $this->assertEquals(400, $client->getResponse()->getStatusCode());
     }
+
+    public function testPutSequenceName() {
+        $client = self::loginClient();
+        $client->request('PATCH', '/rest/container/1/sequence/1', [], [], [], json_encode(['sequenceName' => 'kokoska']));
+        $this->assertEquals(204, $client->getResponse()->getStatusCode());
+        $client->request('GET', '/rest/container/1/sequence/1');
+        $this->assertEquals(200, $client->getResponse()->getStatusCode());
+        $this->assertStringContainsString('"sequenceName":"kokoska"', $client->getResponse()->getContent());
+        $this->assertStringContainsString('"family":[{"id":5,"family":"Kokos"},{"id":2,"family":"destruxins"}]', $client->getResponse()->getContent());
+    }
+
+    public function testPutSequenceNameAndSequenceType() {
+        $client = self::loginClient();
+        $client->request('PATCH', '/rest/container/1/sequence/1', [], [], [], json_encode(['sequenceName' => 'roseotoxin', 'sequenceType' => 'other']));
+        $this->assertEquals(204, $client->getResponse()->getStatusCode());
+        $client->request('GET', '/rest/container/1/sequence/1');
+        $this->assertEquals(200, $client->getResponse()->getStatusCode());
+        $this->assertStringContainsString('"sequenceName":"roseotoxin"', $client->getResponse()->getContent());
+        $this->assertStringContainsString('"sequenceType":"other"', $client->getResponse()->getContent());
+        $this->assertStringContainsString('"family":[{"id":5,"family":"Kokos"},{"id":2,"family":"destruxins"}]', $client->getResponse()->getContent());
+    }
+
 
 }

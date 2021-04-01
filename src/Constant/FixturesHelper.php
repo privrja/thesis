@@ -54,22 +54,22 @@ class FixturesHelper {
     public static function saveSequenceFamily(Container $container, ObjectManager $manager) {
         $family = new SequenceFamily();
         $family->setContainer($container);
-        $family->setSequenceFamilyName('beauverolide');
+        $family->setSequenceFamilyName('beauverolides');
         $manager->persist($family);
 
         $family = new SequenceFamily();
         $family->setContainer($container);
-        $family->setSequenceFamilyName('destruxin');
+        $family->setSequenceFamilyName('destruxins');
         $manager->persist($family);
 
         $family = new SequenceFamily();
         $family->setContainer($container);
-        $family->setSequenceFamilyName('cyclosporin');
+        $family->setSequenceFamilyName('cyclosporins');
         $manager->persist($family);
 
         $family = new SequenceFamily();
         $family->setContainer($container);
-        $family->setSequenceFamilyName('pseudacyclin');
+        $family->setSequenceFamilyName('pseudacyclins');
         $manager->persist($family);
     }
 

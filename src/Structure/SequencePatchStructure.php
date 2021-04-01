@@ -45,6 +45,7 @@ class SequencePatchStructure extends AbstractStructure {
     public function transform(): AbstractTransformed {
         $trans = new SequencePatchTransformed();
         $trans->sequenceName = $this->sequenceName;
+        $trans->sequenceType = $this->sequenceType;
         $trans->formula = $this->formula;
         if (isset($this->mass)) {
             $trans->mass = $this->mass;

@@ -113,5 +113,11 @@ class SequenceTest extends LoginTest {
         $this->assertStringContainsString('"family":[{"id":5,"family":"Kokos"},{"id":2,"family":"destruxins"}]', $client->getResponse()->getContent());
     }
 
+    public function testPutSequenceSequenceTypeWrong() {
+        $client = self::loginClient();
+        $client->request('PATCH', '/rest/container/1/sequence/1', [], [], [], json_encode(['sequenceType' => 'cycli']));
+        $this->assertEquals(400, $client->getResponse()->getStatusCode());
+    }
+
 
 }

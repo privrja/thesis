@@ -5,6 +5,8 @@ namespace App\Structure;
 use App\Base\FormulaHelper;
 use App\Base\Message;
 use App\Constant\ErrorConstants;
+use App\Enum\SequenceEnum;
+use App\Enum\ServerEnum;
 use App\Exception\IllegalStateException;
 
 class SequencePatchStructure extends AbstractStructure {
@@ -38,6 +40,12 @@ class SequencePatchStructure extends AbstractStructure {
             && !isset($this->source) && empty($this->identifier) && empty($this->sequenceType)
             && !isset($this->family) && !isset($this->organism)) {
             return new Message(ErrorConstants::ERROR_EMPTY_PARAMS);
+        }
+        if (isset($this->sequenceType) && !isset(SequenceEnum::$backValues[$this->sequenceType])) {
+            return new Message(ErrorConstants::ERROR_SEQUENCE_BAD_TYPE);
+        }
+        if (isset($this->source) && !ServerEnum::isOneOf($this->source)) {
+            return new Message(ErrorConstants::ERROR_SERVER_IDENTIFIER_PROBLEM);
         }
         return Message::createOkMessage();
     }

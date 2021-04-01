@@ -11,22 +11,22 @@ use App\Exception\IllegalStateException;
 
 class SequencePatchStructure extends AbstractStructure {
 
-    /** @var string | null */
+    /** @var string|null */
     public $sequenceName;
 
-    /** @var string | null */
+    /** @var string|null */
     public $formula;
 
-    /** @var float | null */
+    /** @var float|null */
     public $mass;
 
-    /** @var int | null */
+    /** @var int|null */
     public $source;
 
-    /** @var string | null */
+    /** @var string|null */
     public $identifier;
 
-    /** @var string | null */
+    /** @var string|null */
     public $sequenceType;
 
     /** @var array */
@@ -55,7 +55,7 @@ class SequencePatchStructure extends AbstractStructure {
         $trans->sequenceName = $this->sequenceName;
         $trans->sequenceType = $this->sequenceType;
         $trans->formula = $this->formula;
-        if (isset($this->mass)) {
+        if (!empty($this->mass)) {
             $trans->mass = $this->mass;
         } else {
             if (!empty($this->formula)) {

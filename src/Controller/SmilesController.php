@@ -8,7 +8,9 @@ use App\Base\RequestHelper;
 use App\Base\ResponseHelper;
 use App\Constant\ErrorConstants;
 use App\Entity\Container;
+use App\Enum\ContainerVisibilityEnum;
 use App\Exception\IllegalStateException;
+use App\Model\ContainerModel;
 use App\Repository\SequenceFamilyRepository;
 use App\Repository\SequenceRepository;
 use App\Repository\SetupRepository;
@@ -17,15 +19,16 @@ use App\Smiles\SmilesHelper;
 use App\Structure\FormulaMass;
 use App\Structure\SimilarityStructure;
 use App\Structure\SimilarityTransformed;
+use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Swagger\Annotations as SWG;
+use Symfony\Component\Security\Core\Security;
 
 /**
  * Class SmilesController
@@ -115,7 +118,6 @@ class SmilesController extends AbstractController {
 
     /**
      * @Route("/rest/container/{containerId}/sim", name="similarity_container", methods={"POST"})
-     * @IsGranted("ROLE_USER")
      * @Entity("container", expr="repository.find(containerId)")
      * @param Container $container
      * @param Request $request
@@ -124,6 +126,8 @@ class SmilesController extends AbstractController {
      * @param SequenceFamilyRepository $sequenceFamilyRepository
      *
      * @param SequenceRepository $sequenceRepository
+     * @param EntityManagerInterface $entityManager
+     * @param Security $security
      * @return JsonResponse
      * @SWG\Post(
      *     tags={"SMILES"},
@@ -139,22 +143,26 @@ class SmilesController extends AbstractController {
      *     @SWG\Response(response="200", description="Return Unique SMILES."),
      *     @SWG\Response(response="400", description="Return when input is wrong."),
      *)
-     *
      */
-    public function similarityContainer(Container $container, Request $request, LoggerInterface $logger, SetupRepository$setupRepository, SequenceFamilyRepository $sequenceFamilyRepository, SequenceRepository $sequenceRepository) {
-        /** @var SimilarityTransformed $trans */
-        $trans = RequestHelper::evaluateRequest($request, new SimilarityStructure(), $logger);
-        if ($trans instanceof JsonResponse) {
-            return $trans;
-        }
-        $setup = $setupRepository->findOneBy(['id' => 1]);
-        if ($setup->getSimilarity() === 'name') {
-            return new JsonResponse($sequenceFamilyRepository->similarity(1, $trans->sequenceName));
-        } else {
-            if ($trans->blockLengthUnique === 0) {
-                return ResponseHelper::jsonResponse(new Message(ErrorConstants::ERROR_EMPTY_PARAMS, Response::HTTP_BAD_REQUEST));
+    public function similarityContainer(Container $container, Request $request, LoggerInterface $logger, SetupRepository$setupRepository, SequenceFamilyRepository $sequenceFamilyRepository, SequenceRepository $sequenceRepository, EntityManagerInterface $entityManager, Security $security) {
+        $model = new ContainerModel($entityManager, $this->getDoctrine(), $security->getUser(), $logger);
+        if ($container->getVisibility() === ContainerVisibilityEnum::PUBLIC || ($this->isGranted("ROLE_USER") && $model->hasContainer($container->getId()))) {
+            /** @var SimilarityTransformed $trans */
+            $trans = RequestHelper::evaluateRequest($request, new SimilarityStructure(), $logger);
+            if ($trans instanceof JsonResponse) {
+                return $trans;
             }
-            return new JsonResponse($sequenceRepository->similarity($container->getId(), $trans->blocks, $trans->blockLengthUnique, $trans->blockLength));
+            $setup = $setupRepository->findOneBy(['id' => 1]);
+            if ($setup->getSimilarity() === 'name') {
+                return new JsonResponse($sequenceFamilyRepository->similarity(1, $trans->sequenceName));
+            } else {
+                if ($trans->blockLengthUnique === 0) {
+                    return ResponseHelper::jsonResponse(new Message(ErrorConstants::ERROR_EMPTY_PARAMS, Response::HTTP_BAD_REQUEST));
+                }
+                return new JsonResponse($sequenceRepository->similarity($container->getId(), $trans->blocks, $trans->blockLengthUnique, $trans->blockLength));
+            }
+        } else {
+            return new JsonResponse(new Message(ErrorConstants::ERROR_CONTAINER_INSUFIENT_RIGHTS, Response::HTTP_FORBIDDEN));
         }
     }
 

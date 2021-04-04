@@ -127,7 +127,7 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
 
     public function resetConditions() {
         $conn = $this->getEntityManager()->getConnection();
-        $sql = 'update user set msb_conditions = false;';
+        $sql = 'update msb_user set conditions = false;';
         try {
             $stmt = $conn->prepare($sql);
             $stmt->execute();

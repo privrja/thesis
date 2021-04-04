@@ -25,12 +25,19 @@ class ReferenceHelper {
                 return ServerEnum::$cycloBranchValues[ServerEnum::PDB] . $reference;
             case ServerEnum::NORINE:
                 return $reference;
+            case ServerEnum::SIDEROPHORE_BASE:
+                return ServerEnum::$cycloBranchValues[ServerEnum::SIDEROPHORE_BASE] . $reference;
+            case ServerEnum::DOI:
+                return ServerEnum::$cycloBranchValues[ServerEnum::DOI] . $reference;
             default:
                 return self::defaultValue($smiles);
         }
     }
 
     private static function defaultValue($smiles) {
+        if (empty($smiles)) {
+            return '';
+        }
         return self::SMILES . $smiles;
     }
 

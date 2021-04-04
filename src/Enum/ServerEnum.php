@@ -37,6 +37,8 @@ class ServerEnum {
         self::CHEMSPIDER => 'CSID: ',
         self::PDB => 'PDB: ',
         self::CHEBI => 'ChEBI: ',
+        self::SIDEROPHORE_BASE => 'SB: ',
+        self::DOI => 'DOI: '
     ];
 
     public static function isOneOf(int $source): bool {

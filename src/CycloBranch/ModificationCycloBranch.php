@@ -18,10 +18,10 @@ class ModificationCycloBranch extends AbstractCycloBranch {
         $arResult = $this->repository->findBy(['container' => $this->containerId]);
         if (!empty($arResult)) {
             foreach ($arResult as $modification) {
-                $this->data .= $modification->getModificationName() . "\t"
-                    . $modification->getModificationFormula() . "\t"
-                    . $modification->getModificationMass() . "\t"
-                    . ($modification->getNTerminal() ? '1' : '0') . "\t"
+                $this->data .= str_replace(',', '.', $modification->getModificationName()) . self::TABULATOR
+                    . $modification->getModificationFormula() . self::TABULATOR
+                    . $modification->getModificationMass() . self::TABULATOR
+                    . ($modification->getNTerminal() ? '1' : '0') . self::TABULATOR
                     . ($modification->getCTerminal() ? '1' : '0') . PHP_EOL;
             }
         }

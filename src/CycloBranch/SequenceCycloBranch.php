@@ -24,7 +24,7 @@ class SequenceCycloBranch extends AbstractCycloBranch {
         if (!empty($arResult)) {
             foreach ($arResult as $sequence) {
                 $this->data .= $sequence->getSequenceType() . self::TABULATOR
-                    . $sequence->getSequenceName() . self::TABULATOR
+                    . str_replace(',', '.', $sequence->getSequenceName()) . self::TABULATOR
                     . $sequence->getSequenceFormula() . self::TABULATOR
                     . $sequence->getSequenceMass() . self::TABULATOR
                     . $sequence->getSequence() . self::TABULATOR

@@ -19,11 +19,11 @@ class BlockCycloBranch extends AbstractCycloBranch {
         $arResult = $this->repository->findBy(['container' => $this->containerId]);
         if (!empty($arResult)) {
             foreach ($arResult as $block) {
-                $this->data .= $block->getBlockName() . "\t"
-                    . $block->getAcronym() . "\t"
-                    . $block->getResidue() . "\t"
-                    . $block->getBlockMass() . "\t"
-                    . $block->getLosses() . "\t"
+                $this->data .= str_replace(',', '.', $block->getBlockName()) . self::TABULATOR
+                    . $block->getAcronym() . self::TABULATOR
+                    . $block->getResidue() . self::TABULATOR
+                    . $block->getBlockMass() . self::TABULATOR
+                    . $block->getLosses() . self::TABULATOR
                     . ReferenceHelper::reference($block->getSource(), $block->getIdentifier(), $block->getUsmiles())
                     . PHP_EOL;
             }

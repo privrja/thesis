@@ -246,7 +246,7 @@ class SequenceController extends AbstractController {
      * @param LoggerInterface $logger
      *
      * @return SequencePatchTransformed|JsonResponse
-     * @SWG\Get(
+     * @SWG\Patch(
      *     tags={"Sequence"},
      *     security={
      *         {"ApiKeyAuth":{}}

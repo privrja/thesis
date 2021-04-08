@@ -101,11 +101,10 @@ class SmilesController extends AbstractController {
         }
         $res = [];
         foreach ($smilesInput as $smiles) {
-            // TODO better check for polyketide, then form mass with losses and maybe seting to not removing any losses?
-            $polyketide = str_contains(strtoupper($smiles->smiles), 'O');
+            $losses = LossesEnum::toLosses($smiles->computeLosses);
             $resObject = new FormulaMass();
             $resObject->smiles = $smiles->smiles;
-            $resObject->formula = FormulaHelper::formulaFromSmiles($smiles->smiles, $polyketide ? LossesEnum::H2 : LossesEnum::H2O);
+            $resObject->formula = FormulaHelper::formulaFromSmiles($smiles->smiles, $losses);
             try {
                 $resObject->mass = FormulaHelper::computeMass($resObject->formula);
             } catch (IllegalStateException $e) {
@@ -144,7 +143,7 @@ class SmilesController extends AbstractController {
      *     @SWG\Response(response="400", description="Return when input is wrong."),
      *)
      */
-    public function similarityContainer(Container $container, Request $request, LoggerInterface $logger, SetupRepository$setupRepository, SequenceFamilyRepository $sequenceFamilyRepository, SequenceRepository $sequenceRepository, EntityManagerInterface $entityManager, Security $security) {
+    public function similarityContainer(Container $container, Request $request, LoggerInterface $logger, SetupRepository $setupRepository, SequenceFamilyRepository $sequenceFamilyRepository, SequenceRepository $sequenceRepository, EntityManagerInterface $entityManager, Security $security) {
         $model = new ContainerModel($entityManager, $this->getDoctrine(), $security->getUser(), $logger);
         if ($container->getVisibility() === ContainerVisibilityEnum::PUBLIC || ($this->isGranted("ROLE_USER") && $model->hasContainer($container->getId()))) {
             /** @var SimilarityTransformed $trans */

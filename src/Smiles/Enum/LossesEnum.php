@@ -14,7 +14,7 @@ class LossesEnum {
 
     public static function toLosses(?string $losses) {
         switch ($losses) {
-            case 'H20':
+            case 'H2O':
                 return self::H2O;
             case 'H2':
                 return self::H2;

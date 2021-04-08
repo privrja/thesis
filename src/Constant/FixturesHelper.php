@@ -5,6 +5,7 @@ namespace App\Constant;
 use App\Entity\BlockFamily;
 use App\Entity\Container;
 use App\Entity\Modification;
+use App\Entity\Organism;
 use App\Entity\SequenceFamily;
 use App\Entity\Setup;
 use App\Entity\User;
@@ -81,11 +82,10 @@ class FixturesHelper {
 
     public static function saveMainUser(ObjectManager $manager, UserPasswordEncoderInterface $passwordEncoder) {
         $userP = new User();
-        $userP->setNick("privrja");
-        $userP->setMail("privrja@gmail.com");
+        $userP->setNick("user");
         $userP->setRoles(["ROLE_USER"]);
         $userP->setConditions(true);
-        $userP->setPassword($passwordEncoder->encodePassword($userP, 'nic'));
+        $userP->setPassword($passwordEncoder->encodePassword($userP, '12345678'));
         $manager->persist($userP);
         return $userP;
     }
@@ -93,10 +93,9 @@ class FixturesHelper {
     public static function saveAdmin(ObjectManager $manager, UserPasswordEncoderInterface $passwordEncoder) {
         $user = new User();
         $user->setNick("admin");
-        $user->setMail("admin");
         $user->setRoles(["ROLE_ADMIN"]);
         $user->setConditions(true);
-        $user->setPassword($passwordEncoder->encodePassword($user, 'kokos'));
+        $user->setPassword($passwordEncoder->encodePassword($user, '12345678'));
         $manager->persist($user);
         return $user;
     }
@@ -118,6 +117,55 @@ class FixturesHelper {
         $acidFamily = $acids->getFamilyList();
         foreach ($acidFamily as $b2f) {
             $manager->persist($b2f);
+        }
+    }
+
+    public static function saveOrganisms(Container $container, ObjectManager $manager) {
+        $organisms = [
+            'Actinosynnema mirum',
+            'Alteromonas haloplanktis',
+            'Apergillus ochraceous',
+            'Aspergillus flavus',
+            'Aspergillus fumigatus',
+            'Aspergillus nidulans',
+            'Aspergillus niger',
+            'Aspergillus terreus',
+            'Aureobasidium pullulans',
+            'Cenococcum geophilum',
+            'Cunninghamella blakesleeana',
+            'Erwinia amylovora',
+            'Fusarium cubense',
+            'Halomonas meridiana',
+            'Magnaporthe grisea',
+            'Neurospora crassa',
+            'Penicillium chrysogenum',
+            'Pseudomonas stutzeri',
+            'Rhizobium leguminosarum',
+            'Serratia sp. V4',
+            'Shewanella putrefaciens',
+            'Streptomyces coelicolor',
+            'Streptomyces olivaceus',
+            'Streptomyces pilosus',
+            'Suillus granulatus',
+            'Suillus luteus',
+            'Trichoderma hamatum',
+            'Trichoderma harzianum',
+            'Trichoderma koningii',
+            'Trichoderma longibrachiatum',
+            'Trichoderma pseudokoningii',
+            'Trichoderma viride',
+            'Ustilago maydis',
+            'Ustilago sphaerogena',
+            'Vibrio salmonicida',
+            'Vibrio sp. DS40M4',
+            'Vibrio strain BLI-41',
+            'Vibrio vulnificus'];
+        foreach($organisms as $organismName) {
+            $organism = new Organism();
+            $organism->setContainer($container);
+            $organism->setOrganism($organismName);
+            $manager->persist($organism);
+            $manager->flush();
         }
     }
 

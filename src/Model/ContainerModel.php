@@ -983,7 +983,7 @@ class ContainerModel {
         }
         $this->entityManager->flush();
         $this->entityManager->commit();
-        return Message::createCreated();
+        return Message::createCreated($cloneContainer->getId());
     }
 
     public function createNewOrganism(Container $container, OrganismTransformed $trans): Message {

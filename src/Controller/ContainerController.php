@@ -650,7 +650,8 @@ class ContainerController extends AbstractController {
     public function cloneContainer(Container $container, EntityManagerInterface $entityManager, Security $security, LoggerInterface $logger) {
         $model = new ContainerModel($entityManager, $this->getDoctrine(), $security->getUser(), $logger);
         if ($container->getVisibility() === ContainerVisibilityEnum::PUBLIC || $model->hasContainer($container->getId())) {
-            return ResponseHelper::jsonResponse($model->cloneContainer($container));
+            $message = $model->cloneContainer($container);
+            return new JsonResponse($message, $message->status, isset($message->id) ? Constants::getLocation('container/', $message->id) : []);
         } else {
             return ResponseHelper::jsonResponse(new Message(ErrorConstants::ERROR_CONTAINER_INSUFIENT_RIGHTS, Response::HTTP_FORBIDDEN));
         }

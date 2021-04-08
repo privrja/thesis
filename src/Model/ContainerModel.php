@@ -547,6 +547,8 @@ class ContainerModel {
             $sBlock->setBlockName($block->blockName);
             $sBlock->setAcronym($block->acronym);
             $sBlock->setContainer($container);
+            $this->logger->log('debug', $block->acronym);
+            $this->logger->log('debug', $block->isPolyketide);
             $sBlock->setIsPolyketide($block->isPolyketide);
             if (!empty($block->losses)) {
                 $sBlock->setLosses($block->losses);

@@ -271,7 +271,8 @@ class Block implements JsonSerializable {
             EntityColumnsEnum::SMILES => $this->blockSmiles,
             EntityColumnsEnum::UNIQUE_SMILES => $this->usmiles,
             EntityColumnsEnum::SOURCE => $this->source,
-            EntityColumnsEnum::IDENTIFIER => $this->identifier
+            EntityColumnsEnum::IDENTIFIER => $this->identifier,
+            EntityColumnsEnum::IS_POLYKETIDE => $this->isPolyketide
         ];
     }
 

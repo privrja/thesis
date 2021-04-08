@@ -169,6 +169,7 @@ class SequenceStructure extends AbstractStructure implements JsonSerializable {
                     $blockStructure = new BlockStructure();
                     $blockStructure->acronym = $this->blocks[$i]->acronym;
                     $blockStructure->blockName = $this->blocks[$i]->blockName;
+                    $blockStructure->isPolyketide = $this->blocks[$i]->isPolyketide;
                     if (!empty($this->blocks[$i]->formula)) {
                         $blockStructure->formula = $this->blocks[$i]->formula;
                     }

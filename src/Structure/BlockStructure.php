@@ -41,6 +41,9 @@ class BlockStructure extends AbstractStructure implements JsonSerializable {
     /** @var array */
     public $family;
 
+    /** @var boolean|null */
+    public $isPolyketide;
+
     public function checkInput(): Message {
         if (empty($this->blockName) || empty($this->acronym)) {
             return new Message(ErrorConstants::ERROR_EMPTY_PARAMS);
@@ -60,8 +63,12 @@ class BlockStructure extends AbstractStructure implements JsonSerializable {
     public function transform(): AbstractTransformed {
         $trans = new BlockTransformed();
         $trans->setblockName($this->blockName);
-        if (str_contains('(-2H)', $this->blockName)) {
-            $trans->isPolyketide = true;
+        if (isset($this->isPolyketide)) {
+            $trans->isPolyketide = $this->isPolyketide;
+        } else {
+            if (str_contains($this->blockName, '(-2H)')) {
+                $trans->isPolyketide = true;
+            }
         }
         $trans->setAcronym($this->acronym);
         $trans->setSource($this->source);

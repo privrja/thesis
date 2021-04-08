@@ -23,7 +23,7 @@ class BlockRepository extends ServiceEntityRepository {
 
     public function findBlocks(int $containerId, array $filters, Sort $sort) {
         $qb = $this->createQueryBuilder('blc')
-            ->select('blc.id, blc.blockName, blc.acronym, blc.residue as formula, blc.blockMass as mass, blc.blockSmiles as smiles, blc.usmiles as uniqueSmiles, blc.losses, blc.source, blc.identifier, group_concat(fam.blockFamilyName order by fam.blockFamilyName asc) as family')
+            ->select('blc.id, blc.blockName, blc.acronym, blc.residue as formula, blc.blockMass as mass, blc.blockSmiles as smiles, blc.usmiles as uniqueSmiles, blc.losses, blc.source, blc.identifier, blc.isPolyketide, group_concat(fam.blockFamilyName order by fam.blockFamilyName asc) as family')
             ->leftJoin('blc.b2families', 'b2f')
             ->leftJoin('b2f.family', 'fam', Join::WITH, 'fam.container = blc.container')
             ->where('blc.container = :containerId')

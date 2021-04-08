@@ -45,6 +45,7 @@ class BlockController extends AbstractController {
      *
      * @SWG\Get(
      *     tags={"Block"},
+     *     description="Get list of blocks. When you want to sort it you should add at the end of URL ?sort=blockName&order=asc, where sort can be id, blockName, acronym, residue, blockMass, blockSmiles, losses, identifier, family and order is asc or desc. When you would like to filter data you can add something like blockName=Leu, params are very similar to sorting only difference is in blockMassFrom and blockMassTo which is range.",
      *     @SWG\Response(response="200", description="Return list of blocks in container."),
      *     @SWG\Response(response="403", description="Return when user has not acces to container."),
      *     @SWG\Response(response="404", description="Return when container not found."),

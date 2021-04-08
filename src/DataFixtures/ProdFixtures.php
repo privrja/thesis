@@ -29,6 +29,8 @@ class ProdFixtures extends Fixture implements FixtureGroupInterface {
         $container->setVisibility(ContainerVisibilityEnum::PUBLIC);
         $manager->persist($container);
 
+        FixturesHelper::saveOrganisms($container, $manager);
+
         $u2c = new U2c();
         $u2c->setContainer($container);
         $u2c->setUser($user);

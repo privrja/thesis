@@ -91,6 +91,7 @@ class SequenceController extends AbstractController {
      *
      * @SWG\Get(
      *     tags={"Sequence"},
+     *     description="Get list of sequence. When you want to sort it you should add at the end of URL ?sort=sequenceName&order=asc, where sort can be id, sequenceName, sequence, sequenceType, sequenceFormula, sequenceMass, nModification, cModification, bModification, identifier, family, organism and order is asc or desc. When you would like to filter data you can add something like sequenceName=Cyclo, params are very similar to sorting only difference is in sequenceMassFrom and sequenceMassTo which is range.",
      *     @SWG\Response(response="200", description="Return list of blocks in container."),
      *     @SWG\Response(response="403", description="Return when permisions is insufient."),
      *     @SWG\Response(response="404", description="Return when sequence not found."),

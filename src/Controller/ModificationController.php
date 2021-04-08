@@ -41,6 +41,7 @@ class ModificationController extends AbstractController {
      *
      * @SWG\Get(
      *     tags={"Modification"},
+     *     description="Get list of modifications. When you want to sort it you should add at the end of URL ?sort=modificationName&order=asc, where sort can be id, modificationName,  modificationFormula, modificationMass, nTerminal, cTerminal, organism and order is asc or desc. When you would like to filter data you can add something like modificationName=Ac, params are very similar to sorting only difference is in modificationMassFrom and modificationMassTo which is range.",
      *     @SWG\Response(response="200", description="Return list of containers for logged user."),
      *     @SWG\Response(response="403", description="Return when permisions is insuficient."),
      *     @SWG\Response(response="404", description="Return when container is not found."),

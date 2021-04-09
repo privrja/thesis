@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Constant\Constants;
 use App\Entity\User;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -41,7 +42,7 @@ class MainController extends AbstractController {
      * @Route("/", name="main", methods={"GET"})
      */
     public function main() {
-        return new RedirectResponse('/api/doc');
+        return new RedirectResponse(Constants::ENDPOINT . '/api/doc');
     }
 
 }

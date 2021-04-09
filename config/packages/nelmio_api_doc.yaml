@@ -11,8 +11,6 @@ nelmio_api_doc:
                     description: 'Token authentification'
                     name: x-auth-token
                     in: header
-        security:
-            - ApiKeyAuth: []
     areas: # to filter documented areas
         path_patterns:
             - ^/rest

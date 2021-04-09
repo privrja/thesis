@@ -20,7 +20,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Security;
-use Swagger\Annotations as SWG;
+use OpenApi\Annotations as SWG;
 
 class BlockFamilyController extends AbstractController {
 
@@ -64,14 +64,15 @@ class BlockFamilyController extends AbstractController {
      *     security={
      *         {"ApiKeyAuth":{}}
      *     },
-     *     @SWG\Parameter(
-     *          name="body",
-     *          in="body",
-     *          type="string",
+     *     @SWG\RequestBody(
      *          required=true,
      *          description="JSON wit family attribute - name for new family",
-     *          @SWG\Schema(type="string",
-     *              example="{""family"": ""Acids""}"),
+     *          @SWG\MediaType(mediaType="application/json",
+     *              @SWG\Schema(type="object",
+     *                  @SWG\Property(property="family", type="string"),
+     *                  example="{""family"": ""Acids""}"),
+     *              ),
+     *          ),
      *      ),
      *     @SWG\Response(response="201", description="Create new block family."),
      *     @SWG\Response(response="400", description="Return when input is wrong."),
@@ -140,14 +141,15 @@ class BlockFamilyController extends AbstractController {
      *     security={
      *         {"ApiKeyAuth":{}}
      *     },
-     *     @SWG\Parameter(
-     *          name="body",
-     *          in="body",
-     *          type="string",
+     *     @SWG\RequestBody(
      *          required=true,
      *          description="Params: family - new name for family",
-     *          @SWG\Schema(type="string",
-     *              example="{""family"": ""Acids 2""}"),
+     *          @SWG\MediaType(mediaType="application/json",
+     *              @SWG\Schema(type="object",
+     *                  @SWG\Property(property="family", type="string"),
+     *                  example="{""family"": ""Acids 2""}"),
+     *              ),
+     *          ),
      *      ),
      *     @SWG\Response(response="204", description="Sucessfully update block family."),
      *     @SWG\Response(response="400", description="Return when input is wrong."),

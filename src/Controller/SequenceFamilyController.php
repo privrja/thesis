@@ -20,7 +20,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Security;
-use Swagger\Annotations as SWG;
+use OpenApi\Annotations as SWG;
 
 class SequenceFamilyController extends AbstractController {
 
@@ -64,14 +64,14 @@ class SequenceFamilyController extends AbstractController {
      *     security={
      *         {"ApiKeyAuth":{}}
      *     },
-     *     @SWG\Parameter(
-     *          name="body",
-     *          in="body",
-     *          type="string",
+     *     @SWG\RequestBody(
      *          required=true,
-     *          description="",
-     *          @SWG\Schema(type="string",
-     *              example="{""family"": ""Peptides""}"),
+     *          @SWG\MediaType(mediaType="application/json",
+     *              @SWG\Schema(type="object",
+     *                  @SWG\Property(property="family", type="string"),
+     *                  example="{""family"": ""Peptides""}"),
+     *              ),
+     *          ),
      *      ),
      *     @SWG\Response(response="201", description="Create new sequence family."),
      *     @SWG\Response(response="400", description="Return when input is wrong."),
@@ -80,7 +80,7 @@ class SequenceFamilyController extends AbstractController {
      *     @SWG\Response(response="404", description="Return when container is not found.")
      * )
      */
-    public function addNewBlock(Container $container, Request $request, EntityManagerInterface $entityManager, Security $security, LoggerInterface $logger) {
+    public function addNewFamily(Container $container, Request $request, EntityManagerInterface $entityManager, Security $security, LoggerInterface $logger) {
         /** @var FamilyTransformed $trans */
         $trans = RequestHelper::evaluateRequest($request, new FamilyStructure(), $logger);
         if ($trans instanceof JsonResponse) {
@@ -115,7 +115,7 @@ class SequenceFamilyController extends AbstractController {
      *     @SWG\Response(response="404", description="Return when container or sequence family is not found.")
      * )
      */
-    public function deleteBlock(Container $container, SequenceFamily $sequenceFamily, EntityManagerInterface $entityManager, Security $security, LoggerInterface $logger) {
+    public function deleteFamily(Container $container, SequenceFamily $sequenceFamily, EntityManagerInterface $entityManager, Security $security, LoggerInterface $logger) {
         $model = new ContainerModel($entityManager, $this->getDoctrine(), $security->getUser(), $logger);
         $modelMessage = $model->deleteSequenceFamily($container, $sequenceFamily);
         return ResponseHelper::jsonResponse($modelMessage);
@@ -140,14 +140,15 @@ class SequenceFamilyController extends AbstractController {
      *     security={
      *         {"ApiKeyAuth":{}}
      *     },
-     *     @SWG\Parameter(
-     *          name="body",
-     *          in="body",
-     *          type="string",
+     *     @SWG\RequestBody(
      *          required=true,
      *          description="Params: family",
-     *          @SWG\Schema(type="string",
-     *              example="{""family"": ""Peptides""}"),
+     *          @SWG\MediaType(mediaType="application/json",
+     *              @SWG\Schema(type="object",
+     *                  @SWG\Property(property="family", type="string"),
+     *                  example="{""family"": ""Peptides""}"),
+     *              ),
+     *          ),
      *      ),
      *     @SWG\Response(response="204", description="Sucessfully update sequence family."),
      *     @SWG\Response(response="400", description="Return when input is wrong."),
@@ -156,7 +157,7 @@ class SequenceFamilyController extends AbstractController {
      *     @SWG\Response(response="404", description="Return when container or sequence family is not found.")
      * )
      */
-    public function updateBlock(Container $container, SequenceFamily $sequenceFamily, Request $request, EntityManagerInterface $entityManager, Security $security, LoggerInterface $logger) {
+    public function updateFamily(Container $container, SequenceFamily $sequenceFamily, Request $request, EntityManagerInterface $entityManager, Security $security, LoggerInterface $logger) {
         /** @var FamilyTransformed $trans */
         $trans = RequestHelper::evaluateRequest($request, new FamilyStructure(), $logger);
         if ($trans instanceof JsonResponse) {

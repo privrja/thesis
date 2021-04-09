@@ -8,7 +8,6 @@ use App\Base\ResponseHelper;
 use App\Constant\EntityColumnsEnum;
 use App\Constant\ErrorConstants;
 use App\Entity\Container;
-use App\Entity\User;
 use App\Enum\ContainerVisibilityEnum;
 use App\Model\ContainerModel;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;

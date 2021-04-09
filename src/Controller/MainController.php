@@ -9,7 +9,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Swagger\Annotations as SWG;
+use OpenApi\Annotations as SWG;
 use Symfony\Component\Security\Core\Security;
 
 class MainController extends AbstractController {
@@ -25,7 +25,7 @@ class MainController extends AbstractController {
      *         {"ApiKeyAuth":{}}
      *     },
      *     description="For login use header X-AUTH-TOKEN for first time with value: 'username:password', as a response you get API token. After that you send as a value this generated token.",
-     *     @SWG\Response(response="200", description="Return when user is logged in."),
+     *     @SWG\Response(response="204", description="Return when user is logged in."),
      *     @SWG\Response(response="401", description="Return when user is not logged in."),
      * )
      * @param Security $security

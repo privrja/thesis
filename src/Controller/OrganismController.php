@@ -117,7 +117,7 @@ class OrganismController extends AbstractController {
      *          description="JSON with organism attribute - name for organism",
      *          @SWG\MediaType(mediaType="application\json",
      *              @SWG\Schema(type="object",
-     *                  @SWG\Property(property="organism", type="string")
+     *                  @SWG\Property(property="organism", type="string"),
      *                  example="{""organism"": ""Micrococcus luteus""}"),
      *              ),
      *          ),

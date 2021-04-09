@@ -80,7 +80,7 @@ class SmilesController extends AbstractController {
      *     @SWG\RequestBody(
      *          required=true,
      *          description="Array of smiles objects: Shouldn't be empty. SMILES is special format of molecular structures like: CCC(C)C1C(=O)NC(C(=O)NCCCC(C(=O)NC(C(=O)N2CCCC2C(=O)N1)CC3=CC=CC=C3)NC(=O)C(C(C)CC)NC(=O)C)C(C)CC",
-     *          @swg\mediatype(mediatype="application/json",
+     *          @swg\mediaType(mediaType="application/json",
      *              @SWG\Schema(type="object",
      *                  @SWG\Property(property="smiles", type="string"),
      *                  example="[{""smiles"": ""CC(=O)CC""}]"),
@@ -140,7 +140,7 @@ class SmilesController extends AbstractController {
      *                  @SWG\Property(property="sequenceName", type="string"),
      *                  @SWG\Property(property="blockLengthUnique", type="int"),
      *                  @SWG\Property(property="blockLength", type="int"),
-     *                  @SWG\Property(property="blocks", type="int[]")
+     *                  @SWG\Property(property="blocks", type="int[]"),
      *                  example="{""sequenceName"":""pseudacyclin a"",""blockLengthUnique"":5,""blockLength"":6,""blocks"":[15,39,19,9,26]}"),
      *              ),
      *          ),

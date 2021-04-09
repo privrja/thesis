@@ -6,6 +6,7 @@ namespace App\Tests\DatabaseTests;
 use App\Constant\EntityColumnsEnum;
 use App\Entity\Container;
 use App\Entity\User;
+use App\Structure\Sort;
 use Doctrine\ORM\EntityManager;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
@@ -48,12 +49,12 @@ class ContainerTest extends KernelTestCase {
     }
 
     /**
-     * This test if there are only one db for user privrja. The result is not Container
+     * This test if there are only one db for user. The result is not Container
      */
     public function testFindContainers() {
         $userRepository = $this->entityManager->getRepository(User::class);
-        $usr = $userRepository->findOneBy([EntityColumnsEnum::USER_NICK => 'privrja']);
-        $containers = $userRepository->findContainersForLoggedUser($usr->getId());
+        $usr = $userRepository->findOneBy([EntityColumnsEnum::USER_NICK => 'user']);
+        $containers = $userRepository->findContainersForLoggedUser($usr->getId(), new Sort('id', 'asc'));
         /** @var Container $container */
         $counter = 0;
         foreach ($containers as $container) {

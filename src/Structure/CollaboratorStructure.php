@@ -8,10 +8,14 @@ use App\Enum\ContainerModeEnum;
 
 class CollaboratorStructure extends AbstractStructure {
 
+    /** @var string */
+    public $user;
+
+    /** @var string */
     public $mode;
 
     public function checkInput(): Message {
-        if (empty($this->mode)) {
+        if (empty($this->mode) || empty($this->user)) {
             return new Message(ErrorConstants::ERROR_EMPTY_PARAMS);
         }
         if (!ContainerModeEnum::isOneOf($this->mode)) {
@@ -22,7 +26,8 @@ class CollaboratorStructure extends AbstractStructure {
 
     public function transform(): AbstractTransformed {
         $trans = new CollaboratorTransformed();
-        $trans->setMode($this->mode);
+        $trans->user = $this->user;
+        $trans->mode = $this->mode;
         return $trans;
     }
 }

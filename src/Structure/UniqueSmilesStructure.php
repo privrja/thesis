@@ -21,6 +21,9 @@ class UniqueSmilesStructure implements JsonSerializable {
     /** @var int */
     public $sameAs;
 
+    /** @var boolean */
+    public $isPolyketide;
+
     /** @var BlockSmiles|null */
     public $block;
 
@@ -28,7 +31,7 @@ class UniqueSmilesStructure implements JsonSerializable {
      * @inheritDoc
      */
     public function jsonSerialize() {
-        return ['id' => $this->id, 'acronym' => $this->acronym,'smiles' => $this->smiles, 'unique' => $this->unique, 'sameAs' => $this->sameAs, 'block' => $this->block];
+        return ['id' => $this->id, 'acronym' => $this->acronym,'smiles' => $this->smiles, 'unique' => $this->unique, 'sameAs' => $this->sameAs, 'isPolyketide' => $this->isPolyketide, 'block' => $this->block];
     }
 
 }

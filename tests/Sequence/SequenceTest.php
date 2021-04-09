@@ -27,7 +27,7 @@ final class SequenceTest extends TestCase {
             3 => $ile,
             4 => $orn,
         ]);
-        $res = $helper->sequenceBlocksStructure();
+        $res = $helper->sequenceBlocksStructure('[0]-[1]-[2]-[3]\([5]-[4]\)');
         $this->assertEquals('Phe', $res[0]->getBlock()->getAcronym());
         $this->assertEquals('Pro', $res[1]->getBlock()->getAcronym());
         $this->assertEquals('Ile', $res[2]->getBlock()->getAcronym());
@@ -75,7 +75,7 @@ final class SequenceTest extends TestCase {
             3 => $orn,
             4 => $phe,
         ]);
-        $res = $helper->sequenceBlocksStructure();
+        $res = $helper->sequenceBlocksStructure('[1]-[2]-[3]\([4]-[5]\)[0]');
         $this->assertEquals('Pro', $res[0]->getBlock()->getAcronym());
         $this->assertEquals('Ile', $res[1]->getBlock()->getAcronym());
         $this->assertEquals('Ile', $res[2]->getBlock()->getAcronym());
@@ -117,7 +117,7 @@ final class SequenceTest extends TestCase {
             3 => $orn,
             4 => $phe,
         ]);
-        $res = $helper->sequenceBlocksStructure();
+        $res = $helper->sequenceBlocksStructure('[0]-[1]-[2]\([3]-[4]-[6]\)-[5]');
         $this->assertEquals('Pro', $res[0]->getBlock()->getAcronym());
         $this->assertEquals('Ile', $res[1]->getBlock()->getAcronym());
         $this->assertEquals('Ile', $res[2]->getBlock()->getAcronym());
@@ -158,7 +158,7 @@ final class SequenceTest extends TestCase {
             1 => $pro,
             2 => $phe,
         ]);
-        $res = $helper->sequenceBlocksStructure();
+        $res = $helper->sequenceBlocksStructure('[1]-[2]-[0]');
         $this->assertEquals('Phe', $res[0]->getBlock()->getAcronym());
         $this->assertEquals('Pro', $res[1]->getBlock()->getAcronym());
         $this->assertEquals('Ile', $res[2]->getBlock()->getAcronym());
@@ -194,7 +194,7 @@ final class SequenceTest extends TestCase {
             5 => $tyr,
             6 => $thr,
         ]);
-        $res = $helper->sequenceBlocksStructure();
+        $res = $helper->sequenceBlocksStructure('\([3]-[4]\)[0]-[1]-[2]-[5]-[6]');
         $this->assertEquals('Thr', $res[0]->getBlock()->getAcronym());
         $this->assertEquals('Pro', $res[1]->getBlock()->getAcronym());
         $this->assertEquals('His', $res[2]->getBlock()->getAcronym());

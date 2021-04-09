@@ -3,7 +3,11 @@
 namespace App\Repository;
 
 use App\Entity\User;
+use App\Structure\Sort;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\DBAL\DBALException;
+use Doctrine\ORM\OptimisticLockException;
+use Doctrine\ORM\ORMException;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
 use Symfony\Component\Security\Core\User\PasswordUpgraderInterface;
@@ -15,18 +19,20 @@ use Symfony\Component\Security\Core\User\UserInterface;
  * @method User[]    findAll()
  * @method User[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class UserRepository extends ServiceEntityRepository implements PasswordUpgraderInterface
-{
-    public function __construct(ManagerRegistry $registry)
-    {
+class UserRepository extends ServiceEntityRepository implements PasswordUpgraderInterface {
+
+    public function __construct(ManagerRegistry $registry) {
         parent::__construct($registry, User::class);
     }
 
     /**
      * Used to upgrade (rehash) the user's password automatically over time.
+     * @param UserInterface $user
+     * @param string $newEncodedPassword
+     * @throws ORMException
+     * @throws OptimisticLockException
      */
-    public function upgradePassword(UserInterface $user, string $newEncodedPassword): void
-    {
+    public function upgradePassword(UserInterface $user, string $newEncodedPassword): void {
         if (!$user instanceof User) {
             throw new UnsupportedUserException(sprintf('Instances of "%s" are not supported.', \get_class($user)));
         }
@@ -38,16 +44,17 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
 
     /**
      * @param String $usrId user ID of logged user
+     * @param Sort $sort
      * @return array
      */
-    public function findContainersForLoggedUser(string $usrId) {
+    public function findContainersForLoggedUser(string $usrId, Sort $sort) {
         return $this->createQueryBuilder('usr')
             ->select('cnt.id', 'cnt.containerName', 'cnt.visibility', 'u2c.mode')
             ->innerJoin('usr.u2container', 'u2c')
             ->innerJoin('u2c.container', 'cnt')
             ->andWhere('usr.id = :val')
             ->setParameter('val', $usrId)
-            ->orderBy('cnt.containerName', 'asc')
+            ->orderBy(($sort->sort === 'mode' ? 'u2c.' : 'cnt.') . $sort->sort, $sort->order)
             ->getQuery()
             ->getArrayResult();
     }
@@ -116,6 +123,18 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
             ->andWhere('u2c.mode = \'RWM\'')
             ->getQuery()
             ->getArrayResult();
+    }
+
+    public function resetConditions() {
+        $conn = $this->getEntityManager()->getConnection();
+        $sql = 'update msb_user set conditions = false;';
+        try {
+            $stmt = $conn->prepare($sql);
+            $stmt->execute();
+            return true;
+        } catch (DBALException $e) {
+            return false;
+        }
     }
 
 }

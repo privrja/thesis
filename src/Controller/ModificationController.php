@@ -5,11 +5,13 @@ namespace App\Controller;
 use App\Base\Message;
 use App\Base\RequestHelper;
 use App\Base\ResponseHelper;
+use App\Constant\Constants;
 use App\Constant\ErrorConstants;
 use App\Entity\Container;
 use App\Entity\Modification;
 use App\Enum\ContainerVisibilityEnum;
 use App\Model\ContainerModel;
+use App\Repository\ModificationRepository;
 use App\Structure\ModificationStructure;
 use App\Structure\ModificationTransformed;
 use Doctrine\ORM\EntityManagerInterface;
@@ -27,16 +29,30 @@ use Swagger\Annotations as SWG;
 class ModificationController extends AbstractController {
 
     /**
-     * Return modifications for logged user
+     * Return modifications for container
      * @Route("/rest/container/{containerId}/modification", name="modification", methods={"GET"})
      * @Entity("container", expr="repository.find(containerId)")
      * @param Container $container
+     * @param Request $request
      * @param EntityManagerInterface $entityManager
      * @param Security $security
      * @param LoggerInterface $logger
      * @return JsonResponse
+     *
+     * @SWG\Get(
+     *     tags={"Modification"},
+     *     description="Get list of modifications. When you want to sort it you should add at the end of URL ?sort=modificationName&order=asc, where sort can be id, modificationName,  modificationFormula, modificationMass, nTerminal, cTerminal, organism and order is asc or desc. When you would like to filter data you can add something like modificationName=Ac, params are very similar to sorting only difference is in modificationMassFrom and modificationMassTo which is range.",
+     *     @SWG\Response(response="200", description="Return list of containers for logged user."),
+     *     @SWG\Response(response="403", description="Return when permisions is insuficient."),
+     *     @SWG\Response(response="404", description="Return when container is not found."),
+     * )
+     *
      */
-    public function getModifications(Container $container, EntityManagerInterface $entityManager, Security $security, LoggerInterface $logger) {
+    public function getModifications(Container $container, Request $request, EntityManagerInterface $entityManager, Security $security, LoggerInterface $logger, ModificationRepository $modificationRepository) {
+        $possibleFilters = ['id', 'modificationName', 'modificationFormula', 'modificationMassFrom', 'modificationMassTo', 'nTerminal', 'cTerminal'];
+        $filters = RequestHelper::getFiltering($request, $possibleFilters);
+        $filters = RequestHelper::transformFilters($filters, ['nTerminal', 'cTerminal'], ["yes" => 1, "no" => 0]);
+        $sort = RequestHelper::getSorting($request);
         if ($security->isGranted('ROLE_USER')) {
             $model = new ContainerModel($entityManager, $this->getDoctrine(), $security->getUser(), $logger);
             if ($container->getVisibility() === ContainerVisibilityEnum::PRIVATE) {
@@ -45,23 +61,18 @@ class ModificationController extends AbstractController {
                     return ResponseHelper::jsonResponse(new Message(ErrorConstants::ERROR_CONTAINER_NOT_EXISTS_FOR_USER, Response::HTTP_NOT_FOUND));
                 }
             }
-            return new JsonResponse($model->getContainerModifications($container->getId()));
+            return new JsonResponse($modificationRepository->filters($container, $filters, $sort));
         } else {
-            return $this->getModificationsFree($container, $entityManager, $logger);
+            if ($container->getVisibility() === ContainerVisibilityEnum::PRIVATE) {
+                return ResponseHelper::jsonResponse(new Message(ErrorConstants::ERROR_CONTAINER_NOT_EXISTS_FOR_USER, Response::HTTP_NOT_FOUND));
+            }
+            return new JsonResponse($modificationRepository->filters($container, $filters, $sort));
         }
-    }
-
-    public function getModificationsFree(Container $container, EntityManagerInterface $entityManager, LoggerInterface $logger) {
-        if ($container->getVisibility() === ContainerVisibilityEnum::PRIVATE) {
-            return ResponseHelper::jsonResponse(new Message(ErrorConstants::ERROR_CONTAINER_NOT_EXISTS_FOR_USER, Response::HTTP_NOT_FOUND));
-        }
-        $model = new ContainerModel($entityManager, $this->getDoctrine(), null, $logger);
-        return new JsonResponse($model->getContainerModifications($container->getId()));
     }
 
     /**
      * Delete modification
-     * @Route("/rest/container/{containerId}/modification/{modificationId}", name="modification_delete", methods={"DELETE"})
+     * @Route("/rest/container/{containerId}/modification/{modificationId}", name="modification_delete", methods={"DELETE"}, requirements={"modificationId"="\d+"})
      * @Entity("container", expr="repository.find(containerId)")
      * @Entity("modification", expr="repository.find(modificationId)")
      * @IsGranted("ROLE_USER")
@@ -79,8 +90,8 @@ class ModificationController extends AbstractController {
      *     },
      *     @SWG\Response(response="204", description="Sucessfully deleted container."),
      *     @SWG\Response(response="401", description="Return when user is not logged in."),
+     *     @SWG\Response(response="403", description="Return when permisions is insuficient."),
      *     @SWG\Response(response="404", description="Return when container is not found."),
-     *     @SWG\Response(response="403", description="Return when permisions is insufient.")
      * )
      */
     public function deleteModification(Container $container, Modification $modification, EntityManagerInterface $entityManager, Security $security, LoggerInterface $logger) {
@@ -91,7 +102,7 @@ class ModificationController extends AbstractController {
 
     /**
      * Update modification values
-     * @Route("/rest/container/{containerId}/modification/{modificationId}", name="modification_update", methods={"PUT"})
+     * @Route("/rest/container/{containerId}/modification/{modificationId}", name="modification_update", methods={"PUT"}, requirements={"modificatinoId"="\d+"})
      * @Entity("container", expr="repository.find(containerId)")
      * @Entity("modification", expr="repository.find(modificationId)")
      * @IsGranted("ROLE_USER")
@@ -113,15 +124,15 @@ class ModificationController extends AbstractController {
      *          in="body",
      *          type="string",
      *          required=true,
-     *          description="Paramas: blockName, acronym, formula, mass, losses, smiles, source, identifier.",
+     *          description="Paramas: modificationName, formula, nTerminal, cTerminal.",
      *          @SWG\Schema(type="string",
-     *              example=""),
+     *              example="{""modificationName"":""Modif"",""formula"":""CH2O"",""nTerminal"":false,""cTerminal"":true}"),
      *      ),
      *     @SWG\Response(response="204", description="Sucessfully update container."),
      *     @SWG\Response(response="400", description="Return when input is wrong."),
      *     @SWG\Response(response="401", description="Return when user is not logged in."),
-     *     @SWG\Response(response="403", description="Return when permisions is insufient."),
-     *     @SWG\Response(response="404", description="Return when container is not found.")
+     *     @SWG\Response(response="403", description="Return when permisions is insuficient."),
+     *     @SWG\Response(response="404", description="Return when container or modification is not found.")
      * )
      */
     public function updateModification(Container $container, Modification $modification, Request $request, EntityManagerInterface $entityManager, Security $security, LoggerInterface $logger) {
@@ -157,14 +168,14 @@ class ModificationController extends AbstractController {
      *          in="body",
      *          type="string",
      *          required=true,
-     *          description="Paramas: blockName, acronym, formula, mass, losses, smiles, source, identifier.",
+     *          description="Paramas: modificationName, formula, nTerminal, cTerminal.",
      *          @SWG\Schema(type="string",
-     *              example=""),
+     *              example="{""modificationName"":""Modif"",""formula"":""CH2O"",""nTerminal"":false,""cTerminal"":true}"),
      *      ),
      *     @SWG\Response(response="201", description="Create new container."),
      *     @SWG\Response(response="400", description="Return when input is wrong."),
      *     @SWG\Response(response="401", description="Return when user is not logged in."),
-     *     @SWG\Response(response="403", description="Return when permisions is insufient.")
+     *     @SWG\Response(response="403", description="Return when permisions is insuficient.")
      * )
      */
     public function addNewBlock(Container $container, Request $request, EntityManagerInterface $entityManager, Security $security, LoggerInterface $logger) {
@@ -175,7 +186,7 @@ class ModificationController extends AbstractController {
         }
         $model = new ContainerModel($entityManager, $this->getDoctrine(), $security->getUser(), $logger);
         $modelMessage = $model->createNewModification($container, $trans);
-        return ResponseHelper::jsonResponse($modelMessage);
+        return new JsonResponse($modelMessage, $modelMessage->status, isset($modelMessage->id) ? Constants::getLocation('container/' . $container->getId() . '/modification/', $modelMessage->id) : []);
     }
 
 }

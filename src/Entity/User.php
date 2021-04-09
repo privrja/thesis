@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use DateTimeInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -12,9 +13,10 @@ use Symfony\Component\Security\Core\User\UserInterface;
 /**
  * @ORM\Entity(repositoryClass="App\Repository\UserRepository")
  * @ORM\Table(uniqueConstraints={@UniqueConstraint(name="UX_USER_NICK", columns={"nick"})})
+ * @ORM\Table(name="`msb_user`")
  */
-class User implements UserInterface, JsonSerializable
-{
+class User implements UserInterface, JsonSerializable {
+
     /**
      * @ORM\Id()
      * @ORM\GeneratedValue()
@@ -53,25 +55,35 @@ class User implements UserInterface, JsonSerializable
      */
     private $u2container;
 
-    public function __construct()
-    {
+    /**
+     * @ORM\Column(type="boolean", options={"default": 0})
+     */
+    private $conditions;
+
+    /**
+     * @ORM\Column(type="string", nullable=true)
+     */
+    private $chemSpiderToken;
+
+    /**
+     * @ORM\Column(type="datetime", nullable=true)
+     */
+    private $lastActivity;
+
+    public function __construct() {
         $this->u2container = new ArrayCollection();
     }
 
-    public function getId(): ?int
-    {
+    public function getId(): ?int {
         return $this->id;
     }
 
-    public function getNick(): ?string
-    {
+    public function getNick(): ?string {
         return $this->nick;
     }
 
-    public function setNick(string $nick): self
-    {
+    public function setNick(string $nick): self {
         $this->nick = $nick;
-
         return $this;
     }
 
@@ -80,16 +92,14 @@ class User implements UserInterface, JsonSerializable
      *
      * @see UserInterface
      */
-    public function getUsername(): string
-    {
-        return (string) $this->nick;
+    public function getUsername(): string {
+        return (string)$this->nick;
     }
 
     /**
      * @see UserInterface
      */
-    public function getRoles(): array
-    {
+    public function getRoles(): array {
         $userRoles = $this->roles;
         // guarantee every user at least has ROLE_USER
         $userRoles[] = 'ROLE_USER';
@@ -97,78 +107,63 @@ class User implements UserInterface, JsonSerializable
         return array_unique($userRoles);
     }
 
-    public function setRoles(array $roles): self
-    {
+    public function setRoles(array $roles): self {
         $this->roles = $roles;
-
         return $this;
     }
 
     /**
      * @see UserInterface
      */
-    public function getPassword(): string
-    {
-        return (string) $this->password;
+    public function getPassword(): string {
+        return (string)$this->password;
     }
 
-    public function setPassword(string $password): self
-    {
+    public function setPassword(string $password): self {
         $this->password = $password;
-
         return $this;
     }
 
     /**
      * @see UserInterface
      */
-    public function getSalt()
-    {
+    public function getSalt() {
         // not needed when using the "bcrypt" algorithm in security.yaml
     }
 
     /**
      * @see UserInterface
      */
-    public function eraseCredentials()
-    {
+    public function eraseCredentials() {
         // If you store any temporary, sensitive data on the user, clear it here
     }
 
-    public function getMail(): ?string
-    {
+    public function getMail(): ?string {
         return $this->mail;
     }
 
-    public function setMail(string $mail): self
-    {
+    public function setMail(string $mail): self {
         $this->mail = $mail;
-
         return $this;
     }
 
-    public function getApiToken(): ?string
-    {
+    public function getApiToken(): ?string {
         return $this->apiToken;
     }
 
-    public function setApiToken(?string $apiToken): self
-    {
+    public function setApiToken(?string $apiToken): self {
         $this->apiToken = $apiToken;
-
         return $this;
     }
 
     /**
      * @return Collection|U2c[]
      */
-    public function getU2container(): Collection
-    {
+    public function getU2container(): Collection {
         return $this->u2container;
     }
 
-    public function addU2container(U2c $u2container): self
-    {
+    public function addU2container(U2c $u2container): self {
         if (!$this->u2container->contains($u2container)) {
             $this->u2container[] = $u2container;
             $u2container->setUser($this);
@@ -177,8 +172,7 @@ class User implements UserInterface, JsonSerializable
         return $this;
     }
 
-    public function removeU2container(U2c $u2container): self
-    {
+    public function removeU2container(U2c $u2container): self {
         if ($this->u2container->contains($u2container)) {
             $this->u2container->removeElement($u2container);
             // set the owning side to null (unless already changed)
@@ -191,10 +185,50 @@ class User implements UserInterface, JsonSerializable
     }
 
     /**
+     * @return mixed
+     */
+    public function getConditions() {
+        return $this->conditions;
+    }
+
+    /**
+     * @param mixed $conditions
+     */
+    public function setConditions($conditions): void {
+        $this->conditions = $conditions;
+    }
+
+    /**
+     * @return string
+     */
+    public function getChemSpiderToken() {
+        return $this->chemSpiderToken;
+    }
+
+    /**
+     * @param string $chemSpiderToken
+     */
+    public function setChemSpiderToken(string $chemSpiderToken): void {
+        $this->chemSpiderToken = $chemSpiderToken;
+    }
+
+    /**
      * @inheritDoc
      */
     public function jsonSerialize() {
         return ['value' => $this->id, 'label' => $this->nick];
+    }
+
+    public function getLastActivity(): ?DateTimeInterface
+    {
+        return $this->lastActivity;
+    }
+
+    public function setLastActivity(?DateTimeInterface $lastActivity): self
+    {
+        $this->lastActivity = $lastActivity;
+
+        return $this;
     }
 
 }

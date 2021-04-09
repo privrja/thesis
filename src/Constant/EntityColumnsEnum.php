@@ -20,5 +20,6 @@ abstract class EntityColumnsEnum {
     const SOURCE = 'source';
     const IDENTIFIER = 'identifier';
     const CONTAINER = 'container';
+    const IS_POLYKETIDE = 'isPolyketide';
 
 }

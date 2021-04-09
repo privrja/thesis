@@ -3,6 +3,7 @@
 namespace App\Structure;
 
 use App\Entity\Modification;
+use App\Entity\Organism;
 use App\Entity\SequenceFamily;
 use JsonSerializable;
 
@@ -16,6 +17,9 @@ class SequenceExport implements JsonSerializable {
 
     /** @var string */
     public $sequence;
+
+    /** @var string */
+    public $sequenceOriginal;
 
     /** @var string */
     public $smiles;
@@ -38,6 +42,9 @@ class SequenceExport implements JsonSerializable {
     /** @var SequenceFamily[] */
     public $family = [];
 
+    /** @var Organism[] */
+    public $organism = [];
+
     /** @var Modification */
     public $nModification;
 
@@ -50,6 +57,9 @@ class SequenceExport implements JsonSerializable {
     /** @var BlockExport[] */
     public $blocks = [];
 
+    /** @var string|null */
+    public $uniqueSmiles;
+
     /**
      * @inheritDoc
      */
@@ -58,13 +68,16 @@ class SequenceExport implements JsonSerializable {
             'sequenceName' => $this->sequenceName,
             'sequenceType' => $this->sequenceType,
             'sequence' => $this->sequence,
+            'sequenceOriginal' => $this->sequenceOriginal,
             'smiles' => $this->smiles,
+            'uniqueSmiles' =>$this->uniqueSmiles,
             'formula' => $this->formula,
             'mass' => $this->mass,
             'decays' => $this->decays,
             'source' => $this->source,
             'identifier' => $this->identifier,
             'family' => $this->family,
+            'organism' => $this->organism,
             'nModification' => $this->nModification,
             'cModification' => $this->cModification,
             'bModification' => $this->bModification,

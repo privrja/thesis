@@ -16,9 +16,15 @@ class NewRegistrationStructure extends AbstractStructure {
     /** @var string $mail */
     private $mail;
 
+    /** @var string */
+    public $answer;
+
     public function checkInput(): Message {
-        if (empty($this->name) || empty($this->password)) {
+        if (empty($this->name) || empty($this->password) || empty($this->answer)) {
             return new Message(ErrorConstants::ERROR_EMPTY_PARAMS);
+        }
+        if (strlen($this->password) < 8) {
+            return new Message(ErrorConstants::ERROR_CONDITIONS_NOT_MET);
         }
         // TODO if mail is setup then check it
         return Message::createOkMessage();
@@ -29,6 +35,7 @@ class NewRegistrationStructure extends AbstractStructure {
         $ret->setName($this->name);
         $ret->setPassword($this->password);
         $this->password = '';
+        $ret->cap = $this->answer;
         if ($this->mail !== null) {
             $ret->setMail($this->mail);
         }

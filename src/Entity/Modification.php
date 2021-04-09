@@ -4,12 +4,14 @@ namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\UniqueConstraint;
+use JsonSerializable;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\ModificationRepository")
- * @ORM\Table(uniqueConstraints={@UniqueConstraint(name="UX_MODIFICATION_NAME", columns={"modification_name", "container_id"})})
+ * @ORM\Table(uniqueConstraints={@UniqueConstraint(name="UX_MODIFICATION_NAME", columns={"modification_name", "container_id"})}, name="`msb_modification`")
  */
-class Modification {
+class Modification implements JsonSerializable {
+
     /**
      * @ORM\Id()
      * @ORM\GeneratedValue()
@@ -58,7 +60,6 @@ class Modification {
 
     public function setModificationName(string $modificationName): self {
         $this->modificationName = $modificationName;
-
         return $this;
     }
 
@@ -68,7 +69,6 @@ class Modification {
 
     public function setModificationFormula(string $modificationFormula): self {
         $this->modificationFormula = $modificationFormula;
-
         return $this;
     }
 
@@ -78,7 +78,6 @@ class Modification {
 
     public function setModificationMass(?float $modificationMass): self {
         $this->modificationMass = $modificationMass;
-
         return $this;
     }
 
@@ -88,7 +87,6 @@ class Modification {
 
     public function setNTerminal(bool $nTerminal): self {
         $this->nTerminal = $nTerminal;
-
         return $this;
     }
 
@@ -98,7 +96,6 @@ class Modification {
 
     public function setCTerminal(bool $cTerminal): self {
         $this->cTerminal = $cTerminal;
-
         return $this;
     }
 
@@ -108,8 +105,21 @@ class Modification {
 
     public function setContainer(?Container $container): self {
         $this->container = $container;
-
         return $this;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function jsonSerialize() {
+        return [
+            'id' => $this->id,
+            'modificationName' => $this->modificationName,
+            'formula' => $this->modificationFormula,
+            'mass' => $this->modificationMass,
+            'nTerminal' => $this->nTerminal,
+            'cTerminal' => $this->cTerminal
+        ];
     }
 
 }

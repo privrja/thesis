@@ -7,6 +7,7 @@ class NewRegistrationTransformed extends AbstractTransformed {
     private $name;
     private $password;
     private $mail;
+    public $cap;
 
     /**
      * @return mixed

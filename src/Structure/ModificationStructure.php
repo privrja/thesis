@@ -6,8 +6,10 @@ use App\Base\FormulaHelper;
 use App\Base\Message;
 use App\Constant\ErrorConstants;
 use App\Exception\IllegalStateException;
+use InvalidArgumentException;
+use JsonSerializable;
 
-class ModificationStructure extends AbstractStructure {
+class ModificationStructure extends AbstractStructure implements JsonSerializable {
 
     public $modificationName;
     public $formula;
@@ -33,7 +35,9 @@ class ModificationStructure extends AbstractStructure {
             try {
                 $trans->setMass(FormulaHelper::computeMass($this->formula));
             } catch (IllegalStateException $e) {
-                /* Empty on purpose - mass can be null */
+                $trans->setMass(0);
+            } catch (InvalidArgumentException $e) {
+                $trans->setMass(0);
             }
         } else {
             $trans->setMass($this->mass);
@@ -45,6 +49,17 @@ class ModificationStructure extends AbstractStructure {
             $trans->setCTerminal($this->cTerminal);
         }
         return $trans;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function jsonSerialize() {
+        $res = ['modificationName' => $this->modificationName, 'formula' => $this->formula, 'mass' => $this->mass, 'nTerminal' => $this->nTerminal, 'cTerminal' => $this->cTerminal];
+        if (!empty($this->error)) {
+            $res['error'] = $this->error;
+        }
+        return $res;
     }
 
 }

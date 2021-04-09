@@ -2,7 +2,6 @@
 
 namespace App\Smiles\Parser;
 
-
 use App\Exception\IllegalStateException;
 
 class NatParser implements IParser {

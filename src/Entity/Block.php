@@ -11,9 +11,10 @@ use JsonSerializable;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\BlockRepository")
- * @ORM\Table(uniqueConstraints={@UniqueConstraint(name="UX_BLOCK_ACRONYM", columns={"acronym", "container_id"})})
+ * @ORM\Table(uniqueConstraints={@UniqueConstraint(name="UX_BLOCK_ACRONYM", columns={"acronym", "container_id"})}, name="`msb_block`")
  */
 class Block implements JsonSerializable {
+
     /**
      * @ORM\Id()
      * @ORM\GeneratedValue()
@@ -67,6 +68,11 @@ class Block implements JsonSerializable {
     private $identifier;
 
     /**
+     * @ORM\Column(type="boolean", nullable=false, options={"default": 0})
+     */
+    private $isPolyketide;
+
+    /**
      * @ORM\OneToMany(targetEntity="App\Entity\B2s", mappedBy="block")
      */
     private $b2s;
@@ -78,7 +84,7 @@ class Block implements JsonSerializable {
     private $container;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\B2f", mappedBy="block")
+     * @ORM\OneToMany(targetEntity="App\Entity\B2f", mappedBy="block", cascade={"persist", "remove"})
      */
     private $b2families;
 
@@ -97,7 +103,6 @@ class Block implements JsonSerializable {
 
     public function setBlockName(string $blockName): self {
         $this->blockName = $blockName;
-
         return $this;
     }
 
@@ -107,7 +112,6 @@ class Block implements JsonSerializable {
 
     public function setAcronym(string $acronym): self {
         $this->acronym = $acronym;
-
         return $this;
     }
 
@@ -117,7 +121,6 @@ class Block implements JsonSerializable {
 
     public function setResidue(string $residue): self {
         $this->residue = $residue;
-
         return $this;
     }
 
@@ -127,7 +130,6 @@ class Block implements JsonSerializable {
 
     public function setBlockMass(?float $blockMass): self {
         $this->blockMass = $blockMass;
-
         return $this;
     }
 
@@ -137,7 +139,6 @@ class Block implements JsonSerializable {
 
     public function setLosses(?string $losses): self {
         $this->losses = $losses;
-
         return $this;
     }
 
@@ -147,7 +148,6 @@ class Block implements JsonSerializable {
 
     public function setBlockSmiles(?string $blockSmiles): self {
         $this->blockSmiles = $blockSmiles;
-
         return $this;
     }
 
@@ -157,7 +157,6 @@ class Block implements JsonSerializable {
 
     public function setSource(?int $source): self {
         $this->source = $source;
-
         return $this;
     }
 
@@ -167,7 +166,6 @@ class Block implements JsonSerializable {
 
     public function setIdentifier(?string $identifier): self {
         $this->identifier = $identifier;
-
         return $this;
     }
 
@@ -183,7 +181,6 @@ class Block implements JsonSerializable {
             $this->b2s[] = $b2;
             $b2->setBlock($this);
         }
-
         return $this;
     }
 
@@ -195,7 +192,6 @@ class Block implements JsonSerializable {
                 $b2->setBlock(null);
             }
         }
-
         return $this;
     }
 
@@ -205,7 +201,6 @@ class Block implements JsonSerializable {
 
     public function setContainer(?Container $container): self {
         $this->container = $container;
-
         return $this;
     }
 
@@ -233,7 +228,6 @@ class Block implements JsonSerializable {
                 $b2family->setBlock(null);
             }
         }
-
         return $this;
     }
 
@@ -243,8 +237,25 @@ class Block implements JsonSerializable {
 
     public function setUsmiles(?string $usmiles): self {
         $this->usmiles = $usmiles;
-
         return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getIsPolyketide() {
+        return $this->isPolyketide;
+    }
+
+    /**
+     * @param mixed $isPolyketide
+     */
+    public function setIsPolyketide($isPolyketide): void {
+        $this->isPolyketide = $isPolyketide;
+    }
+
+    public function emptyB2Family() {
+        $this->b2families = new ArrayCollection();
     }
 
     /**
@@ -260,7 +271,9 @@ class Block implements JsonSerializable {
             EntityColumnsEnum::SMILES => $this->blockSmiles,
             EntityColumnsEnum::UNIQUE_SMILES => $this->usmiles,
             EntityColumnsEnum::SOURCE => $this->source,
-            EntityColumnsEnum::IDENTIFIER => $this->identifier
+            EntityColumnsEnum::IDENTIFIER => $this->identifier,
+            EntityColumnsEnum::IS_POLYKETIDE => $this->isPolyketide
         ];
     }
+
 }

@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Base\Message;
 use App\Base\RequestHelper;
 use App\Base\ResponseHelper;
+use App\Constant\Constants;
 use App\Constant\EntityColumnsEnum;
 use App\Constant\ErrorConstants;
 use App\CycloBranch\AbstractCycloBranch;
@@ -25,6 +26,8 @@ use App\Structure\AbstractStructure;
 use App\Structure\BlockStructure;
 use App\Structure\CollaboratorStructure;
 use App\Structure\CollaboratorTransformed;
+use App\Structure\CollaboratorUpdateStructure;
+use App\Structure\CollaboratorUpdateTransformed;
 use App\Structure\ConcreateContainer;
 use App\Structure\ModificationStructure;
 use App\Structure\NewContainerStructure;
@@ -60,6 +63,7 @@ class ContainerController extends AbstractController {
      * @Route("/rest/container", name="container", methods={"GET"})
      * @IsGranted("ROLE_USER")
      * @param UserRepository $userRepository
+     * @param Request $request
      * @param Security $security
      * @return JsonResponse
      *
@@ -74,36 +78,34 @@ class ContainerController extends AbstractController {
      *      @SWG\SecurityScheme(type="apiKey", securityDefinition="ApiKeyAuth", in="header", name="X-AUTH-TOKEN")
      *     )
      * )
-     *
      */
-    public function index(UserRepository $userRepository, Security $security) {
-        // TODO prepare sorting and filtering options to query, maybe paging
-        return new JsonResponse($userRepository->findContainersForLoggedUser($security->getUser()->getId()));
+    public function index(UserRepository $userRepository, Request $request, Security $security) {
+        return new JsonResponse($userRepository->findContainersForLoggedUser($security->getUser()->getId(), RequestHelper::getSorting($request)));
     }
 
     /**
      * Return containers which is free to read
      * @Route("/rest/free/container", name="container_free", methods={"GET"})
      * @param ContainerRepository $containerRepository
+     * @param Request $request
      * @return JsonResponse
      *
      * @SWG\Get(
      *     tags={"Container"},
      *     @SWG\Response(response="200", description="Return list of public containers."),
      * )
-     *
      */
-    public function freeContainers(ContainerRepository $containerRepository) {
-        // TODO prepare sorting and filtering options to query, maybe paging
-        return new JsonResponse($containerRepository->findBy([EntityColumnsEnum::CONTAINER_VISIBILITY => ContainerVisibilityEnum::PUBLIC]));
+    public function freeContainers(ContainerRepository $containerRepository, Request $request) {
+        return new JsonResponse($containerRepository->findBy([EntityColumnsEnum::CONTAINER_VISIBILITY => ContainerVisibilityEnum::PUBLIC], RequestHelper::getSorting($request)->asArray()));
     }
 
     /**
-     * Return containers for logged user
+     * Return container detail
      * @Route("/rest/container/{containerId}", name="container_id", methods={"GET"})
      * @IsGranted("ROLE_USER")
      * @Entity("container", expr="repository.find(containerId)")
      * @param Container $container
+     * @param Request $request
      * @param EntityManagerInterface $entityManager
      * @param Security $security
      * @param LoggerInterface $logger
@@ -116,17 +118,17 @@ class ContainerController extends AbstractController {
      *     },
      *     @SWG\Response(response="200", description="Return specific container for user."),
      *     @SWG\Response(response="401", description="Return when user is not logged in."),
+     *     @SWG\Response(response="403", description="Return when user has not enought permissions"),
      *     @SWG\Response(response="404", description="Return when container is not found."),
      * )
-     *
      */
-    public function containerId(Container $container, EntityManagerInterface $entityManager, Security $security, LoggerInterface $logger) {
+    public function containerId(Container $container, Request $request, EntityManagerInterface $entityManager, Security $security, LoggerInterface $logger) {
         $model = new ContainerModel($entityManager, $this->getDoctrine(), $security->getUser(), $logger);
         $modelMessage = $model->concreteContainer($container);
         if (!$modelMessage->result) {
             return ResponseHelper::jsonResponse($modelMessage);
         }
-        $ccContainer = new ConcreateContainer($container->getId(), $container->getContainerName(), $container->getVisibility(), $model->concreteContainerCollaborators($container->getId()));
+        $ccContainer = new ConcreateContainer($container->getId(), $container->getContainerName(), $container->getVisibility(), $model->concreteContainerCollaborators($container->getId(), RequestHelper::getSorting($request)));
         return new JsonResponse($ccContainer, Response::HTTP_OK);
     }
 
@@ -166,9 +168,13 @@ class ContainerController extends AbstractController {
         if ($trans instanceof JsonResponse) {
             return $trans;
         }
-        $model = new ContainerModel($entityManager, $this->getDoctrine(), $security->getUser(), $logger);
-        $modelMessage = $model->createNew($trans);
-        return ResponseHelper::jsonResponse($modelMessage);
+        if (($trans->getVisibility() === ContainerVisibilityEnum::PUBLIC && $this->isGranted("ROLE_ADMIN")) || $trans->getVisibility() === ContainerVisibilityEnum::PRIVATE) {
+            $model = new ContainerModel($entityManager, $this->getDoctrine(), $security->getUser(), $logger);
+            $modelMessage = $model->createNew($trans);
+            return new JsonResponse($modelMessage, $modelMessage->status, isset($modelMessage->id) ? Constants::getLocation('container/', $modelMessage->id) : []);
+        } else {
+            return ResponseHelper::jsonResponse(new Message('Only admin can create PUBLIC container'));
+        }
     }
 
     /**
@@ -238,19 +244,22 @@ class ContainerController extends AbstractController {
         if ($trans instanceof JsonResponse) {
             return $trans;
         }
-        $model = new ContainerModel($entityManager, $this->getDoctrine(), $security->getUser(), $logger);
-        $modelMessage = $model->update($trans, $container);
-        return ResponseHelper::jsonResponse($modelMessage);
+        if (($trans->getVisibility() === ContainerVisibilityEnum::PUBLIC && $this->isGranted("ROLE_ADMIN")) || $trans->getVisibility() === ContainerVisibilityEnum::PRIVATE || empty($trans->getVisibility())) {
+            $model = new ContainerModel($entityManager, $this->getDoctrine(), $security->getUser(), $logger);
+            $modelMessage = $model->update($trans, $container);
+            return ResponseHelper::jsonResponse($modelMessage);
+        } else {
+            return ResponseHelper::jsonResponse(new Message('Only admin can change PRIVATE container to PUBLIC'));
+        }
     }
 
     /**
      * Add new user to container
-     * @Route("/rest/container/{containerId}/collaborator/{userId}", name="collaborator_new", methods={"POST"})
+     * @Route("/rest/container/{containerId}/collaborator", name="collaborator_new", methods={"POST"})
      * @Entity("container", expr="repository.find(containerId)")
      * @Entity("collaborator", expr="repository.find(userId)")
      * @IsGranted("ROLE_USER")
      * @param Container $container
-     * @param User $collaborator
      * @param Request $request
      * @param EntityManagerInterface $entityManager
      * @param Security $security
@@ -267,25 +276,26 @@ class ContainerController extends AbstractController {
      *          in="body",
      *          type="string",
      *          required=true,
-     *          description="",
+     *          description="mode - permisions for new user",
      *          @SWG\Schema(type="string",
-     *              example=""),
+     *              example="{""user"":""kokos"", ""mode"":""RW""}"),
      *      ),
      *     @SWG\Response(response="201", description="Create new container."),
      *     @SWG\Response(response="400", description="Return when input is wrong."),
      *     @SWG\Response(response="401", description="Return when user is not logged in."),
-     *     @SWG\Response(response="403", description="Return when user doesn't have enought permissions.")
+     *     @SWG\Response(response="403", description="Return when user doesn't have enought permissions."),
+     *     @SWG\Response(response="404", description="Return when container or user not found."),
      * )
      */
-    public function addNewCollaborator(Container $container, User $collaborator, Request $request, EntityManagerInterface $entityManager, Security $security, LoggerInterface $logger) {
+    public function addNewCollaborator(Container $container, Request $request, EntityManagerInterface $entityManager, Security $security, LoggerInterface $logger) {
         /** @var CollaboratorTransformed $trans */
         $trans = RequestHelper::evaluateRequest($request, new CollaboratorStructure(), $logger);
         if ($trans instanceof JsonResponse) {
             return $trans;
         }
         $model = new ContainerModel($entityManager, $this->getDoctrine(), $security->getUser(), $logger);
-        $modelMessage = $model->createNewCollaborator($collaborator, $container, $trans);
-        return ResponseHelper::jsonResponse($modelMessage);
+        $modelMessage = $model->createNewCollaborator($container, $trans);
+        return new JsonResponse($modelMessage, $modelMessage->status, isset($modelMessage->id) ? Constants::getLocation('container/' . $container->getId() . '/collaborator/', $modelMessage->id) : []);
     }
 
     /**
@@ -308,6 +318,7 @@ class ContainerController extends AbstractController {
      *     },
      *     @SWG\Response(response="204", description="Sucessfully removed collaborator."),
      *     @SWG\Response(response="401", description="Return when user is not logged in."),
+     *     @SWG\Response(response="403", description="Return when permissions is insuficient."),
      *     @SWG\Response(response="404", description="Return when container is not found.")
      * )
      */
@@ -331,19 +342,30 @@ class ContainerController extends AbstractController {
      * @param LoggerInterface $logger
      * @return JsonResponse
      *
-     * @SWG\Delete(
+     * @SWG\Put(
      *     tags={"Collaborator"},
      *     security={
      *         {"ApiKeyAuth":{}}
      *     },
+     *     @SWG\Parameter(
+     *          name="body",
+     *          in="body",
+     *          type="string",
+     *          required=true,
+     *          description="mode - permisions for user",
+     *          @SWG\Schema(type="string",
+     *              example="{""mode"":""RW""}"),
+     *      ),
      *     @SWG\Response(response="204", description="Sucessfully removed collaborator."),
+     *     @SWG\Response(response="400", description="Return when input is bad"),
      *     @SWG\Response(response="401", description="Return when user is not logged in."),
+     *     @SWG\Response(response="403", description="Return when permissions is insuficient."),
      *     @SWG\Response(response="404", description="Return when container is not found.")
      * )
      */
     public function updateCollaborator(Container $container, User $collaborator, Request $request, EntityManagerInterface $entityManager, Security $security, LoggerInterface $logger) {
-        /** @var CollaboratorTransformed $trans */
-        $trans = RequestHelper::evaluateRequest($request, new CollaboratorStructure(), $logger);
+        /** @var CollaboratorUpdateTransformed $trans */
+        $trans = RequestHelper::evaluateRequest($request, new CollaboratorUpdateStructure(), $logger);
         if ($trans instanceof JsonResponse) {
             return $trans;
         }
@@ -359,13 +381,21 @@ class ContainerController extends AbstractController {
      * @param Container $container
      * @param ModificationRepository $repository
      * @return Response
+     *
+     * @SWG\Get(
+     *     tags={"Export"},
+     *     @SWG\Response(response="200", description="Export modifications."),
+     *     @SWG\Response(response="403", description="Forbidden."),
+     *     @SWG\Response(response="404", description="Not found."),
+     * )
+     *
      */
     public function modificationExport(Container $container, ModificationRepository $repository) {
         if ($container->getVisibility() === ContainerVisibilityEnum::PUBLIC || $this->isGranted("ROLE_USER")) {
             $export = new ModificationCycloBranch($repository, $container->getId());
             return $export->export();
         } else {
-            return new JsonResponse(new Message(ErrorConstants::ERROR_CONTAINER_INSUFIENT_RIGHTS));
+            return new JsonResponse(new Message(ErrorConstants::ERROR_CONTAINER_INSUFIENT_RIGHTS, Response::HTTP_FORBIDDEN));
         }
     }
 
@@ -376,30 +406,46 @@ class ContainerController extends AbstractController {
      * @param Container $container
      * @param BlockRepository $repository
      * @return Response
+     *
+     * @SWG\Get(
+     *     tags={"Export"},
+     *     @SWG\Response(response="200", description="Export blocks."),
+     *     @SWG\Response(response="403", description="Forbidden."),
+     *     @SWG\Response(response="404", description="Not found."),
+     * )
+     *
      */
     public function blockExport(Container $container, BlockRepository $repository) {
         if ($container->getVisibility() === ContainerVisibilityEnum::PUBLIC || $this->isGranted("ROLE_USER")) {
             $export = new BlockCycloBranch($repository, $container->getId());
             return $export->export();
         } else {
-            return new JsonResponse(new Message(ErrorConstants::ERROR_CONTAINER_INSUFIENT_RIGHTS));
+            return new JsonResponse(new Message(ErrorConstants::ERROR_CONTAINER_INSUFIENT_RIGHTS, Response::HTTP_FORBIDDEN));
         }
     }
 
     /**
-     * Export blocks for CycloBranch
+     * Export sequences for CycloBranch
      * @Route("/rest/container/{containerId}/sequence/export", name="sequence_export", methods={"GET"})
      * @Entity("container", expr="repository.find(containerId)")
      * @param Container $container
      * @param SequenceRepository $repository
      * @return Response
+     *
+     * @SWG\Get(
+     *     tags={"Export"},
+     *     @SWG\Response(response="200", description="Export sequences."),
+     *     @SWG\Response(response="403", description="Forbidden."),
+     *     @SWG\Response(response="404", description="Not found."),
+     * )
+     *
      */
     public function sequenceExport(Container $container, SequenceRepository $repository) {
         if ($container->getVisibility() === ContainerVisibilityEnum::PUBLIC || $this->isGranted("ROLE_USER")) {
             $export = new SequenceCycloBranch($repository, $container->getId());
             return $export->export();
         } else {
-            return new JsonResponse(new Message(ErrorConstants::ERROR_CONTAINER_INSUFIENT_RIGHTS));
+            return new JsonResponse(new Message(ErrorConstants::ERROR_CONTAINER_INSUFIENT_RIGHTS, Response::HTTP_FORBIDDEN));
         }
     }
 
@@ -410,6 +456,14 @@ class ContainerController extends AbstractController {
      * @param Container $container
      * @param BlockRepository $repository
      * @return Response
+     *
+     * @SWG\Get(
+     *     tags={"Export"},
+     *     @SWG\Response(response="200", description="Export merged blocks."),
+     *     @SWG\Response(response="403", description="Forbidden."),
+     *     @SWG\Response(response="404", description="Not found."),
+     * )
+     *
      */
     public function blockMergeExport(Container $container, BlockRepository $repository) {
         if ($container->getVisibility() === ContainerVisibilityEnum::PUBLIC || $this->isGranted("ROLE_USER")) {
@@ -429,6 +483,13 @@ class ContainerController extends AbstractController {
      * @param SequenceRepository $sequenceRepository
      * @param ModificationRepository $modificationRepository
      * @return Response
+     *
+     * @SWG\Get(
+     *     tags={"Export"},
+     *     @SWG\Response(response="200", description="Export all."),
+     *     @SWG\Response(response="403", description="Forbidden."),
+     *     @SWG\Response(response="404", description="Not found."),
+     * )
      */
     public function allExport(Container $container, BlockRepository $blockRepository, SequenceRepository $sequenceRepository, ModificationRepository $modificationRepository) {
         if ($container->getVisibility() === ContainerVisibilityEnum::PUBLIC || $this->isGranted("ROLE_USER")) {
@@ -467,6 +528,26 @@ class ContainerController extends AbstractController {
      * @param Security $security
      * @param LoggerInterface $logger
      * @return Response
+     *
+     * @SWG\Post(
+     *     tags={"Import"},
+     *     security={
+     *         {"ApiKeyAuth":{}}
+     *     },
+     *     @SWG\Parameter(
+     *          name="body",
+     *          in="body",
+     *          type="string",
+     *          required=true,
+     *          description="Array with modifications to import",
+     *          @SWG\Schema(type="string",
+     *              example="[{""modificationName"":""Acetyl"",""formula"":""H2C2O"",""mass"":42.0105646863,""nTerminal"":true,""cTerminal"":false},{""modificationName"":""Amidated"",""formula"":""HNO-1"",""mass"":-0.9840155848,""nTerminal"":false,""cTerminal"":false},{""modificationName"":""Ethanolamine"",""formula"":""H5C2N"",""mass"":43.0421991657,""nTerminal"":false,""cTerminal"":false},{""modificationName"":""Formyl"",""formula"":""CO"",""mass"":27.9949146221,""nTerminal"":true,""cTerminal"":false}]"),
+     *      ),
+     *     @SWG\Response(response="200", description="Return list of not imported modifications."),
+     *     @SWG\Response(response="403", description="Forbidden"),
+     *     @SWG\Response(response="404", description="Not found."),
+     * )
+     *
      */
     public function modificationImport(Container $container, Request $request, ModificationRepository $repository, EntityManagerInterface $entityManager, Security $security, LoggerInterface $logger) {
         return $this->import($container, $request, new ModificationCycloBranch($repository, $container->getId()), ModificationStructure::class, $entityManager, $security, $logger);
@@ -479,11 +560,29 @@ class ContainerController extends AbstractController {
      * @IsGranted("ROLE_USER")
      * @param Container $container
      * @param Request $request
-     * @param ModificationRepository $repository
      * @param EntityManagerInterface $entityManager
      * @param Security $security
      * @param LoggerInterface $logger
      * @return Response
+     *
+     * @SWG\Post(
+     *     tags={"Import"},
+     *     security={
+     *         {"ApiKeyAuth":{}}
+     *     },
+     *     @SWG\Parameter(
+     *          name="body",
+     *          in="body",
+     *          type="string",
+     *          required=true,
+     *          description="Array with blocs to import",
+     *          @SWG\Schema(type="string",
+     *              example="[{""blockName"":""Tryptophan"",""acronym"":""Trp"",""formula"":""C11H10N20"",""mass"":186.079313,""losses"":null,""smiles"":""C1=CC=C2C(=C1)C(=CN2)CC(C(=O)O)N"",""source"":0,""identifier"":""6305""},{""blockName"":""Glycine"",""acronym"":""Gly"",""formula"":""C2H3NO"",""mass"":57.021464,""losses"":null,""smiles"":""C(C(=O)O)N"",""source"":0,""identifier"":""750""},{""blockName"":""Alanine"",""acronym"":""Ala"",""formula"":""C3H5NO"",""mass"":71.037114,""losses"":null,""smiles"":""CC(C(=O)O)N"",""source"":0,""identifier"":""5950""},{""blockName"":""Serine"",""acronym"":""Ser"",""formula"":""C3H5NO2"",""mass"":87.032028,""losses"":null,""smiles"":""C(C(C(=O)O)N)O"",""source"":0,""identifier"":""5951""},{""blockName"":""Cysteine"",""acronym"":""Cys"",""formula"":""C3H5NOS"",""mass"":103.009184,""losses"":null,""smiles"":""C(C(C(=O)O)N)S"",""source"":0,""identifier"":""5862""},{""blockName"":""Aspartic acid"",""acronym"":""Asp"",""formula"":""C4H5NO3"",""mass"":115.026943,""losses"":null,""smiles"":""C(C(C(=O)O)N)C(=O)O"",""source"":0,""identifier"":""5960""},{""blockName"":""Asparagine"",""acronym"":""Asn"",""formula"":""C4H6N2O2"",""mass"":114.042927,""losses"":null,""smiles"":""C(C(C(=O)O)N)C(=O)N"",""source"":0,""identifier"":""6267""},{""blockName"":""Threonine"",""acronym"":""Thr"",""formula"":""C4H7NO2"",""mass"":101.047678,""losses"":null,""smiles"":""CC(C(C(=O)O)N)O"",""source"":0,""identifier"":""6288""}]")
+     *      ),
+     *     @SWG\Response(response="200", description="Return list of not imported blocks."),
+     *     @SWG\Response(response="403", description="Forbidden"),
+     *     @SWG\Response(response="404", description="Not found."),
+     * )
      */
     public function blockImport(Container $container, Request $request, BlockRepository $repository, EntityManagerInterface $entityManager, Security $security, LoggerInterface $logger) {
         return $this->import($container, $request, new BlockCycloBranch($repository, $container->getId()), BlockStructure::class, $entityManager, $security, $logger);
@@ -501,9 +600,61 @@ class ContainerController extends AbstractController {
      * @param Security $security
      * @param LoggerInterface $logger
      * @return Response
+     *
+     * @SWG\Post(
+     *     tags={"Import"},
+     *     security={
+     *         {"ApiKeyAuth":{}}
+     *     },
+     *     @SWG\Parameter(
+     *          name="body",
+     *          in="body",
+     *          type="string",
+     *          required=true,
+     *          description="Array with sequences to import",
+     *          @SWG\Schema(type="string",
+     *              example="[{""sequenceType"":""cyclic"",""sequenceName"":""cyclosporin A"",""formula"":""C62H111N11O12"",""mass"":1201.8413680855,""sequence"":""[NMe-Bmt]-[Abu]-[NMe-Gly]-[NMe-Leu]-[Val]-[NMe-Leu]-[Ala]-[Ala]-[NMe-Leu]-[NMe-Leu]-[NMe-Val]"",""nModification"":null,""cModification"":null,""bModification"":null,""smiles"":null,""source"":1,""identifier"":""25027415""},{""sequenceType"":""branched"",""sequenceName"":""dau 677 T2"",""formula"":""C61H91N15O20"",""mass"":1353.6564804411,""sequence"":""[Glu]-[Ser]-[Leu]\\([Lys]-[Asn]-[Phe]-[Ile]\\)[Asp]-[Gln]-[Tyr]-[Gly]"",""nModification"":""Acetyl"",""cModification"":""Acetyl"",""bModification"":null,""smiles"":null,""source"":null,""identifier"":null},{""sequenceType"":""branched"",""sequenceName"":""linearized pseudacyclin A"",""formula"":""C39H63N7O8"",""mass"":757.4738120355,""sequence"":""[Pro]-[Ile]-[Ile]\\([Orn]-[NAc-Ile]\\)[Phe]"",""nModification"":null,""cModification"":null,""bModification"":null,""smiles"":null,""source"":null,""identifier"":null},{""sequenceType"":""cyclic"",""sequenceName"":""pseudacyclin A"",""formula"":""C39H61N7O7"",""mass"":739.4632473492,""sequence"":""[Phe]-[Pro]-[Ile]-[Ile]-[Orn]-[NAc-Ile]"",""nModification"":null,""cModification"":null,""bModification"":null,""smiles"":null,""source"":1,""identifier"":""25028474""}]")
+     *      ),
+     *     @SWG\Response(response="200", description="Return list of not imported sequences."),
+     *     @SWG\Response(response="403", description="Forbidden"),
+     *     @SWG\Response(response="404", description="Not found."),
+     * )
      */
     public function sequenceImport(Container $container, Request $request, SequenceRepository $repository, EntityManagerInterface $entityManager, Security $security, LoggerInterface $logger) {
         return $this->import($container, $request, new SequenceCycloBranch($repository, $container->getId()), SequenceStructure::class, $entityManager, $security, $logger);
+    }
+
+    /**
+     * Clone container
+     * @Route("/rest/container/{containerId}/clone", name="container_clone", methods={"POST"}, requirements={"containerId"="\d+"})
+     * @Entity("container", expr="repository.find(containerId)")
+     * @Entity("sequence", expr="repository.find(sequenceId)")
+     * @IsGranted("ROLE_USER")
+     * @param Container $container
+     * @param EntityManagerInterface $entityManager
+     * @param Security $security
+     * @param LoggerInterface $logger
+     * @return JsonResponse
+     *
+     * @SWG\Post(
+     *     tags={"Container"},
+     *     security={
+     *         {"ApiKeyAuth":{}}
+     *     },
+     *     @SWG\Response(response="204", description="Sucessfully deleted sequence."),
+     *     @SWG\Response(response="401", description="Return when user is not logged in."),
+     *     @SWG\Response(response="403", description="Return when permisions is insufient."),
+     *     @SWG\Response(response="404", description="Return when sequence is not found.")
+     * )
+     */
+    public function cloneContainer(Container $container, EntityManagerInterface $entityManager, Security $security, LoggerInterface $logger) {
+        $model = new ContainerModel($entityManager, $this->getDoctrine(), $security->getUser(), $logger);
+        if ($container->getVisibility() === ContainerVisibilityEnum::PUBLIC || $model->hasContainer($container->getId())) {
+            $message = $model->cloneContainer($container);
+            return new JsonResponse($message, $message->status, isset($message->id) ? Constants::getLocation('container/', $message->id) : []);
+        } else {
+            return ResponseHelper::jsonResponse(new Message(ErrorConstants::ERROR_CONTAINER_INSUFIENT_RIGHTS, Response::HTTP_FORBIDDEN));
+        }
     }
 
     private function import(Container $container, Request $request, AbstractCycloBranch $import, $className, EntityManagerInterface $entityManager, Security $security, LoggerInterface $logger) {
@@ -530,7 +681,7 @@ class ContainerController extends AbstractController {
             $errorStack = $import->import($container, $entityManager, $okStack, $errorStack);
             return new JsonResponse($errorStack, Response::HTTP_OK);
         } else {
-            return new JsonResponse(new Message(ErrorConstants::ERROR_CONTAINER_INSUFIENT_RIGHTS));
+            return ResponseHelper::jsonResponse(new Message(ErrorConstants::ERROR_CONTAINER_INSUFIENT_RIGHTS, Response::HTTP_FORBIDDEN));
         }
     }
 

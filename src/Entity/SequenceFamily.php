@@ -5,12 +5,15 @@ namespace App\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\Mapping\UniqueConstraint;
 use JsonSerializable;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\SequenceFamilyRepository")
+ * @ORM\Table(uniqueConstraints={@UniqueConstraint(name="UX_SEQUENCE_FAMILY_NAME", columns={"sequence_family_name", "container_id"})}, name="`msb_sequence_family`")
  */
 class SequenceFamily implements JsonSerializable {
+
     /**
      * @ORM\Id()
      * @ORM\GeneratedValue()
@@ -48,7 +51,6 @@ class SequenceFamily implements JsonSerializable {
 
     public function setSequenceFamilyName(string $sequenceFamilyName): self {
         $this->sequenceFamilyName = $sequenceFamilyName;
-
         return $this;
     }
 
@@ -64,7 +66,6 @@ class SequenceFamily implements JsonSerializable {
             $this->f2sequences[] = $f2sequence;
             $f2sequence->setFamily($this);
         }
-
         return $this;
     }
 
@@ -76,7 +77,6 @@ class SequenceFamily implements JsonSerializable {
                 $f2sequence->setFamily(null);
             }
         }
-
         return $this;
     }
 
@@ -86,7 +86,6 @@ class SequenceFamily implements JsonSerializable {
 
     public function setContainer(?Container $container): self {
         $this->container = $container;
-
         return $this;
     }
 
@@ -96,4 +95,5 @@ class SequenceFamily implements JsonSerializable {
     public function jsonSerialize() {
         return ['id' => $this->id, 'family' => $this->sequenceFamilyName];
     }
+
 }

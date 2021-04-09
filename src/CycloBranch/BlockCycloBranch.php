@@ -19,11 +19,11 @@ class BlockCycloBranch extends AbstractCycloBranch {
         $arResult = $this->repository->findBy(['container' => $this->containerId]);
         if (!empty($arResult)) {
             foreach ($arResult as $block) {
-                $this->data .= $block->getBlockName() . "\t"
-                    . $block->getAcronym() . "\t"
-                    . $block->getResidue() . "\t"
-                    . $block->getBlockMass() . "\t"
-                    . $block->getLosses() . "\t"
+                $this->data .= str_replace(',', '.', $block->getBlockName()) . self::TABULATOR
+                    . $block->getAcronym() . self::TABULATOR
+                    . $block->getResidue() . self::TABULATOR
+                    . $block->getBlockMass() . self::TABULATOR
+                    . $block->getLosses() . self::TABULATOR
                     . ReferenceHelper::reference($block->getSource(), $block->getIdentifier(), $block->getUsmiles())
                     . PHP_EOL;
             }
@@ -36,11 +36,11 @@ class BlockCycloBranch extends AbstractCycloBranch {
      */
     public function import(Container $container, EntityManagerInterface $entityManager, array $okStack, array $errorStack): array {
         /** @var BlockTransformed $item */
-//        $blockRepository = $entityManager->getRepository(Block::class);
         foreach ($okStack as $item) {
             $res = $this->repository->findOneBy(['container' => $container->getId(), 'acronym' => $item->getAcronym()]);
             if ($res) {
-                array_push($errorStack, $item);
+                $item->error = 'ERROR: Same acronym';
+                array_push($errorStack,  $item);
                 continue;
             }
             $block = new Block();
@@ -54,6 +54,7 @@ class BlockCycloBranch extends AbstractCycloBranch {
             $block->setIdentifier($item->getIdentifier());
             $block->setBlockSmiles($item->getSmiles());
             $block->setUsmiles($item->getUSmiles());
+            $block->setIsPolyketide($item->isPolyketide);
             $entityManager->persist($block);
         }
         $entityManager->flush();

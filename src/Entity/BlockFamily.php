@@ -5,12 +5,15 @@ namespace App\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\Mapping\UniqueConstraint;
 use JsonSerializable;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\BlockFamilyRepository")
+ * @ORM\Table(uniqueConstraints={@UniqueConstraint(name="UX_BLOCK_FAMILY_NAME", columns={"block_family_name", "container_id"})}, name="`msb_block_family`")
  */
 class BlockFamily implements JsonSerializable {
+
     /**
      * @ORM\Id()
      * @ORM\GeneratedValue()
@@ -48,7 +51,6 @@ class BlockFamily implements JsonSerializable {
 
     public function setBlockFamilyName(string $blockFamilyName): self {
         $this->blockFamilyName = $blockFamilyName;
-
         return $this;
     }
 
@@ -76,7 +78,6 @@ class BlockFamily implements JsonSerializable {
                 $f2block->setFamily(null);
             }
         }
-
         return $this;
     }
 
@@ -86,7 +87,6 @@ class BlockFamily implements JsonSerializable {
 
     public function setContainer(?Container $container): self {
         $this->container = $container;
-
         return $this;
     }
 

@@ -10,9 +10,10 @@ use JsonSerializable;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\SequenceRepository")
- * @ORM\Table(uniqueConstraints={@UniqueConstraint(name="UX_SEQUENCE_NAME", columns={"sequence_name", "container_id"})})
+ * @ORM\Table(uniqueConstraints={@UniqueConstraint(name="UX_SEQUENCE_NAME", columns={"sequence_name", "container_id"})}, name="`msb_sequence`")
  */
 class Sequence implements JsonSerializable {
+
     /**
      * @ORM\Id()
      * @ORM\GeneratedValue()
@@ -31,9 +32,14 @@ class Sequence implements JsonSerializable {
     private $sequenceName;
 
     /**
-     * @ORM\Column(type="string", length=500)
+     * @ORM\Column(type="string", length=500, nullable=true)
      */
     private $sequence;
+
+    /**
+     * @ORM\Column(type="string", length=500, nullable=true)
+     */
+    private $sequenceOriginal;
 
     /**
      * @ORM\Column(type="string", length=255)
@@ -51,6 +57,11 @@ class Sequence implements JsonSerializable {
     private $sequenceSmiles;
 
     /**
+     * @ORM\Column(type="string", length=4000, nullable=true)
+     */
+    private $usmiles;
+
+    /**
      * @ORM\Column(type="smallint", nullable=true)
      */
     private $source;
@@ -64,6 +75,16 @@ class Sequence implements JsonSerializable {
      * @ORM\Column(type="string", length=255, nullable=true)
      */
     private $decays;
+
+    /**
+     * @ORM\Column(type="integer", options={"default": 0})
+     */
+    private $uniqueBlockCount;
+
+    /**
+     * @ORM\Column(type="integer", options={"default": 0})
+     */
+    private $blockCount;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Modification", cascade={"persist"})
@@ -96,9 +117,16 @@ class Sequence implements JsonSerializable {
      */
     private $s2families;
 
+    /**
+     * @ORM\OneToMany(targetEntity=S2o::class, mappedBy="sequence", orphanRemoval=true, cascade={"persist", "remove"})
+     */
+    private $s2Organism;
+
     public function __construct() {
         $this->b2s = new ArrayCollection();
         $this->s2families = new ArrayCollection();
+        $this->S2Organisms = new ArrayCollection();
+        $this->s2Organism = new ArrayCollection();
     }
 
     public function getId(): ?int {
@@ -111,7 +139,6 @@ class Sequence implements JsonSerializable {
 
     public function setSequenceType(string $sequenceType): self {
         $this->sequenceType = $sequenceType;
-
         return $this;
     }
 
@@ -121,7 +148,6 @@ class Sequence implements JsonSerializable {
 
     public function setSequenceName(string $sequenceName): self {
         $this->sequenceName = $sequenceName;
-
         return $this;
     }
 
@@ -131,7 +157,6 @@ class Sequence implements JsonSerializable {
 
     public function setSequenceFormula(string $sequenceFormula): self {
         $this->sequenceFormula = $sequenceFormula;
-
         return $this;
     }
 
@@ -141,7 +166,6 @@ class Sequence implements JsonSerializable {
 
     public function setSequenceMass(?float $sequenceMass): self {
         $this->sequenceMass = $sequenceMass;
-
         return $this;
     }
 
@@ -151,7 +175,6 @@ class Sequence implements JsonSerializable {
 
     public function setSequenceSmiles(?string $sequenceSmiles): self {
         $this->sequenceSmiles = $sequenceSmiles;
-
         return $this;
     }
 
@@ -161,7 +184,6 @@ class Sequence implements JsonSerializable {
 
     public function setSource(?int $source): self {
         $this->source = $source;
-
         return $this;
     }
 
@@ -171,7 +193,6 @@ class Sequence implements JsonSerializable {
 
     public function setIdentifier(?string $identifier): self {
         $this->identifier = $identifier;
-
         return $this;
     }
 
@@ -181,7 +202,6 @@ class Sequence implements JsonSerializable {
 
     public function setDecays(?string $decays): self {
         $this->decays = $decays;
-
         return $this;
     }
 
@@ -191,7 +211,6 @@ class Sequence implements JsonSerializable {
 
     public function setNModification(?Modification $nModification): self {
         $this->nModification = $nModification;
-
         return $this;
     }
 
@@ -201,7 +220,6 @@ class Sequence implements JsonSerializable {
 
     public function setCModification(?Modification $cModification): self {
         $this->cModification = $cModification;
-
         return $this;
     }
 
@@ -211,7 +229,6 @@ class Sequence implements JsonSerializable {
 
     public function setBModification(?Modification $bModification): self {
         $this->bModification = $bModification;
-
         return $this;
     }
 
@@ -227,7 +244,6 @@ class Sequence implements JsonSerializable {
             $this->b2s[] = $b2;
             $b2->setSequence($this);
         }
-
         return $this;
     }
 
@@ -239,7 +255,6 @@ class Sequence implements JsonSerializable {
                 $b2->setSequence(null);
             }
         }
-
         return $this;
     }
 
@@ -249,7 +264,6 @@ class Sequence implements JsonSerializable {
 
     public function setContainer(?Container $container): self {
         $this->container = $container;
-
         return $this;
     }
 
@@ -265,7 +279,6 @@ class Sequence implements JsonSerializable {
             $this->s2families[] = $s2family;
             $s2family->setSequence($this);
         }
-
         return $this;
     }
 
@@ -277,8 +290,19 @@ class Sequence implements JsonSerializable {
                 $s2family->setSequence(null);
             }
         }
-
         return $this;
+    }
+
+    public function emptyS2Family() {
+        $this->s2families = new ArrayCollection();
+    }
+
+    public function emptyS2Organism() {
+        $this->s2Organism = new ArrayCollection();
+    }
+
+    public function emptyB2s() {
+        $this->b2s = new ArrayCollection();
     }
 
     /**
@@ -296,6 +320,87 @@ class Sequence implements JsonSerializable {
     }
 
     /**
+     * @return string|null
+     */
+    public function getSequenceOriginal() {
+        return $this->sequenceOriginal;
+    }
+
+    /**
+     * @param string $sequenceOriginal
+     */
+    public function setSequenceOriginal($sequenceOriginal): void {
+        $this->sequenceOriginal = $sequenceOriginal;
+    }
+
+    /**
+     * @return string
+     */
+    public function getUsmiles() {
+        return $this->usmiles;
+    }
+
+    /**
+     * @param string $usmiles
+     */
+    public function setUsmiles($usmiles): void {
+        $this->usmiles = $usmiles;
+    }
+
+    /**
+     * @return int
+     */
+    public function getUniqueBlockCount() {
+        return $this->uniqueBlockCount;
+    }
+
+    /**
+     * @param int $blockCount
+     */
+    public function setUniqueBlockCount(int $blockCount): void {
+        $this->uniqueBlockCount = $blockCount;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getBlockCount() {
+        return $this->blockCount;
+    }
+
+    /**
+     * @param mixed $blockCount
+     */
+    public function setBlockCount($blockCount): void {
+        $this->blockCount = $blockCount;
+    }
+
+    /**
+     * @return Collection|S2o[]
+     */
+    public function getS2Organism(): Collection {
+        return $this->s2Organism;
+    }
+
+    public function addS2Organism(S2o $s2Organism): self {
+        if (!$this->s2Organism->contains($s2Organism)) {
+            $this->s2Organism[] = $s2Organism;
+            $s2Organism->setSequence($this);
+        }
+        return $this;
+    }
+
+    public function removeS2Organism(S2o $s2Organism): self {
+        if ($this->s2Organism->removeElement($s2Organism)) {
+            // set the owning side to null (unless already changed)
+            if ($s2Organism->getSequence() === $this) {
+                $s2Organism->setSequence(null);
+            }
+        }
+        return $this;
+    }
+
+    /**
      * @inheritDoc
      */
     public function jsonSerialize() {
@@ -307,6 +412,7 @@ class Sequence implements JsonSerializable {
             'formula' => $this->sequenceFormula,
             'mass' => $this->sequenceMass,
             'smiles' => $this->sequenceSmiles,
+            'uniqueSmiles' => $this->usmiles,
             'source' => $this->source,
             'identifier' => $this->identifier,
             'nModification' => $this->nModification,

@@ -10,6 +10,10 @@ class ServerEnum {
     const NORINE = 2;
     const PDB = 3;
     const CHEBI = 4;
+    const MASS_SPEC_BLOCKS = 5;
+    const DOI = 6;
+    const SIDEROPHORE_BASE = 7;
+    const LIPID_MAPS = 8;
 
     /** @var array mapping int code to string */
     public static $values = [
@@ -33,10 +37,12 @@ class ServerEnum {
         self::CHEMSPIDER => 'CSID: ',
         self::PDB => 'PDB: ',
         self::CHEBI => 'ChEBI: ',
+        self::SIDEROPHORE_BASE => 'SB: ',
+        self::DOI => 'DOI: '
     ];
 
     public static function isOneOf(int $source): bool {
-        return $source >= self::PUBCHEM && $source <= self::CHEBI;
+        return $source >= self::PUBCHEM && $source <= self::LIPID_MAPS;
     }
 
 }

@@ -70,16 +70,17 @@
     "post-update-cmd": [
       "@auto-scripts"
     ],
-    "prepare:database": [
+    "prepare:database:create": [
       "php bin/console doctrine:database:drop --force",
       "php bin/console doctrine:database:create",
-      "php bin/console doctrine:mig:mig -n",
+      "php bin/console doctrine:mig:mig -n"
+    ],
+    "prepare:database": [
+      "composer prepare:database:create",
       "php bin/console doctrine:fixtures:load --group=dev -n"
     ],
     "prepare:database:prod": [
-      "php bin/console doctrine:database:drop --force",
-      "php bin/console doctrine:database:create",
-      "php bin/console doctrine:mig:mig -n",
+      "composer prepare:database:create",
       "php bin/console doctrine:fixtures:load --group=prod -n"
     ],
     "test": [

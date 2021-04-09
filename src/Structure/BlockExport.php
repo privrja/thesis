@@ -40,6 +40,9 @@ class BlockExport implements JsonSerializable {
     /** @var int|null */
     public $sameAs = null;
 
+    /** @var int|null */
+    public $originalId = null;
+
     /**
      * @inheritDoc
      */
@@ -54,6 +57,7 @@ class BlockExport implements JsonSerializable {
             EntityColumnsEnum::UNIQUE_SMILES => $this->uniqueSmiles,
             EntityColumnsEnum::SOURCE => $this->source,
             EntityColumnsEnum::IDENTIFIER => $this->identifier,
+            'originalId' => $this->originalId,
             'sameAs' => $this->sameAs
         ];
     }

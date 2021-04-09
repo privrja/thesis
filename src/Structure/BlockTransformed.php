@@ -7,31 +7,37 @@ use JsonSerializable;
 class BlockTransformed extends AbstractTransformed implements JsonSerializable {
 
     /** @var string */
-    private $blockName;
+    public $blockName;
 
     /** @var string */
-    private $acronym;
+    public $acronym;
 
     /** @var string|null */
-    private $losses = null;
+    public $losses = null;
 
     /** @var string */
-    private $formula;
+    public $formula;
 
     /** @var float|null */
-    private $mass = null;
+    public $mass = null;
 
     /** @var string|null */
-    private $smiles = null;
+    public $smiles = null;
 
     /** @var string|null */
-    private $uSmiles = null;
+    public $uSmiles = null;
 
     /** @var int|null */
-    private $source = null;
+    public $source = null;
 
     /** @var string|null */
-    private $identifier = null;
+    public $identifier = null;
+
+    /** @var bool */
+    public $isPolyketide = false;
+
+    /** @var array */
+    public $family;
 
     /**
      * @return string
@@ -163,7 +169,11 @@ class BlockTransformed extends AbstractTransformed implements JsonSerializable {
      * @inheritDoc
      */
     public function jsonSerialize() {
-        return ['blockName' => $this->blockName, 'acronym' => $this->acronym, 'formula' => $this->formula, 'mass' => $this->mass, 'losses' => $this->losses === null ? '' : $this->losses, 'smiles' => $this->smiles, 'source' => $this->source, 'identifier' => $this->identifier];
+        $res = ['blockName' => $this->blockName, 'acronym' => $this->acronym, 'formula' => $this->formula, 'mass' => $this->mass, 'losses' => $this->losses === null ? '' : $this->losses, 'smiles' => $this->smiles, 'source' => $this->source, 'identifier' => $this->identifier];
+        if (!empty($this->error)) {
+            $res['error'] = $this->error;
+        }
+        return $res;
     }
 
 }

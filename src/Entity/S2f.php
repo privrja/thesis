@@ -6,9 +6,10 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\S2fRepository")
+ * @ORM\Table(name="`msb_s2f`")
  */
-class S2f
-{
+class S2f {
+
     /**
      * @ORM\Id()
      * @ORM\GeneratedValue()
@@ -28,32 +29,26 @@ class S2f
      */
     private $family;
 
-    public function getId(): ?int
-    {
+    public function getId(): ?int {
         return $this->id;
     }
 
-    public function getSequence(): ?Sequence
-    {
+    public function getSequence(): ?Sequence {
         return $this->sequence;
     }
 
-    public function setSequence(?Sequence $sequence): self
-    {
+    public function setSequence(?Sequence $sequence): self {
         $this->sequence = $sequence;
-
         return $this;
     }
 
-    public function getFamily(): ?SequenceFamily
-    {
+    public function getFamily(): ?SequenceFamily {
         return $this->family;
     }
 
-    public function setFamily(?SequenceFamily $family): self
-    {
+    public function setFamily(?SequenceFamily $family): self {
         $this->family = $family;
-
         return $this;
     }
+
 }

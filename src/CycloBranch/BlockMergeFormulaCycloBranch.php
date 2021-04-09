@@ -13,11 +13,11 @@ class BlockMergeFormulaCycloBranch extends BlockCycloBranch {
         $arResult = $this->repository->findMergeByFormula($this->containerId);
         if (!empty($arResult)) {
             foreach ($arResult as $block) {
-                $this->data .= $block['block_name'] . "\t"
-                    . $block['acronym'] . "\t"
-                    . $block['residue'] . "\t"
-                    . $block['block_mass'] . "\t"
-                    . $block['losses'] . "\t"
+                $this->data .= str_replace(',', '.', $block['block_name']) . self::TABULATOR
+                    . $block['acronym'] . self::TABULATOR
+                    . $block['residue'] . self::TABULATOR
+                    . $block['block_mass'] . self::TABULATOR
+                    . $block['losses'] . self::TABULATOR
                     . $block['ref']
                     . PHP_EOL;
             }

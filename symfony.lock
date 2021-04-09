@@ -93,9 +93,6 @@
     "doctrine/sql-formatter": {
         "version": "1.1.1"
     },
-    "exsyst/swagger": {
-        "version": "v0.4.2"
-    },
     "friendsofphp/proxy-manager-lts": {
         "version": "v1.0.3"
     },

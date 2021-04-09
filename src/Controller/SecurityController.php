@@ -34,7 +34,7 @@ use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
-use Swagger\Annotations as SWG;
+use OpenApi\Annotations as SWG;
 use Symfony\Component\Security\Core\Security;
 
 class SecurityController extends AbstractController {
@@ -76,14 +76,16 @@ class SecurityController extends AbstractController {
      *
      * @SWG\Post(
      *     tags={"Auth"},
-     *     @SWG\Parameter(
-     *          name="body",
-     *          in="body",
-     *          type="string",
+     *     @SWG\RequestBody(
      *          required=true,
      *          description="Setup similarity method computing for application, values: name or tanimoto",
-     *          @SWG\Schema(type="string",
-     *              example="{""name"":""kokoska"",""password"":""H6saf@sd%sdp""}")
+     *          @SWG\MediaType(mediaType="application/json",
+     *              @SWG\Schema(type="string",
+     *                  @SWG\Property(property="name", type="string"),
+     *                  @SWG\Property(property="password", type="string"),
+     *                  example="{""name"":""kokoska"",""password"":""H6saf@sd%sdp""}")
+     *              ),
+     *          ),
      *      ),
      *     @SWG\Response(response="201", description="User created"),
      *     @SWG\Response(response="400", description="Name is taken")
@@ -185,14 +187,15 @@ class SecurityController extends AbstractController {
      *     security={
      *         {"ApiKeyAuth":{}}
      *     },
-     *     @SWG\Parameter(
-     *          name="body",
-     *          in="body",
-     *          type="string",
+     *     @SWG\RequestBody(
      *          required=true,
      *          description="Change password",
-     *          @SWG\Schema(type="string",
-     *              example="{""password"":""H6saf@sd%sdp2""}")
+     *          @SWG\MediaType(mediaType="application/json",
+     *              @SWG\Schema(type="object",
+     *                  @SWG\Property(property="password", type="string"),
+     *                  example="{""password"":""H6saf@sd%sdp2""}")
+     *              ),
+     *          ),
      *      ),
      *     @SWG\Response(response="201", description="Password changed"),
      *     @SWG\Response(response="500", description="Internal server Error"),
@@ -233,14 +236,15 @@ class SecurityController extends AbstractController {
      *     security={
      *         {"ApiKeyAuth":{}}
      *     },
-     *     @SWG\Parameter(
-     *          name="body",
-     *          in="body",
-     *          type="string",
+     *     @SWG\RequestBody(
      *          required=true,
      *          description="Set new value for email",
-     *          @SWG\Schema(type="string",
-     *              example="{""mail"":""kokos@xx.cz""}")
+     *          @SWG\MediaType(mediaType="application/json",
+     *              @SWG\Schema(type="object",
+     *                  @SWG\Property(property="mail", type="string"),
+     *                  example="{""mail"":""kokos@xx.cz""}")
+     *              ),
+     *          ),
      *      ),
      *     @SWG\Response(response="201", description="Mail changed"),
      *     @SWG\Response(response="400", description="Name is taken")
@@ -300,14 +304,15 @@ class SecurityController extends AbstractController {
      *     security={
      *         {"ApiKeyAuth":{}}
      *     },
-     *     @SWG\Parameter(
-     *          name="body",
-     *          in="body",
-     *          type="string",
+     *     @SWG\RequestBody(
      *          required=true,
      *          description="Apikey for ChemSpider, you need to obtain this on your Chemspider account",
-     *          @SWG\Schema(type="string",
-     *              example="{""apiKey"":""YyFGYKE4rVH886ywQs8kwKDEBeBo1fAO""}")
+     *          @SWG\MediaType(mediaType="application/json",
+     *              @SWG\Schema(type="object",
+     *                  @SWG\Property(property="apiKey", type="string"),
+     *                  example="{""apiKey"":""YyFGYKE4rVH886ywQs8kwKDEBeBo1fAO""}")
+     *              ),
+     *          ),
      *      ),
      *     @SWG\Response(response="204", description="Add new Chemspider apikey."),
      *     @SWG\Response(response="401", description="Return when user is not logged in.")

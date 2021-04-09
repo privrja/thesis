@@ -27,7 +27,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Security;
-use Swagger\Annotations as SWG;
+use OpenApi\Annotations as SWG;
 
 class BlockController extends AbstractController {
 
@@ -118,15 +118,22 @@ class BlockController extends AbstractController {
      *     security={
      *         {"ApiKeyAuth":{}}
      *     },
-     *     @SWG\Parameter(
-     *          name="body",
-     *          in="body",
-     *          type="string",
+     *     @SWG\RequestBody(
      *          required=true,
      *          description="Paramas: blockName, acronym, formula, mass, losses, smiles, source, identifier.",
-     *          @SWG\Schema(type="string",
-     *              example="{""blockName"": ""cyclohexane"", ""acronym"": ""Chx"", ""formula"": ""C6H12"", ""mass"": 84.093900, ""smiles"": ""C1CCCCC1"", ""source"": 0, ""identifier"": ""8078""}")
-     *      ),
+     *          @SWG\MediaType(mediaType="application/json",
+     *              @SWG\Schema(type="object",
+     *                  @SWG\Property(property="blockName", type="string"),
+     *                  @SWG\Property(property="acronym", type="string"),
+     *                  @SWG\Property(property="formula", type="string"),
+     *                  @SWG\Property(property="mass", type="float", description="Monoisotopic mass"),
+     *                  @SWG\Property(property="smiles", type="string"),
+     *                  @SWG\Property(property="source", type="int", description="Number of source database representation. PubChem(0), ChemSpider(1), Norine(2), PDB(3), ChEBI(4), MSB(5), DOI(6), SiderophoreBase(7), LipidMaps(8)"),
+     *                  @SWG\Property(property="identifier", type="string", description="Identifier in source database"),
+     *                  example="{""blockName"": ""cyclohexane"", ""acronym"": ""Chx"", ""formula"": ""C6H12"", ""mass"": 84.093900, ""smiles"": ""C1CCCCC1"", ""source"": 0, ""identifier"": ""8078""}")
+     *              ),
+     *          ),
+     *     ),
      *     @SWG\Response(response="204", description="Sucessfully update block."),
      *     @SWG\Response(response="400", description="Return when input is wrong."),
      *     @SWG\Response(response="401", description="Return when user is not logged in."),
@@ -162,14 +169,21 @@ class BlockController extends AbstractController {
      *     security={
      *         {"ApiKeyAuth":{}}
      *     },
-     *     @SWG\Parameter(
-     *          name="body",
-     *          in="body",
-     *          type="string",
+     *     @SWG\RequestBody(
      *          required=true,
      *          description="Paramas: blockName, acronym, formula, mass, losses, smiles, source, identifier.",
-     *          @SWG\Schema(type="string",
-     *              example="{""blockName"": ""cyclohexane"", ""acronym"": ""Chx"", ""formula"": ""C6H12"", ""mass"": 84.093900, ""smiles"": ""C1CCCCC1"", ""source"": 0, ""identifier"": ""8078""}")
+     *          @SWG\MediaType(mediaType="application/json",
+     *              @SWG\Schema(type="object",
+     *                  @SWG\Property(property="blockName", type="string"),
+     *                  @SWG\Property(property="acronym", type="string"),
+     *                  @SWG\Property(property="formula", type="string"),
+     *                  @SWG\Property(property="mass", type="float", description="Monoisotopic mass"),
+     *                  @SWG\Property(property="smiles", type="string"),
+     *                  @SWG\Property(property="source", type="int", description="Number of source database representation. PubChem(0), ChemSpider(1), Norine(2), PDB(3), ChEBI(4), MSB(5), DOI(6), SiderophoreBase(7), LipidMaps(8)"),
+     *                  @SWG\Property(property="identifier", type="string", description="Identifier in source database"),
+     *                  example="{""blockName"": ""cyclohexane"", ""acronym"": ""Chx"", ""formula"": ""C6H12"", ""mass"": 84.093900, ""smiles"": ""C1CCCCC1"", ""source"": 0, ""identifier"": ""8078""}")
+     *              ),
+     *          ),
      *     ),
      *     @SWG\Response(response="201", description="Create new container."),
      *     @SWG\Response(response="400", description="Return when input is wrong."),
@@ -281,14 +295,18 @@ class BlockController extends AbstractController {
      *     security={
      *         {"ApiKeyAuth":{}}
      *     },
-     *     @SWG\Parameter(
-     *          name="body",
-     *          in="body",
-     *          type="string",
+     *     @SWG\RequestBody(
      *          required=true,
      *          description="Paramas: array of object with smiles (string, required) and isPolyketide (boolean).",
-     *          @SWG\Schema(type="string",
-     *              example="[{""smiles"":""OC(C(C(CC)C)N)=O"",""isPolyketide"":false},{""smiles"":""NC(C(=O)O)C(C)CC"",""isPolyketide"":false},{""smiles"":""NCCCC(C(=O)O)N"",""isPolyketide"":false},{""smiles"":""NC(C(=O)O)CC1=CC=CC=C1"",""isPolyketide"":false},{""smiles"":""N1CCCC1C(=O)O"",""isPolyketide"":false},{""smiles"":""OC(=O)C(C(C)CC)NC(=O)C"",""isPolyketide"":false}]")
+     *          @SWG\MediaType(mediaType="application/json",
+     *              @SWG\Schema(type="array",
+     *                  @SWG\Items(
+     *                      @SWG\Property(property="smiles", type="string"),
+     *                      @SWG\Property(property="isPolyketide", type="boolean"),
+     *                  ),
+     *                  example="[{""smiles"":""OC(C(C(CC)C)N)=O"",""isPolyketide"":false},{""smiles"":""NC(C(=O)O)C(C)CC"",""isPolyketide"":false},{""smiles"":""NCCCC(C(=O)O)N"",""isPolyketide"":false},{""smiles"":""NC(C(=O)O)CC1=CC=CC=C1"",""isPolyketide"":false},{""smiles"":""N1CCCC1C(=O)O"",""isPolyketide"":false},{""smiles"":""OC(=O)C(C(C)CC)NC(=O)C"",""isPolyketide"":false}]")
+     *              ),
+     *          ),
      *     ),
      *     @SWG\Response(response="200", description="Return list of blocks in container."),
      *     @SWG\Response(response="403", description="Return when user has not acces to container."),

@@ -27,7 +27,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Swagger\Annotations as SWG;
+use OpenApi\Annotations as SWG;
 use Symfony\Component\Security\Core\Security;
 
 /**
@@ -43,14 +43,15 @@ class SmilesController extends AbstractController {
      *
      * @SWG\Post(
      *     tags={"SMILES"},
-     *     @SWG\Parameter(
-     *          name="body",
-     *          in="body",
-     *          type="string",
+     *     @SWG\RequestBody(
      *          required=true,
      *          description="Array of smiles objects: Shouldn't be empty. SMILES is special format of molecular structures like: CCC(C)C1C(=O)NC(C(=O)NCCCC(C(=O)NC(C(=O)N2CCCC2C(=O)N1)CC3=CC=CC=C3)NC(=O)C(C(C)CC)NC(=O)C)C(C)CC",
-     *          @SWG\Schema(type="string",
-     *              example="[{""smiles"": ""CC(=O)CC""}]"),
+     *          @SWG\MediaType(mediaType="application/json",
+     *              @SWG\Schema(type="object",
+     *                  @SWG\Property(property="smiles", type="string"),
+     *                  example="[{""smiles"": ""CC(=O)CC""}]"),
+     *              ),
+     *          ),
      *      ),
      *     @SWG\Response(response="200", description="Return Unique SMILES."),
      *     @SWG\Response(response="400", description="Return when input is wrong."),
@@ -76,14 +77,15 @@ class SmilesController extends AbstractController {
      *
      * @SWG\Post(
      *     tags={"SMILES"},
-     *     @SWG\Parameter(
-     *          name="body",
-     *          in="body",
-     *          type="string",
+     *     @SWG\RequestBody(
      *          required=true,
      *          description="Array of smiles objects: Shouldn't be empty. SMILES is special format of molecular structures like: CCC(C)C1C(=O)NC(C(=O)NCCCC(C(=O)NC(C(=O)N2CCCC2C(=O)N1)CC3=CC=CC=C3)NC(=O)C(C(C)CC)NC(=O)C)C(C)CC",
-     *          @SWG\Schema(type="string",
-     *              example="[{""smiles"": ""CC(=O)CC""}]"),
+     *          @swg\mediaType(mediaType="application/json",
+     *              @SWG\Schema(type="object",
+     *                  @SWG\Property(property="smiles", type="string"),
+     *                  example="[{""smiles"": ""CC(=O)CC""}]"),
+     *              ),
+     *          ),
      *      ),
      *     @SWG\Response(response="200", description="Return Unique SMILES."),
      *     @SWG\Response(response="400", description="Return when input is wrong."),
@@ -130,14 +132,18 @@ class SmilesController extends AbstractController {
      * @return JsonResponse
      * @SWG\Post(
      *     tags={"SMILES"},
-     *     @SWG\Parameter(
-     *          name="body",
-     *          in="body",
-     *          type="string",
+     *     @SWG\RequestBody(
      *          required=true,
      *          description="This return best match for sequence family. SequenceName or rest must be filled based on similarity method used by application - name or tanimoto, when name is used is required too fill sequenceName, when tanimoto is used you need too fill blockLengthUnique, blockLength and blocks, where blocks is array of blocks id from database from sequence, and difference between length is only when some blocks are used in sequence more times.",
-     *          @SWG\Schema(type="string",
-     *              example="{""sequenceName"":""pseudacyclin a"",""blockLengthUnique"":5,""blockLength"":6,""blocks"":[15,39,19,9,26]}"),
+     *          @SWG\MediaType(mediaType="application/json",
+     *              @SWG\Schema(type="object",
+     *                  @SWG\Property(property="sequenceName", type="string"),
+     *                  @SWG\Property(property="blockLengthUnique", type="int"),
+     *                  @SWG\Property(property="blockLength", type="int"),
+     *                  @SWG\Property(property="blocks", type="int[]"),
+     *                  example="{""sequenceName"":""pseudacyclin a"",""blockLengthUnique"":5,""blockLength"":6,""blocks"":[15,39,19,9,26]}"),
+     *              ),
+     *          ),
      *      ),
      *     @SWG\Response(response="200", description="Return Unique SMILES."),
      *     @SWG\Response(response="400", description="Return when input is wrong."),

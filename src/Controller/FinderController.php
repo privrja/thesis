@@ -21,7 +21,7 @@ use App\Structure\SequenceSmilesStructure;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
-use Swagger\Annotations as SWG;
+use OpenApi\Annotations as SWG;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -46,14 +46,15 @@ class FinderController extends AbstractController {
      *
      * @SWG\Post(
      *     tags={"Finder"},
-     *     @SWG\Parameter(
-     *          name="body",
-     *          in="body",
-     *          type="string",
+     *     @swg\requestbody(
      *          required=true,
      *          description="Params: sequenceName.",
-     *          @SWG\Schema(type="string",
-     *              example="{""sequenceName"":""pseudacyclin""}")
+     *          @SWG\MediaType(mediaType="application/json",
+     *              @SWG\Schema(type="object",
+     *                  @SWG\Property(property="sequenceName", type="string"),
+     *                  example="{""sequenceName"":""pseudacyclin""}")
+     *              ),
+     *          ),
      *     ),
      *     @SWG\Response(response="200", description="Results - even when not found anything -> result is array, so when not found anything, empty array is returned"),
      *     @SWG\Response(response="404", description="Not found container"),
@@ -77,14 +78,15 @@ class FinderController extends AbstractController {
      *
      * @SWG\Post(
      *     tags={"Finder"},
-     *     @SWG\Parameter(
-     *          name="body",
-     *          in="body",
-     *          type="string",
+     *     @SWG\RequestBody(
      *          required=true,
      *          description="Params: sequenceFormula.",
-     *          @SWG\Schema(type="string",
-     *              example="{""sequenceFormula"":""C97H139N19O17""}")
+     *          @SWG\MediaType(mediaType="application/json",
+     *              @SWG\Schema(type="object",
+     *                  @SWG\Property(property="sequenceFormula", type="string"),
+     *                  example="{""sequenceFormula"":""C97H139N19O17""}")
+     *              ),
+     *          ),
      *     ),
      *     @SWG\Response(response="200", description="Results - even when not found anything -> result is array, so hwne not found anaything empty array is returned"),
      *     @SWG\Response(response="403", description="Insuficient rights"),
@@ -108,14 +110,15 @@ class FinderController extends AbstractController {
      *
      * @SWG\Post(
      *     tags={"Finder"},
-     *     @SWG\Parameter(
-     *          name="body",
-     *          in="body",
-     *          type="string",
+     *     @SWG\RequestBody(
      *          required=true,
      *          description="Params: array with block SMILES",
-     *          @SWG\Schema(type="string",
-     *              example="{""smiles"":[""NCC(=O)O"",""OC(=O)C(NC=O)C(C)C"",""NC(C)C(=O)O"",""NC(CC(C)C)C(=O)O"",""NC(C)C(=O)O"",""NC(C(C)C)C(=O)O"",""NC(C(C)C)C(=O)O"",""NC(C(C)C)C(=O)O"",""NC(CC2=CNC1=C2C=CC=C1)C(=O)O"",""NC(CC(C)C)C(=O)O"",""NC(CC1=CC=C(O)C=C1)C(=O)O"",""NC(CC(C)C)C(=O)O"",""NC(CC2=CNC1=C2C=CC=C1)C(=O)O"",""NC(CC(C)C)C(=O)O"",""NC(CC2=CNC1=C2C=CC=C1)C(=O)O"",""NCCO""]}")
+     *          @SWG\MediaType(mediaType="application/json",
+     *              @SWG\Schema(type="object",
+     *                  @SWG\Property(property="smiles", type="string[]", description="array with smiles"),
+     *                  example="{""smiles"":[""NCC(=O)O"",""OC(=O)C(NC=O)C(C)C"",""NC(C)C(=O)O"",""NC(CC(C)C)C(=O)O"",""NC(C)C(=O)O"",""NC(C(C)C)C(=O)O"",""NC(C(C)C)C(=O)O"",""NC(C(C)C)C(=O)O"",""NC(CC2=CNC1=C2C=CC=C1)C(=O)O"",""NC(CC(C)C)C(=O)O"",""NC(CC1=CC=C(O)C=C1)C(=O)O"",""NC(CC(C)C)C(=O)O"",""NC(CC2=CNC1=C2C=CC=C1)C(=O)O"",""NC(CC(C)C)C(=O)O"",""NC(CC2=CNC1=C2C=CC=C1)C(=O)O"",""NCCO""]}")
+     *              ),
+     *          ),
      *     ),
      *     @SWG\Response(response="200", description="Results - even when not found anything -> result is array, so hwne not found anaything empty array is returned"),
      *     @SWG\Response(response="403", description="Insuficient rights"),
@@ -139,14 +142,15 @@ class FinderController extends AbstractController {
      *
      * @SWG\Post(
      *     tags={"Finder"},
-     *     @SWG\Parameter(
-     *          name="body",
-     *          in="body",
-     *          type="string",
+     *     @SWG\RequestBody(
      *          required=true,
      *          description="Params: id.",
-     *          @SWG\Schema(type="string",
-     *              example="{""id"": 3}")
+     *          @SWG\MediaType(mediaType="application/json",
+     *              @SWG\Schema(type="object",
+     *                  @SWG\Property(property="id", type="string"),
+     *                  example="{""id"": 3}")
+     *              ),
+     *          ),
      *     ),
      *     @SWG\Response(response="200", description="Results - even when not found anything -> result is array, so hwne not found anaything empty array is returned"),
      *     @SWG\Response(response="403", description="Insuficient rights"),
@@ -158,7 +162,7 @@ class FinderController extends AbstractController {
     }
 
     /**
-     * Find by identifier
+     * Find by mass
      * @Route("/rest/container/{containerId}/mass", name="find_mass", methods={"POST"})
      * @Entity("container", expr="repository.find(containerId)")
      * @param Request $request
@@ -170,14 +174,15 @@ class FinderController extends AbstractController {
      *
      * @SWG\Post(
      *     tags={"Finder"},
-     *     @SWG\Parameter(
-     *          name="body",
-     *          in="body",
-     *          type="string",
+     *     @SWG\RequestBody(
      *          required=true,
      *          description="Params: mass (required), range",
-     *          @SWG\Schema(type="string",
-     *              example="{""mass"": 1201.84137, ""range"": 0.5}")
+     *          @SWG\MediaType(mediaType="application/json",
+     *              @SWG\Schema(type="object",
+     *                  @SWG\Property(property="mass", type="float"),
+     *                  example="{""mass"": 1201.84137, ""range"": 0.5}")
+     *              ),
+     *          ),
      *     ),
      *     @SWG\Response(response="200", description="Results - even when not found anything -> result is array, so hwne not found anaything empty array is returned"),
      *     @SWG\Response(response="403", description="Insuficient rights"),

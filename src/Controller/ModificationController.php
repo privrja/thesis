@@ -24,7 +24,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Security;
-use Swagger\Annotations as SWG;
+use OpenApi\Annotations as SWG;
 
 class ModificationController extends AbstractController {
 
@@ -119,14 +119,18 @@ class ModificationController extends AbstractController {
      *     security={
      *         {"ApiKeyAuth":{}}
      *     },
-     *     @SWG\Parameter(
-     *          name="body",
-     *          in="body",
-     *          type="string",
+     *     @SWG\RequestBody(
      *          required=true,
      *          description="Paramas: modificationName, formula, nTerminal, cTerminal.",
-     *          @SWG\Schema(type="string",
-     *              example="{""modificationName"":""Modif"",""formula"":""CH2O"",""nTerminal"":false,""cTerminal"":true}"),
+     *          @SWG\MediaType(mediaType="application/json",
+     *              @SWG\Schema(type="object",
+     *                  @SWG\Property(property="modificationName", type="string"),
+     *                  @SWG\Property(property="formula", type="string"),
+     *                  @SWG\Property(property="nTerminal", type="boolean"),
+     *                  @SWG\Property(property="cTerminal", type="boolean"),
+     *                  example="{""modificationName"":""Modif"",""formula"":""CH2O"",""nTerminal"":false,""cTerminal"":true}"),
+     *              ),
+     *          ),
      *      ),
      *     @SWG\Response(response="204", description="Sucessfully update container."),
      *     @SWG\Response(response="400", description="Return when input is wrong."),
@@ -163,14 +167,18 @@ class ModificationController extends AbstractController {
      *     security={
      *         {"ApiKeyAuth":{}}
      *     },
-     *     @SWG\Parameter(
-     *          name="body",
-     *          in="body",
-     *          type="string",
+     *     @SWG\RequestBody(
      *          required=true,
      *          description="Paramas: modificationName, formula, nTerminal, cTerminal.",
-     *          @SWG\Schema(type="string",
-     *              example="{""modificationName"":""Modif"",""formula"":""CH2O"",""nTerminal"":false,""cTerminal"":true}"),
+     *          @SWG\MediaType(mediaType="application/json",
+     *              @SWG\Schema(type="object",
+     *                  @SWG\Property(property="modificationName", type="string"),
+     *                  @SWG\Property(property="formula", type="string"),
+     *                  @SWG\Property(property="nTerminal", type="boolean"),
+     *                  @SWG\Property(property="cTerminal", type="boolean"),
+     *                  example="{""modificationName"":""Modif"",""formula"":""CH2O"",""nTerminal"":false,""cTerminal"":true}"),
+     *              ),
+     *          ),
      *      ),
      *     @SWG\Response(response="201", description="Create new container."),
      *     @SWG\Response(response="400", description="Return when input is wrong."),

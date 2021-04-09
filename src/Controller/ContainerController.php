@@ -48,7 +48,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Security;
-use Swagger\Annotations as SWG;
+use OpenApi\Annotations as SWG;
 use ZipStream\Option\Archive;
 use ZipStream\ZipStream;
 
@@ -74,10 +74,8 @@ class ContainerController extends AbstractController {
      *     },
      *     @SWG\Response(response="200", description="Return list of containers for logged user."),
      *     @SWG\Response(response="401", description="Return when user is not logged in."),
-     *     @SWG\Swagger(
-     *      @SWG\SecurityScheme(type="apiKey", securityDefinition="ApiKeyAuth", in="header", name="X-AUTH-TOKEN")
-     *     )
-     * )
+     * ),
+     *
      */
     public function index(UserRepository $userRepository, Request $request, Security $security) {
         return new JsonResponse($userRepository->findContainersForLoggedUser($security->getUser()->getId(), RequestHelper::getSorting($request)));
@@ -147,14 +145,16 @@ class ContainerController extends AbstractController {
      *     security={
      *         {"ApiKeyAuth":{}}
      *     },
-     *     @SWG\Parameter(
-     *          name="body",
-     *          in="body",
-     *          type="string",
+     *     @SWG\RequestBody(
      *          required=true,
      *          description="Two paramas: name and visibility. At least one shouldn't be empty. Visibility has values: PRIVATE or PUBLIC.",
-     *          @SWG\Schema(type="string",
-     *              example="{""containerName"":""ContainerName"",""visibility"":""PRIVATE""}"),
+     *          @SWG\MediaType(mediaType="application/json",
+     *              @SWG\Schema(type="object",
+     *                  @SWG\Property(property="containerName", type="string"),
+     *                  @SWG\Property(property="visibility", type="string", description="Possible values are PUBLIC or PRIVATE"),
+     *                  example="{""containerName"":""ContainerName"",""visibility"":""PRIVATE""}"),
+     *              ),
+     *          ),
      *      ),
      *     @SWG\Response(response="201", description="Create new container."),
      *     @SWG\Response(response="400", description="Return when input is wrong."),
@@ -222,14 +222,15 @@ class ContainerController extends AbstractController {
      *     security={
      *         {"ApiKeyAuth":{}}
      *     },
-     *     @SWG\Parameter(
-     *          name="body",
-     *          in="body",
-     *          type="string",
+     *     @SWG\RequestBody(
      *          required=true,
      *          description="Two paramas: name and visibility. At least one shouldn't be empty. Visibility has values: PRIVATE or PUBLIC.",
-     *          @SWG\Schema(type="string",
-     *              example="{""name"":""ContainerName"",""visibility"":""PRIVATE""}"),
+     *          @SWG\MediaType(mediaType="application/json",
+     *              @SWG\Schema(type="object",
+     *                  @SWG\Property(property="name", type="string"),
+     *                  @SWG\Property(property="visibility", type="string", description="Possible values are PUBLIC or PRIVATE"),
+     *                  example="{""name"":""ContainerName"",""visibility"":""PRIVATE""}"),
+     *          ),
      *      ),
      *     @SWG\Response(response="204", description="Sucessfully update container."),
      *     @SWG\Response(response="400", description="Return when input is wrong."),
@@ -271,14 +272,16 @@ class ContainerController extends AbstractController {
      *     security={
      *         {"ApiKeyAuth":{}}
      *     },
-     *     @SWG\Parameter(
-     *          name="body",
-     *          in="body",
-     *          type="string",
+     *     @SWG\RequestBody(
      *          required=true,
      *          description="mode - permisions for new user",
-     *          @SWG\Schema(type="string",
-     *              example="{""user"":""kokos"", ""mode"":""RW""}"),
+     *          @SWG\MediaType(mediaType="application/json",
+     *              @SWG\Schema(type="object",
+     *                  @SWG\Property(property="user", type="string"),
+     *                  @SWG\Property(property="mode", type="string", description="Possible values are R, RW or RWM"),
+     *                  example="{""user"":""kokos"", ""mode"":""RW""}"),
+     *              ),
+     *          ),
      *      ),
      *     @SWG\Response(response="201", description="Create new container."),
      *     @SWG\Response(response="400", description="Return when input is wrong."),
@@ -347,14 +350,15 @@ class ContainerController extends AbstractController {
      *     security={
      *         {"ApiKeyAuth":{}}
      *     },
-     *     @SWG\Parameter(
-     *          name="body",
-     *          in="body",
-     *          type="string",
+     *     @SWG\RequestBody(
      *          required=true,
      *          description="mode - permisions for user",
-     *          @SWG\Schema(type="string",
-     *              example="{""mode"":""RW""}"),
+     *          @SWG\MediaType(mediaType="application/json",
+     *              @SWG\Schema(type="object",
+     *                  @SWG\Property(property="mode", type="string", description="Possible values are R, RW or RWM"),
+     *                  example="{""mode"":""RW""}"),
+     *              ),
+     *          ),
      *      ),
      *     @SWG\Response(response="204", description="Sucessfully removed collaborator."),
      *     @SWG\Response(response="400", description="Return when input is bad"),
@@ -534,14 +538,21 @@ class ContainerController extends AbstractController {
      *     security={
      *         {"ApiKeyAuth":{}}
      *     },
-     *     @SWG\Parameter(
-     *          name="body",
-     *          in="body",
-     *          type="string",
+     *     @SWG\RequestBody(
      *          required=true,
      *          description="Array with modifications to import",
-     *          @SWG\Schema(type="string",
-     *              example="[{""modificationName"":""Acetyl"",""formula"":""H2C2O"",""mass"":42.0105646863,""nTerminal"":true,""cTerminal"":false},{""modificationName"":""Amidated"",""formula"":""HNO-1"",""mass"":-0.9840155848,""nTerminal"":false,""cTerminal"":false},{""modificationName"":""Ethanolamine"",""formula"":""H5C2N"",""mass"":43.0421991657,""nTerminal"":false,""cTerminal"":false},{""modificationName"":""Formyl"",""formula"":""CO"",""mass"":27.9949146221,""nTerminal"":true,""cTerminal"":false}]"),
+     *          @SWG\MediaType(mediaType="application/json",
+     *              @SWG\Schema(type="array",
+     *                  @SWG\Items(
+     *                      @SWG\Property(property="modificationName", type="string"),
+     *                      @SWG\Property(property="formula", type="string"),
+     *                      @SWG\Property(property="mass", type="float"),
+     *                      @SWG\Property(property="nTerminal", type="boolean"),
+     *                      @SWG\Property(property="cTerminal", type="boolean"),
+     *                   ),
+     *                  example="[{""modificationName"":""Acetyl"",""formula"":""H2C2O"",""mass"":42.0105646863,""nTerminal"":true,""cTerminal"":false},{""modificationName"":""Amidated"",""formula"":""HNO-1"",""mass"":-0.9840155848,""nTerminal"":false,""cTerminal"":false},{""modificationName"":""Ethanolamine"",""formula"":""H5C2N"",""mass"":43.0421991657,""nTerminal"":false,""cTerminal"":false},{""modificationName"":""Formyl"",""formula"":""CO"",""mass"":27.9949146221,""nTerminal"":true,""cTerminal"":false}]"),
+     *              ),
+     *          ),
      *      ),
      *     @SWG\Response(response="200", description="Return list of not imported modifications."),
      *     @SWG\Response(response="403", description="Forbidden"),
@@ -570,14 +581,24 @@ class ContainerController extends AbstractController {
      *     security={
      *         {"ApiKeyAuth":{}}
      *     },
-     *     @SWG\Parameter(
-     *          name="body",
-     *          in="body",
-     *          type="string",
+     *     @SWG\RequestBody(
      *          required=true,
      *          description="Array with blocs to import",
-     *          @SWG\Schema(type="string",
-     *              example="[{""blockName"":""Tryptophan"",""acronym"":""Trp"",""formula"":""C11H10N20"",""mass"":186.079313,""losses"":null,""smiles"":""C1=CC=C2C(=C1)C(=CN2)CC(C(=O)O)N"",""source"":0,""identifier"":""6305""},{""blockName"":""Glycine"",""acronym"":""Gly"",""formula"":""C2H3NO"",""mass"":57.021464,""losses"":null,""smiles"":""C(C(=O)O)N"",""source"":0,""identifier"":""750""},{""blockName"":""Alanine"",""acronym"":""Ala"",""formula"":""C3H5NO"",""mass"":71.037114,""losses"":null,""smiles"":""CC(C(=O)O)N"",""source"":0,""identifier"":""5950""},{""blockName"":""Serine"",""acronym"":""Ser"",""formula"":""C3H5NO2"",""mass"":87.032028,""losses"":null,""smiles"":""C(C(C(=O)O)N)O"",""source"":0,""identifier"":""5951""},{""blockName"":""Cysteine"",""acronym"":""Cys"",""formula"":""C3H5NOS"",""mass"":103.009184,""losses"":null,""smiles"":""C(C(C(=O)O)N)S"",""source"":0,""identifier"":""5862""},{""blockName"":""Aspartic acid"",""acronym"":""Asp"",""formula"":""C4H5NO3"",""mass"":115.026943,""losses"":null,""smiles"":""C(C(C(=O)O)N)C(=O)O"",""source"":0,""identifier"":""5960""},{""blockName"":""Asparagine"",""acronym"":""Asn"",""formula"":""C4H6N2O2"",""mass"":114.042927,""losses"":null,""smiles"":""C(C(C(=O)O)N)C(=O)N"",""source"":0,""identifier"":""6267""},{""blockName"":""Threonine"",""acronym"":""Thr"",""formula"":""C4H7NO2"",""mass"":101.047678,""losses"":null,""smiles"":""CC(C(C(=O)O)N)O"",""source"":0,""identifier"":""6288""}]")
+     *          @SWG\MediaType(mediaType="application/json",
+     *              @SWG\Schema(type="array",
+     *                  @SWG\Items(
+     *                      @SWG\Property(property="blockName", type="string"),
+     *                      @SWG\Property(property="acronym", type="string", description="Acronym from block name, ideal is three letter"),
+     *                      @SWG\Property(property="formula", type="string"),
+     *                      @SWG\Property(property="mass", type="float", description="Monoisotopic mass"),
+     *                      @SWG\Property(property="losses", type="string"),
+     *                      @SWG\Property(property="smiles", type="string"),
+     *                      @SWG\Property(property="source", type="int", description="Number of source database representation. PubChem(0), ChemSpider(1), Norine(2), PDB(3), ChEBI(4), MSB(5), DOI(6), SiderophoreBase(7), LipidMaps(8)"),
+     *                      @SWG\Property(property="identifier", type="string", description="Identifier in source database")
+     *                  ),
+     *                  example="[{""blockName"":""Tryptophan"",""acronym"":""Trp"",""formula"":""C11H10N20"",""mass"":186.079313,""losses"":null,""smiles"":""C1=CC=C2C(=C1)C(=CN2)CC(C(=O)O)N"",""source"":0,""identifier"":""6305""},{""blockName"":""Glycine"",""acronym"":""Gly"",""formula"":""C2H3NO"",""mass"":57.021464,""losses"":null,""smiles"":""C(C(=O)O)N"",""source"":0,""identifier"":""750""},{""blockName"":""Alanine"",""acronym"":""Ala"",""formula"":""C3H5NO"",""mass"":71.037114,""losses"":null,""smiles"":""CC(C(=O)O)N"",""source"":0,""identifier"":""5950""},{""blockName"":""Serine"",""acronym"":""Ser"",""formula"":""C3H5NO2"",""mass"":87.032028,""losses"":null,""smiles"":""C(C(C(=O)O)N)O"",""source"":0,""identifier"":""5951""},{""blockName"":""Cysteine"",""acronym"":""Cys"",""formula"":""C3H5NOS"",""mass"":103.009184,""losses"":null,""smiles"":""C(C(C(=O)O)N)S"",""source"":0,""identifier"":""5862""},{""blockName"":""Aspartic acid"",""acronym"":""Asp"",""formula"":""C4H5NO3"",""mass"":115.026943,""losses"":null,""smiles"":""C(C(C(=O)O)N)C(=O)O"",""source"":0,""identifier"":""5960""},{""blockName"":""Asparagine"",""acronym"":""Asn"",""formula"":""C4H6N2O2"",""mass"":114.042927,""losses"":null,""smiles"":""C(C(C(=O)O)N)C(=O)N"",""source"":0,""identifier"":""6267""},{""blockName"":""Threonine"",""acronym"":""Thr"",""formula"":""C4H7NO2"",""mass"":101.047678,""losses"":null,""smiles"":""CC(C(C(=O)O)N)O"",""source"":0,""identifier"":""6288""}]")
+     *              ),
+     *          ),
      *      ),
      *     @SWG\Response(response="200", description="Return list of not imported blocks."),
      *     @SWG\Response(response="403", description="Forbidden"),
@@ -606,14 +627,27 @@ class ContainerController extends AbstractController {
      *     security={
      *         {"ApiKeyAuth":{}}
      *     },
-     *     @SWG\Parameter(
-     *          name="body",
-     *          in="body",
-     *          type="string",
+     *     @SWG\RequestBody(
      *          required=true,
      *          description="Array with sequences to import",
-     *          @SWG\Schema(type="string",
-     *              example="[{""sequenceType"":""cyclic"",""sequenceName"":""cyclosporin A"",""formula"":""C62H111N11O12"",""mass"":1201.8413680855,""sequence"":""[NMe-Bmt]-[Abu]-[NMe-Gly]-[NMe-Leu]-[Val]-[NMe-Leu]-[Ala]-[Ala]-[NMe-Leu]-[NMe-Leu]-[NMe-Val]"",""nModification"":null,""cModification"":null,""bModification"":null,""smiles"":null,""source"":1,""identifier"":""25027415""},{""sequenceType"":""branched"",""sequenceName"":""dau 677 T2"",""formula"":""C61H91N15O20"",""mass"":1353.6564804411,""sequence"":""[Glu]-[Ser]-[Leu]\\([Lys]-[Asn]-[Phe]-[Ile]\\)[Asp]-[Gln]-[Tyr]-[Gly]"",""nModification"":""Acetyl"",""cModification"":""Acetyl"",""bModification"":null,""smiles"":null,""source"":null,""identifier"":null},{""sequenceType"":""branched"",""sequenceName"":""linearized pseudacyclin A"",""formula"":""C39H63N7O8"",""mass"":757.4738120355,""sequence"":""[Pro]-[Ile]-[Ile]\\([Orn]-[NAc-Ile]\\)[Phe]"",""nModification"":null,""cModification"":null,""bModification"":null,""smiles"":null,""source"":null,""identifier"":null},{""sequenceType"":""cyclic"",""sequenceName"":""pseudacyclin A"",""formula"":""C39H61N7O7"",""mass"":739.4632473492,""sequence"":""[Phe]-[Pro]-[Ile]-[Ile]-[Orn]-[NAc-Ile]"",""nModification"":null,""cModification"":null,""bModification"":null,""smiles"":null,""source"":1,""identifier"":""25028474""}]")
+     *          @SWG\MediaType(mediaType="application/json",
+     *              @SWG\Schema(type="array",
+     *                  @SWG\Items(
+     *                      @SWG\Property(property="sequenceType", type="string", description="Possible values are linear, cyclic, branched, branch-cyclic, linear-polyketide, cyclic-polyketide and other"),
+     *                      @SWG\Property(property="sequenceName", type="string"),
+     *                      @SWG\Property(property="formula", type="string"),
+     *                      @SWG\Property(property="mass", type="float", description="Monoisotopic mass"),
+     *                      @SWG\Property(property="sequence", type="string", description="Sequence CycloBranch notation"),
+     *                      @SWG\Property(property="nModification", type="string"),
+     *                      @SWG\Property(property="cModification", type="string"),
+     *                      @SWG\Property(property="bModification", type="string"),
+     *                      @SWG\Property(property="smiles", type="string"),
+     *                      @SWG\Property(property="source", type="int", description="Number of source database representation. PubChem(0), ChemSpider(1), Norine(2), PDB(3), ChEBI(4), MSB(5), DOI(6), SiderophoreBase(7), LipidMaps(8)"),
+     *                      @SWG\Property(property="identifier", type="string", description="Identifier in source database")
+     *                  ),
+     *                  example="[{""sequenceType"":""cyclic"",""sequenceName"":""cyclosporin A"",""formula"":""C62H111N11O12"",""mass"":1201.8413680855,""sequence"":""[NMe-Bmt]-[Abu]-[NMe-Gly]-[NMe-Leu]-[Val]-[NMe-Leu]-[Ala]-[Ala]-[NMe-Leu]-[NMe-Leu]-[NMe-Val]"",""nModification"":null,""cModification"":null,""bModification"":null,""smiles"":null,""source"":1,""identifier"":""25027415""},{""sequenceType"":""branched"",""sequenceName"":""dau 677 T2"",""formula"":""C61H91N15O20"",""mass"":1353.6564804411,""sequence"":""[Glu]-[Ser]-[Leu]\\([Lys]-[Asn]-[Phe]-[Ile]\\)[Asp]-[Gln]-[Tyr]-[Gly]"",""nModification"":""Acetyl"",""cModification"":""Acetyl"",""bModification"":null,""smiles"":null,""source"":null,""identifier"":null},{""sequenceType"":""branched"",""sequenceName"":""linearized pseudacyclin A"",""formula"":""C39H63N7O8"",""mass"":757.4738120355,""sequence"":""[Pro]-[Ile]-[Ile]\\([Orn]-[NAc-Ile]\\)[Phe]"",""nModification"":null,""cModification"":null,""bModification"":null,""smiles"":null,""source"":null,""identifier"":null},{""sequenceType"":""cyclic"",""sequenceName"":""pseudacyclin A"",""formula"":""C39H61N7O7"",""mass"":739.4632473492,""sequence"":""[Phe]-[Pro]-[Ile]-[Ile]-[Orn]-[NAc-Ile]"",""nModification"":null,""cModification"":null,""bModification"":null,""smiles"":null,""source"":1,""identifier"":""25028474""}]")
+     *              ),
+     *          ),
      *      ),
      *     @SWG\Response(response="200", description="Return list of not imported sequences."),
      *     @SWG\Response(response="403", description="Forbidden"),

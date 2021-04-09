@@ -21,7 +21,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Swagger\Annotations as SWG;
+use OpenApi\Annotations as SWG;
 
 class SetupController extends AbstractController {
 
@@ -40,14 +40,15 @@ class SetupController extends AbstractController {
      *     security={
      *         {"ApiKeyAuth":{}}
      *     },
-     *     @SWG\Parameter(
-     *          name="body",
-     *          in="body",
-     *          type="string",
+     *     @SWG\RequestBody(
      *          required=true,
      *          description="Setup similarity method computing for application, values: name or tanimoto",
-     *          @SWG\Schema(type="string",
-     *              example="{""similarity"":""tanimoto""}")
+     *          @SWG\MediaType(mediaType="application/json",
+     *              @SWG\Schema(type="object",
+     *                  @SWG\Property(property="similarity", type="string"),
+     *                  example="{""similarity"":""tanimoto""}")
+     *              ),
+     *          ),
      *      ),
      *     @SWG\Response(response="204", description="Similarity method set."),
      *     @SWG\Response(response="401", description="Return when user is not logged in."),

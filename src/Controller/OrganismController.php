@@ -19,7 +19,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
-use Swagger\Annotations as SWG;
+use OpenApi\Annotations as SWG;
 use Symfony\Component\Security\Core\Security;
 
 class OrganismController extends AbstractController {
@@ -63,14 +63,15 @@ class OrganismController extends AbstractController {
      *     security={
      *         {"ApiKeyAuth":{}}
      *     },
-     *     @SWG\Parameter(
-     *          name="body",
-     *          in="body",
-     *          type="string",
+     *     @SWG\RequestBody(
      *          required=true,
      *          description="JSON with organism attribute - name for new organism",
-     *          @SWG\Schema(type="string",
-     *              example="{""organism"": ""Micrococcus luteus""}"),
+     *          @SWG\MediaType(mediaType="application/json",
+     *              @SWG\Schema(type="object",
+     *                  @SWG\Property(property="organism", type="string"),
+     *                  example="{""organism"": ""Micrococcus luteus""}"),
+     *              ),
+     *          ),
      *      ),
      *     @SWG\Response(response="201", description="Create new organism."),
      *     @SWG\Response(response="400", description="Return when input is wrong."),
@@ -111,14 +112,15 @@ class OrganismController extends AbstractController {
      *     security={
      *         {"ApiKeyAuth":{}}
      *     },
-     *     @SWG\Parameter(
-     *          name="body",
-     *          in="body",
-     *          type="string",
+     *     @SWG\RequestBody(
      *          required=true,
      *          description="JSON with organism attribute - name for organism",
-     *          @SWG\Schema(type="string",
-     *              example="{""organism"": ""Micrococcus luteus""}"),
+     *          @SWG\MediaType(mediaType="application\json",
+     *              @SWG\Schema(type="object",
+     *                  @SWG\Property(property="organism", type="string")
+     *                  example="{""organism"": ""Micrococcus luteus""}"),
+     *              ),
+     *          ),
      *      ),
      *     @SWG\Response(response="204", description="Organism updated."),
      *     @SWG\Response(response="400", description="Return when input is wrong."),

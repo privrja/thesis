@@ -18,7 +18,6 @@ use App\Structure\SequencePatchStructure;
 use App\Structure\SequencePatchTransformed;
 use App\Structure\SequenceStructure;
 use App\Structure\SequenceTransformed;
-use Doctrine\Common\Annotations\Annotation\Enum;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
@@ -28,7 +27,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Swagger\Annotations as SWG;
+use OpenApi\Annotations as SWG;
 use Symfony\Component\Security\Core\Security;
 
 class SequenceController extends AbstractController {
@@ -50,14 +49,29 @@ class SequenceController extends AbstractController {
      *     security={
      *         {"ApiKeyAuth":{}}
      *     },
-     *     @SWG\Parameter(
-     *          name="body",
-     *          in="body",
-     *          type="string",
+     *     @SWG\RequestBody(
      *          required=true,
      *          description="Many params: sequenceName, formula, mass, smiles, source, identifier, sequence - string record with block acronyms, decays - array from SmilesDrawer with id of decays edges, sequenceOriginal - same as sequence, but with id of numeric blocks, sequenceType - values: linear, branched, cyclic, branch-cyclic, linear-polyketide, cyclic-polyketide, other, nModification - id of modification in database, or new modification to create, cModification, bModification, family - array with id of sequence famillies, or families to create, blocks - array of blocks - id for blocks in database, or new blocks to create",
-     *          @SWG\Schema(type="string",
-     *              example="{""sequenceName"":""pseudacyclin a"",""formula"":""C39H61N7O7"",""mass"":739.463247,""smiles"":""CCC(C)C1C(=O)NC(C(=O)NCCCC(C(=O)NC(C(=O)N2CCCC2C(=O)N1)CC3=CC=CC=C3)NC(=O)C(C(C)CC)NC(=O)C)C(C)CC"",""source"":0,""identifier"":""46848855"",""sequence"":""[Ile]-[Pro]-[Phe]\\([Orn]-[NAc-Ile]\\)[Ile]"",""decays"":""[6,10,17,21,28,37]"",""sequenceOriginal"":""[0]-[4]-[3]\\([2]-[5]\\)[1]"",""sequenceType"":""branch-cyclic"",""nModification"":null,""cModification"":null,""bModification"":null,""family"":[""4""],""blocks"":[{""databaseId"":15,""originalId"":0,""sameAs"":null,""acronym"":""Ile"",""blockName"":""Isoleucine"",""smiles"":""CCC(C)C(N)C(O)=O"",""formula"":""C6H11NO"",""mass"":113.084064,""source"":0,""identifier"":""6306""},{""databaseId"":15,""originalId"":1,""sameAs"":0,""acronym"":""Ile"",""blockName"":""Isoleucine"",""smiles"":""CCC(C)C(N)C(O)=O"",""formula"":""C6H11NO"",""mass"":113.084064,""source"":0,""identifier"":""6306""},{""databaseId"":39,""originalId"":2,""sameAs"":null,""acronym"":""Orn"",""blockName"":""Ornithine"",""smiles"":""NCCCC(N)C(O)=O"",""formula"":""C5H10N2O"",""mass"":114.079313,""source"":0,""identifier"":""389""},{""databaseId"":19,""originalId"":3,""sameAs"":null,""acronym"":""Phe"",""blockName"":""Phenylalanine"",""smiles"":""NC(CC1=CC=CC=C1)C(O)=O"",""formula"":""C9H9NO"",""mass"":147.068414,""source"":0,""identifier"":""6140""},{""databaseId"":9,""originalId"":4,""sameAs"":null,""acronym"":""Pro"",""blockName"":""Proline"",""smiles"":""OC(=O)C1CCCN1"",""formula"":""C5H7NO"",""mass"":97.052764,""source"":0,""identifier"":""145742""},{""databaseId"":26,""originalId"":5,""sameAs"":null,""acronym"":""NAc-Ile"",""blockName"":""N-Acetyl-Isoleucine"",""smiles"":""CCC(C)C(NC(C)=O)C(O)=O"",""formula"":""C8H13NO2"",""mass"":155.094629,""source"":0,""identifier"":""306109""}]}")
+     *          @SWG\MediaType(mediaType="application/json",
+     *              @SWG\Schema(type="object",
+     *                  @SWG\Property(property="sequenceName", type="string"),
+     *                  @SWG\Property(property="formula", type="string"),
+     *                  @SWG\Property(property="mass", type="float", description="Monoisotopic mass"),
+     *                  @SWG\Property(property="smiles", type="string"),
+     *                  @SWG\Property(property="source", type="int"),
+     *                  @SWG\Property(property="identifier", type="string"),
+     *                  @SWG\Property(property="sequence", type="string"),
+     *                  @SWG\Property(property="decays", type="string"),
+     *                  @SWG\Property(property="sequenceOriginal", type="string"),
+     *                  @SWG\Property(property="sequenceType", type="string"),
+     *                  @SWG\Property(property="nModification", type="string"),
+     *                  @SWG\Property(property="cModification", type="object"),
+     *                  @SWG\Property(property="bModification", type="object"),
+     *                  @SWG\Property(property="family", type="string"),
+     *                  @SWG\Property(property="organism", type="string"),
+     *                  example="{""sequenceName"":""pseudacyclin a"",""formula"":""C39H61N7O7"",""mass"":739.463247,""smiles"":""CCC(C)C1C(=O)NC(C(=O)NCCCC(C(=O)NC(C(=O)N2CCCC2C(=O)N1)CC3=CC=CC=C3)NC(=O)C(C(C)CC)NC(=O)C)C(C)CC"",""source"":0,""identifier"":""46848855"",""sequence"":""[Ile]-[Pro]-[Phe]\\([Orn]-[NAc-Ile]\\)[Ile]"",""decays"":""[6,10,17,21,28,37]"",""sequenceOriginal"":""[0]-[4]-[3]\\([2]-[5]\\)[1]"",""sequenceType"":""branch-cyclic"",""nModification"":null,""cModification"":null,""bModification"":null,""family"":[""4""],""blocks"":[{""databaseId"":15,""originalId"":0,""sameAs"":null,""acronym"":""Ile"",""blockName"":""Isoleucine"",""smiles"":""CCC(C)C(N)C(O)=O"",""formula"":""C6H11NO"",""mass"":113.084064,""source"":0,""identifier"":""6306""},{""databaseId"":15,""originalId"":1,""sameAs"":0,""acronym"":""Ile"",""blockName"":""Isoleucine"",""smiles"":""CCC(C)C(N)C(O)=O"",""formula"":""C6H11NO"",""mass"":113.084064,""source"":0,""identifier"":""6306""},{""databaseId"":39,""originalId"":2,""sameAs"":null,""acronym"":""Orn"",""blockName"":""Ornithine"",""smiles"":""NCCCC(N)C(O)=O"",""formula"":""C5H10N2O"",""mass"":114.079313,""source"":0,""identifier"":""389""},{""databaseId"":19,""originalId"":3,""sameAs"":null,""acronym"":""Phe"",""blockName"":""Phenylalanine"",""smiles"":""NC(CC1=CC=CC=C1)C(O)=O"",""formula"":""C9H9NO"",""mass"":147.068414,""source"":0,""identifier"":""6140""},{""databaseId"":9,""originalId"":4,""sameAs"":null,""acronym"":""Pro"",""blockName"":""Proline"",""smiles"":""OC(=O)C1CCCN1"",""formula"":""C5H7NO"",""mass"":97.052764,""source"":0,""identifier"":""145742""},{""databaseId"":26,""originalId"":5,""sameAs"":null,""acronym"":""NAc-Ile"",""blockName"":""N-Acetyl-Isoleucine"",""smiles"":""CCC(C)C(NC(C)=O)C(O)=O"",""formula"":""C8H13NO2"",""mass"":155.094629,""source"":0,""identifier"":""306109""}]}")
+     *              ),
+     *          ),
      *      ),
      *     @SWG\Response(response="201", description="Create new sequence."),
      *     @SWG\Response(response="400", description="Return when input is wrong."),
@@ -167,14 +181,29 @@ class SequenceController extends AbstractController {
      *     security={
      *         {"ApiKeyAuth":{}}
      *     },
-     *     @SWG\Parameter(
-     *          name="body",
-     *          in="body",
-     *          type="string",
+     *     @SWG\RequestBody(
      *          required=true,
      *          description="Many params: sequenceName, formula, mass, smiles, source, identifier, sequence - string record with block acronyms, decays - array from SmilesDrawer with id of decays edges, sequenceOriginal - same as sequence, but with id of numeric blocks, sequenceType - values: linear, branched, cyclic, branch-cyclic, linear-polyketide, cyclic-polyketide, other, nModification - id of modification in database, or new modification to create, cModification, bModification, family - array with id of sequence famillies, or families to create, blocks - array of blocks - id for blocks in database, or new blocks to create",
-     *          @SWG\Schema(type="string",
-     *              example="{""sequenceName"":""pseudacyclin a"",""formula"":""C39H61N7O7"",""mass"":739.463247,""smiles"":""CCC(C)C1C(=O)NC(C(=O)NCCCC(C(=O)NC(C(=O)N2CCCC2C(=O)N1)CC3=CC=CC=C3)NC(=O)C(C(C)CC)NC(=O)C)C(C)CC"",""source"":0,""identifier"":""46848855"",""sequence"":""[Ile]-[Pro]-[Phe]\\([Orn]-[NAc-Ile]\\)[Ile]"",""decays"":""[6,10,17,21,28,37]"",""sequenceOriginal"":""[0]-[4]-[3]\\([2]-[5]\\)[1]"",""sequenceType"":""branch-cyclic"",""nModification"":null,""cModification"":null,""bModification"":null,""family"":[""4""],""blocks"":[{""databaseId"":15,""originalId"":0,""sameAs"":null,""acronym"":""Ile"",""blockName"":""Isoleucine"",""smiles"":""CCC(C)C(N)C(O)=O"",""formula"":""C6H11NO"",""mass"":113.084064,""source"":0,""identifier"":""6306""},{""databaseId"":15,""originalId"":1,""sameAs"":0,""acronym"":""Ile"",""blockName"":""Isoleucine"",""smiles"":""CCC(C)C(N)C(O)=O"",""formula"":""C6H11NO"",""mass"":113.084064,""source"":0,""identifier"":""6306""},{""databaseId"":39,""originalId"":2,""sameAs"":null,""acronym"":""Orn"",""blockName"":""Ornithine"",""smiles"":""NCCCC(N)C(O)=O"",""formula"":""C5H10N2O"",""mass"":114.079313,""source"":0,""identifier"":""389""},{""databaseId"":19,""originalId"":3,""sameAs"":null,""acronym"":""Phe"",""blockName"":""Phenylalanine"",""smiles"":""NC(CC1=CC=CC=C1)C(O)=O"",""formula"":""C9H9NO"",""mass"":147.068414,""source"":0,""identifier"":""6140""},{""databaseId"":9,""originalId"":4,""sameAs"":null,""acronym"":""Pro"",""blockName"":""Proline"",""smiles"":""OC(=O)C1CCCN1"",""formula"":""C5H7NO"",""mass"":97.052764,""source"":0,""identifier"":""145742""},{""databaseId"":26,""originalId"":5,""sameAs"":null,""acronym"":""NAc-Ile"",""blockName"":""N-Acetyl-Isoleucine"",""smiles"":""CCC(C)C(NC(C)=O)C(O)=O"",""formula"":""C8H13NO2"",""mass"":155.094629,""source"":0,""identifier"":""306109""}]}")
+     *          @SWG\MediaType(mediaType="application/json",
+     *              @SWG\Schema(type="object",
+     *                  @SWG\Property(property="sequenceName", type="string"),
+     *                  @SWG\Property(property="formula", type="string"),
+     *                  @SWG\Property(property="mass", type="float", description="Monoisotopic mass"),
+     *                  @SWG\Property(property="smiles", type="string"),
+     *                  @SWG\Property(property="source", type="int"),
+     *                  @SWG\Property(property="identifier", type="string"),
+     *                  @SWG\Property(property="sequence", type="string"),
+     *                  @SWG\Property(property="decays", type="string"),
+     *                  @SWG\Property(property="sequenceOriginal", type="string"),
+     *                  @SWG\Property(property="sequenceType", type="string"),
+     *                  @SWG\Property(property="nModification", type="string"),
+     *                  @SWG\Property(property="cModification", type="object"),
+     *                  @SWG\Property(property="bModification", type="object"),
+     *                  @SWG\Property(property="family", type="string"),
+     *                  @SWG\Property(property="organism", type="string"),
+     *                  example="{""sequenceName"":""pseudacyclin a"",""formula"":""C39H61N7O7"",""mass"":739.463247,""smiles"":""CCC(C)C1C(=O)NC(C(=O)NCCCC(C(=O)NC(C(=O)N2CCCC2C(=O)N1)CC3=CC=CC=C3)NC(=O)C(C(C)CC)NC(=O)C)C(C)CC"",""source"":0,""identifier"":""46848855"",""sequence"":""[Ile]-[Pro]-[Phe]\\([Orn]-[NAc-Ile]\\)[Ile]"",""decays"":""[6,10,17,21,28,37]"",""sequenceOriginal"":""[0]-[4]-[3]\\([2]-[5]\\)[1]"",""sequenceType"":""branch-cyclic"",""nModification"":null,""cModification"":null,""bModification"":null,""family"":[""4""],""blocks"":[{""databaseId"":15,""originalId"":0,""sameAs"":null,""acronym"":""Ile"",""blockName"":""Isoleucine"",""smiles"":""CCC(C)C(N)C(O)=O"",""formula"":""C6H11NO"",""mass"":113.084064,""source"":0,""identifier"":""6306""},{""databaseId"":15,""originalId"":1,""sameAs"":0,""acronym"":""Ile"",""blockName"":""Isoleucine"",""smiles"":""CCC(C)C(N)C(O)=O"",""formula"":""C6H11NO"",""mass"":113.084064,""source"":0,""identifier"":""6306""},{""databaseId"":39,""originalId"":2,""sameAs"":null,""acronym"":""Orn"",""blockName"":""Ornithine"",""smiles"":""NCCCC(N)C(O)=O"",""formula"":""C5H10N2O"",""mass"":114.079313,""source"":0,""identifier"":""389""},{""databaseId"":19,""originalId"":3,""sameAs"":null,""acronym"":""Phe"",""blockName"":""Phenylalanine"",""smiles"":""NC(CC1=CC=CC=C1)C(O)=O"",""formula"":""C9H9NO"",""mass"":147.068414,""source"":0,""identifier"":""6140""},{""databaseId"":9,""originalId"":4,""sameAs"":null,""acronym"":""Pro"",""blockName"":""Proline"",""smiles"":""OC(=O)C1CCCN1"",""formula"":""C5H7NO"",""mass"":97.052764,""source"":0,""identifier"":""145742""},{""databaseId"":26,""originalId"":5,""sameAs"":null,""acronym"":""NAc-Ile"",""blockName"":""N-Acetyl-Isoleucine"",""smiles"":""CCC(C)C(NC(C)=O)C(O)=O"",""formula"":""C8H13NO2"",""mass"":155.094629,""source"":0,""identifier"":""306109""}]}")
+     *              ),
+     *          ),
      *      ),
      *     @SWG\Response(response="201", description="Update sequence."),
      *     @SWG\Response(response="400", description="Return when input is wrong."),
@@ -252,6 +281,30 @@ class SequenceController extends AbstractController {
      *     security={
      *         {"ApiKeyAuth":{}}
      *     },
+     *     @SWG\RequestBody(
+     *          required=true,
+     *          description="Many params: sequenceName, formula, mass, smiles, source, identifier, sequence - string record with block acronyms, decays - array from SmilesDrawer with id of decays edges, sequenceOriginal - same as sequence, but with id of numeric blocks, sequenceType - values: linear, branched, cyclic, branch-cyclic, linear-polyketide, cyclic-polyketide, other, nModification - id of modification in database, or new modification to create, cModification, bModification, family - array with id of sequence famillies, or families to create, blocks - array of blocks - id for blocks in database, or new blocks to create",
+     *          @SWG\MediaType(mediaType="application/json",
+     *              @SWG\Schema(type="object",
+     *                  @SWG\Property(property="sequenceName", type="string"),
+     *                  @SWG\Property(property="formula", type="string"),
+     *                  @SWG\Property(property="mass", type="float", description="Monoisotopic mass"),
+     *                  @SWG\Property(property="smiles", type="string"),
+     *                  @SWG\Property(property="source", type="int"),
+     *                  @SWG\Property(property="identifier", type="string"),
+     *                  @SWG\Property(property="sequence", type="string"),
+     *                  @SWG\Property(property="decays", type="string"),
+     *                  @SWG\Property(property="sequenceOriginal", type="string"),
+     *                  @SWG\Property(property="sequenceType", type="string"),
+     *                  @SWG\Property(property="nModification", type="string"),
+     *                  @SWG\Property(property="cModification", type="object"),
+     *                  @SWG\Property(property="bModification", type="object"),
+     *                  @SWG\Property(property="family", type="string"),
+     *                  @SWG\Property(property="organism", type="string"),
+     *                  example="{""sequenceName"":""pseudacyclin a"",""formula"":""C39H61N7O7"",""mass"":739.463247,""smiles"":""CCC(C)C1C(=O)NC(C(=O)NCCCC(C(=O)NC(C(=O)N2CCCC2C(=O)N1)CC3=CC=CC=C3)NC(=O)C(C(C)CC)NC(=O)C)C(C)CC"",""source"":0,""identifier"":""46848855"",""sequence"":""[Ile]-[Pro]-[Phe]\\([Orn]-[NAc-Ile]\\)[Ile]"",""decays"":""[6,10,17,21,28,37]"",""sequenceOriginal"":""[0]-[4]-[3]\\([2]-[5]\\)[1]"",""sequenceType"":""branch-cyclic"",""nModification"":null,""cModification"":null,""bModification"":null,""family"":[""4""],""blocks"":[{""databaseId"":15,""originalId"":0,""sameAs"":null,""acronym"":""Ile"",""blockName"":""Isoleucine"",""smiles"":""CCC(C)C(N)C(O)=O"",""formula"":""C6H11NO"",""mass"":113.084064,""source"":0,""identifier"":""6306""},{""databaseId"":15,""originalId"":1,""sameAs"":0,""acronym"":""Ile"",""blockName"":""Isoleucine"",""smiles"":""CCC(C)C(N)C(O)=O"",""formula"":""C6H11NO"",""mass"":113.084064,""source"":0,""identifier"":""6306""},{""databaseId"":39,""originalId"":2,""sameAs"":null,""acronym"":""Orn"",""blockName"":""Ornithine"",""smiles"":""NCCCC(N)C(O)=O"",""formula"":""C5H10N2O"",""mass"":114.079313,""source"":0,""identifier"":""389""},{""databaseId"":19,""originalId"":3,""sameAs"":null,""acronym"":""Phe"",""blockName"":""Phenylalanine"",""smiles"":""NC(CC1=CC=CC=C1)C(O)=O"",""formula"":""C9H9NO"",""mass"":147.068414,""source"":0,""identifier"":""6140""},{""databaseId"":9,""originalId"":4,""sameAs"":null,""acronym"":""Pro"",""blockName"":""Proline"",""smiles"":""OC(=O)C1CCCN1"",""formula"":""C5H7NO"",""mass"":97.052764,""source"":0,""identifier"":""145742""},{""databaseId"":26,""originalId"":5,""sameAs"":null,""acronym"":""NAc-Ile"",""blockName"":""N-Acetyl-Isoleucine"",""smiles"":""CCC(C)C(NC(C)=O)C(O)=O"",""formula"":""C8H13NO2"",""mass"":155.094629,""source"":0,""identifier"":""306109""}]}")
+     *              ),
+     *          ),
+     *      ),
      *     @SWG\Response(response="200", description="Sucessfully update sequence."),
      *     @SWG\Response(response="401", description="Return when user is not logged in."),
      *     @SWG\Response(response="403", description="Return when permisions is insufient."),

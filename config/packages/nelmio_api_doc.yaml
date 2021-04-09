@@ -1,7 +1,7 @@
 nelmio_api_doc:
     documentation:
         info:
-            title: Thesis
+            title: MassSpecBlocks
             description: This is backend app is for storing blocks, sequences, and modifications.
             version: 1.0.0
         components:

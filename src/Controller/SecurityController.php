@@ -17,12 +17,17 @@ use App\Repository\UserRepository;
 use App\Structure\ChemSpiderKeyExport;
 use App\Structure\ChemSpiderKeyStructure;
 use App\Structure\ChemSpiderKeyTransformed;
+use App\Structure\GenerateStructure;
+use App\Structure\GenerateTransformed;
 use App\Structure\MailStructure;
 use App\Structure\MailTransformed;
 use App\Structure\NewRegistrationStructure;
 use App\Structure\NewRegistrationTransformed;
 use App\Structure\PassStructure;
 use App\Structure\PassTransformed;
+use App\Structure\ResetStructure;
+use App\Structure\ResetTransformed;
+use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 use Psr\Log\LoggerInterface;
@@ -404,22 +409,71 @@ class SecurityController extends AbstractController {
     /**
      * Reset
      * @Route("/rest/user/reset", name="reset", methods={"POST"})
-     * @IsGranted("ROLE_USER")
+     * @param Request $request
      * @param EntityManagerInterface $entityManager
-     * @param Security $security
-     * @param UserPasswordEncoderInterface $passwordEncoder
+     * @param UserRepository $userRepository
+     * @param LoggerInterface $logger
      * @return JsonResponse
      *
      * @SWG\Post(
      *     tags={"Auth"},
      *     @SWG\Response(response="200", description="Mail send"),
      *     @SWG\Response(response="500", description="Internal server Error"),
-     *     @SWG\Response(response="400", description="Name is taken")
+     *     @SWG\Response(response="400", description="Wrong input")
      * )
+     *
      */
-    public function reset(EntityManagerInterface $entityManager, Security $security, UserPasswordEncoderInterface $passwordEncoder) {
-        /** @var User $user */
-        $user = $security->getUser();
+    public function reset(Request $request, EntityManagerInterface $entityManager, UserRepository $userRepository, LoggerInterface $logger) {
+        /** @var ResetTransformed $trans */
+        $trans = RequestHelper::evaluateRequest($request, new ResetStructure(), $logger);
+        if ($trans instanceof JsonResponse) {
+            return $trans;
+        }
+        $user = $userRepository->findOneBy(['nick' => $trans->nick]);
+        if (!isset($user)) {
+            return ResponseHelper::jsonResponse(new Message("User not found"));
+        }
+        try {
+            $user->setApiToken(GeneratorHelper::generate(32));
+            $user->setLastActivity(new DateTime());
+            $entityManager->persist($user);
+            $entityManager->flush();
+        } catch (Exception $exception) {
+            return ResponseHelper::jsonResponse(new Message(ErrorConstants::ERROR_SOMETHING_GO_WRONG, Response::HTTP_INTERNAL_SERVER_ERROR));
+        }
+        try {
+            mail($user->getMail(), 'MassSpecBlocks - password reset', 'You request a new password for Mass Spec Blocks. We generated you a token for verification it\'s you:' . $user->getApiToken() . ' . After that we generated you new password and send it via email. After first login with new password we recommended you to change it. \n Thanks');
+        } catch (Exception $exception) {
+            return ResponseHelper::jsonResponse(new Message('Server doesn\'t support sending mails'));
+        }
+        return ResponseHelper::jsonResponse(Message::createNoContent());
+    }
+
+    /**
+     * Generate new password
+     * @Route("/rest/user/generate", name="generate", methods={"POST"})
+     * @param Request $request
+     * @param EntityManagerInterface $entityManager
+     * @param UserPasswordEncoderInterface $passwordEncoder
+     * @param UserRepository $userRepository
+     * @param LoggerInterface $logger
+     * @return JsonResponse
+     *
+     * @SWG\Post(
+     *     tags={"Auth"},
+     *     @SWG\Response(response="200", description="Mail send"),
+     *     @SWG\Response(response="500", description="Internal server Error"),
+     *     @SWG\Response(response="400", description="Wrong input")
+     * )
+     *
+     */
+    public function generatePassword(Request $request, EntityManagerInterface $entityManager, UserPasswordEncoderInterface $passwordEncoder, UserRepository $userRepository, LoggerInterface $logger) {
+        /** @var GenerateTransformed $trans */
+        $trans = RequestHelper::evaluateRequest($request, new GenerateStructure(), $logger);
+        if ($trans instanceof JsonResponse) {
+            return $trans;
+        }
+        $user = $userRepository->findByNickToken($trans->nick, $trans->token);
         $pass = null;
         try {
             $pass = bin2hex(random_bytes(8));
@@ -427,20 +481,20 @@ class SecurityController extends AbstractController {
             $pass = rand(1000000, 999999999999);
         }
         try {
-            $user->setApiToken(GeneratorHelper::generate(32));
-//            $user->setPassword($passwordEncoder->encodePassword($user, $pass));
+            $user->setPassword($passwordEncoder->encodePassword($user, $pass));
             $entityManager->persist($user);
             $entityManager->flush();
         } catch (Exception $exception) {
             return ResponseHelper::jsonResponse(new Message(ErrorConstants::ERROR_SOMETHING_GO_WRONG, Response::HTTP_INTERNAL_SERVER_ERROR));
         }
         try {
-            mail($user->getMail(), 'Mass Spec Block - password reset', 'You request a new password for Mass Spec Blocks. We generated new for you. After first login with new password we recommended you to change it. You\'re new generated password: ' . $pass . '\n Thanks');
+            mail($user->getMail(), 'MassSpecBlocks - password reset', 'You request a new password for Mass Spec Blocks. New genrated password: ' . $pass . '\nAfter first login with new password we recommended you to change it. \n Thanks');
         } catch (Exception $exception) {
             return ResponseHelper::jsonResponse(new Message('Server doesn\'t support sending mails'));
         }
+        /** On purpose to replace stored password in memory */
         $pass = '12345678';
-        return ResponseHelper::jsonResponse(new Message('Mail sent to address: ' . $user->getMail(), Response::HTTP_OK));
+        return ResponseHelper::jsonResponse(Message::createNoContent());
     }
 
 }

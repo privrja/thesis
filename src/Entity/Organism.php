@@ -29,7 +29,7 @@ class Organism implements JsonSerializable {
     private $container;
 
     /**
-     * @ORM\OneToMany(targetEntity=S2O::class, mappedBy="organism")
+     * @ORM\OneToMany(targetEntity=S2o::class, mappedBy="organism")
      */
     private $O2Seqeunces;
 

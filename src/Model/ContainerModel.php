@@ -45,6 +45,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
 use InvalidArgumentException;
 use Psr\Log\LoggerInterface;
+use Psr\Log\LogLevel;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -547,8 +548,8 @@ class ContainerModel {
             $sBlock->setBlockName($block->blockName);
             $sBlock->setAcronym($block->acronym);
             $sBlock->setContainer($container);
-            $this->logger->log('debug', $block->acronym);
-            $this->logger->log('debug', $block->isPolyketide);
+            $this->logger->log(LogLevel::ERROR, $block->acronym);
+            $this->logger->log(LogLevel::CRITICAL, $block->isPolyketide);
             $sBlock->setIsPolyketide($block->isPolyketide);
             if (!empty($block->losses)) {
                 $sBlock->setLosses($block->losses);

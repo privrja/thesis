@@ -228,6 +228,29 @@ class SecurityController extends AbstractController {
     }
 
     /**
+     * Get Email
+     * @Route("/rest/user/mail", name="mail", methods={"GET"})
+     * @IsGranted("ROLE_USER")
+     * @param Security $security
+     * @return JsonResponse
+     *
+     * @SWG\Put(
+     *     tags={"Auth"},
+     *     security={
+     *         {"ApiKeyAuth":{}}
+     *     },
+     *     @SWG\Response(response="200", description="Mail"),
+     *     @SWG\Response(response="403", description="Unauthorized")
+     * )
+     *
+     */
+    public function getMail(Security $security) {
+        /** @var User $user */
+        $user = $security->getUser();
+        return new JsonResponse(['mail' => $user->getMail()]);
+    }
+
+    /**
      * Change mail
      * @Route("/rest/user/mail", name="change_mail", methods={"PUT"})
      * @IsGranted("ROLE_USER")

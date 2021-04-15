@@ -142,7 +142,7 @@ class User implements UserInterface, JsonSerializable {
         return $this->mail;
     }
 
-    public function setMail(string $mail): self {
+    public function setMail($mail): self {
         $this->mail = $mail;
         return $this;
     }

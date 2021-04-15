@@ -8,10 +8,10 @@ use App\Constant\ErrorConstants;
 class GenerateStructure extends AbstractStructure {
 
     public $token;
-    public $nick;
+    public $mail;
 
     public function checkInput(): Message {
-        if (empty($this->token) || empty($this->nick)) {
+        if (empty($this->token) || empty($this->mail)) {
             return new Message(ErrorConstants::ERROR_EMPTY_PARAMS);
         }
         return Message::createOkMessage();
@@ -19,7 +19,7 @@ class GenerateStructure extends AbstractStructure {
 
     public function transform(): AbstractTransformed {
         $trans = new GenerateTransformed();
-        $trans->nick = $this->nick;
+        $trans->mail = $this->mail;
         $trans->token = $this->token;
         return $trans;
     }

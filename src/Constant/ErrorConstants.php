@@ -11,6 +11,7 @@ class ErrorConstants {
     public const ERROR_EMPTY_ID = 'You need to specify id';
     public const ERROR_CONTAINER_NOT_EXISTS_FOR_USER = 'Container with specified id for user not exists';
     public const ERROR_NAME_IS_TAKEN = 'This name is taken';
+    public const ERROR_MAIL_IS_TAKEN = 'This email is taken';
     public const ERROR_SOMETHING_GO_WRONG = 'Something go wrong';
     public const ERROR_SERVER_IDENTIFIER = 'Server is unknown';
     public const ERROR_SERVER_IDENTIFIER_PROBLEM = 'Server identifier or server is empty, but one of them is filled';

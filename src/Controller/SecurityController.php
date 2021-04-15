@@ -103,6 +103,8 @@ class SecurityController extends AbstractController {
             return $trans;
         } else if ($userRepository->findOneBy(['nick' => $trans->getName()])) {
             return ResponseHelper::jsonResponse(new Message(ErrorConstants::ERROR_NAME_IS_TAKEN));
+        } else if (isset($trans->mail) && $userRepository->findOneBy(['mail' => $trans->mail])) {
+            return ResponseHelper::jsonResponse(new Message(ErrorConstants::ERROR_MAIL_IS_TAKEN));
         }
 
         $question = $this->session->get(self::QUESTION);
@@ -505,7 +507,7 @@ class SecurityController extends AbstractController {
         if ($trans instanceof JsonResponse) {
             return $trans;
         }
-        $user = $userRepository->findOneBy(['nick' => $trans->nick]);
+        $user = $userRepository->findOneBy(['mail' => $trans->mail]);
         if (!isset($user)) {
             return ResponseHelper::jsonResponse(new Message("User not found"));
         }
@@ -554,7 +556,7 @@ class SecurityController extends AbstractController {
         if ($trans instanceof JsonResponse) {
             return $trans;
         }
-        $user = $userRepository->findByNickToken($trans->nick, $trans->token);
+        $user = $userRepository->findByMailToken($trans->mail, $trans->token);
         $pass = null;
         try {
             $pass = bin2hex(random_bytes(8));

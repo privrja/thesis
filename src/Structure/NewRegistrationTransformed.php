@@ -4,9 +4,9 @@ namespace App\Structure;
 
 class NewRegistrationTransformed extends AbstractTransformed {
 
-    private $name;
-    private $password;
-    private $mail;
+    public $name;
+    public $password;
+    public $mail;
     public $cap;
 
     /**

@@ -8,10 +8,10 @@ use App\Constant\ErrorConstants;
 class ResetStructure extends AbstractStructure {
 
     /** @var string */
-    public $nick;
+    public $mail;
 
     public function checkInput(): Message {
-        if (empty($this->nick)) {
+        if (empty($this->mail)) {
             return new Message(ErrorConstants::ERROR_EMPTY_PARAMS);
         }
         return Message::createOkMessage();
@@ -19,7 +19,7 @@ class ResetStructure extends AbstractStructure {
 
     public function transform(): AbstractTransformed {
         $trans = new ResetTransformed();
-        $trans->nick = $this->nick;
+        $trans->mail = $this->mail;
         return $trans;
     }
 }

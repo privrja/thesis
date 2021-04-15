@@ -137,11 +137,13 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         }
     }
 
-    public function findByNickToken(string $nick, string $token) {
+    public function findByMailToken(string $mail, string $token) {
         return $this->createQueryBuilder('usr')
-            ->andWhere('usr.nick = :nick')
+            ->andWhere('usr.mail = :mail')
             ->andWhere('usr.apiToken = :token')
             ->andWhere('time_to_sec(timediff(now(), usr.lastActivity)) < 600))')
+            ->setParameter('mail', $mail)
+            ->setParameter('token', $token)
             ->getQuery()
             ->getResult();
     }

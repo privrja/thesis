@@ -142,7 +142,7 @@ class User implements UserInterface, JsonSerializable {
         return $this->mail;
     }
 
-    public function setMail($mail): self {
+    public function setMail(?string $mail): self {
         $this->mail = $mail;
         return $this;
     }
@@ -208,7 +208,7 @@ class User implements UserInterface, JsonSerializable {
     /**
      * @param string $chemSpiderToken
      */
-    public function setChemSpiderToken(string $chemSpiderToken): void {
+    public function setChemSpiderToken(?string $chemSpiderToken): void {
         $this->chemSpiderToken = $chemSpiderToken;
     }
 

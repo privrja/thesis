@@ -227,6 +227,32 @@ class SecurityController extends AbstractController {
     }
 
     /**
+     * Remove Email
+     * @Route("/rest/user/mail", name="mail_delete", methods={"DELETE"})
+     * @IsGranted("ROLE_USER")
+     * @param Security $security
+     * @param EntityManagerInterface $entityManager
+     * @return JsonResponse
+     *
+     * @SWG\Get(
+     *     tags={"Auth"},
+     *     security={
+     *         {"ApiKeyAuth":{}}
+     *     },
+     *     @SWG\Response(response="204", description="Removed"),
+     *     @SWG\Response(response="401", description="Return when user is not logged in."),
+     * )
+     */
+    public function removeMail(Security $security, EntityManagerInterface $entityManager) {
+        /** @var User $user */
+        $user = $security->getUser();
+        $user->setMail(null);
+        $entityManager->persist($user);
+        $entityManager->flush();
+        return ResponseHelper::jsonResponse(Message::createNoContent());
+    }
+
+    /**
      * Get Email
      * @Route("/rest/user/mail", name="mail", methods={"GET"})
      * @IsGranted("ROLE_USER")
@@ -289,6 +315,32 @@ class SecurityController extends AbstractController {
         /** @var User $user */
         $user = $security->getUser();
         $user->setMail($trans->mail);
+        $entityManager->persist($user);
+        $entityManager->flush();
+        return ResponseHelper::jsonResponse(Message::createNoContent());
+    }
+
+    /**
+     * Remove ChemSpider key
+     * @Route("/rest/chemspider/key", name="chemspider_delete", methods={"DELETE"})
+     * @IsGranted("ROLE_USER")
+     * @param Security $security
+     * @param EntityManagerInterface $entityManager
+     * @return JsonResponse
+     *
+     * @SWG\Get(
+     *  tags={"Setup"},
+     *     security={
+     *         {"ApiKeyAuth":{}}
+     *     },
+     *     @SWG\Response(response="204", description="Return Done."),
+     *     @SWG\Response(response="401", description="Return when user is not logged in.")
+     * )
+     */
+    public function deleteChemSpiderKey(Security $security, EntityManagerInterface $entityManager) {
+        /** @var User $user */
+        $user = $security->getUser();
+        $user->setChemSpiderToken(null);
         $entityManager->persist($user);
         $entityManager->flush();
         return ResponseHelper::jsonResponse(Message::createNoContent());

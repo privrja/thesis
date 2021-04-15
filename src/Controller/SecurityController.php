@@ -31,7 +31,6 @@ use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 use Psr\Log\LoggerInterface;
-use Psr\Log\LogLevel;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -465,11 +464,15 @@ class SecurityController extends AbstractController {
         } catch (Exception $exception) {
             return ResponseHelper::jsonResponse(new Message(ErrorConstants::ERROR_SOMETHING_GO_WRONG, Response::HTTP_INTERNAL_SERVER_ERROR));
         }
-        $logger->log(LogLevel::DEBUG,  $user->getMail());
-        try {
-            mail($user->getMail(), 'MassSpecBlocks - password reset', 'You request a new password for Mass Spec Blocks. We generated you a token for verification it\'s you:' . $user->getApiToken() . ' . After that we generated you new password and send it via email. After first login with new password we recommended you to change it. \n Thanks');
-        } catch (Exception $exception) {
-            return ResponseHelper::jsonResponse(new Message('Server doesn\'t support sending mails'));
+        $email = $user->getMail();
+        if (!empty($email)) {
+            try {
+                mail($user->getMail(), 'MassSpecBlocks - password reset', 'You request a new password for Mass Spec Blocks. We generated you a token for verification it\'s you:' . $user->getApiToken() . ' . After that we generated you new password and send it via email. After first login with new password we recommended you to change it. \n Thanks');
+            } catch (Exception $exception) {
+                return ResponseHelper::jsonResponse(new Message('Server doesn\'t support sending mails'));
+            }
+        } else {
+            return ResponseHelper::jsonResponse(new Message('Mail not set for this user'));
         }
         return ResponseHelper::jsonResponse(Message::createNoContent());
     }

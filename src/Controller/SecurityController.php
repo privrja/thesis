@@ -83,7 +83,7 @@ class SecurityController extends AbstractController {
      *     tags={"Auth"},
      *     @SWG\RequestBody(
      *          required=true,
-     *          description="Setup similarity method computing for application, values: name or tanimoto",
+     *          description="Create new user",
      *          @SWG\MediaType(mediaType="application/json",
      *              @SWG\Schema(type="string",
      *                  @SWG\Property(property="name", type="string"),
@@ -233,12 +233,13 @@ class SecurityController extends AbstractController {
      * @param Security $security
      * @return JsonResponse
      *
-     * @SWG\Put(
+     * @SWG\Get(
      *     tags={"Auth"},
      *     security={
      *         {"ApiKeyAuth":{}}
      *     },
      *     @SWG\Response(response="200", description="Mail"),
+     *     @SWG\Response(response="401", description="Return when user is not logged in."),
      *     @SWG\Response(response="403", description="Unauthorized")
      * )
      *
@@ -516,7 +517,7 @@ class SecurityController extends AbstractController {
             return ResponseHelper::jsonResponse(new Message(ErrorConstants::ERROR_SOMETHING_GO_WRONG, Response::HTTP_INTERNAL_SERVER_ERROR));
         }
         try {
-            mail($user->getMail(), 'MassSpecBlocks - password reset', 'You request a new password for Mass Spec Blocks. New genrated password: ' . $pass . '\nAfter first login with new password we recommended you to change it. \n Thanks');
+            mail($user->getMail(), 'MassSpecBlocks - password reset', 'You request a new password for Mass Spec Blocks. New genrated password: ' . $pass . '. After first login with new password we recommended you to change it. \n Thanks');
         } catch (Exception $exception) {
             return ResponseHelper::jsonResponse(new Message('Server doesn\'t support sending mails'));
         }

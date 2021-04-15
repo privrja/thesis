@@ -26,6 +26,28 @@ use OpenApi\Annotations as SWG;
 class SetupController extends AbstractController {
 
     /**
+     * Get similarity option
+     * @Route("/rest/setup/similarity", name="similarity", methods={"GET"})
+     * @IsGranted("ROLE_ADMIN")
+     * @param SetupRepository $setupRepository
+     * @return JsonResponse
+     *
+     * @SWG\Get(
+     *  tags={"Setup"},
+     *     security={
+     *         {"ApiKeyAuth":{}}
+     *     },
+     *     @SWG\Response(response="200", description="Similarity."),
+     *     @SWG\Response(response="401", description="Return when user is not logged in."),
+     *     @SWG\Response(response="403", description="Return when you don't have right for operation.")
+     * )
+     *
+     */
+    public function getSimilarity(SetupRepository $setupRepository) {
+        return new JsonResponse(['similarity' => $setupRepository->find(1)->getSimilarity()]);
+    }
+
+    /**
      * Setup similarity
      * @Route("/rest/setup/similarity", name="setup_similarity", methods={"POST"})
      * @IsGranted("ROLE_ADMIN")

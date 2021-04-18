@@ -66,7 +66,7 @@ class RepositoryHelper {
     }
 
 
-    public static function addSort(QueryBuilder $qb, Sort $sort) {
+    public static function addSort(QueryBuilder $qb, ?Sort $sort) {
         if (isset($sort)) {
             if ($sort->sort === 'family') {
                 $qb->addOrderBy('case when fam.sequenceFamilyName is null then 1 else 0 end', $sort->order)

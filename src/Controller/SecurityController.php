@@ -92,8 +92,8 @@ class SecurityController extends AbstractController {
      *              ),
      *          ),
      *      ),
-     *     @SWG\Response(response="201", description="User created"),
-     *     @SWG\Response(response="400", description="Name is taken")
+     * @SWG\Response(response="201", description="User created"),
+     * @SWG\Response(response="400", description="Name is taken")
      * )
      */
     public function registration(Request $request, EntityManagerInterface $entityManager, UserPasswordEncoderInterface $passwordEncoder, UserRepository $userRepository, LoggerInterface $logger) {
@@ -204,9 +204,9 @@ class SecurityController extends AbstractController {
      *              ),
      *          ),
      *      ),
-     *     @SWG\Response(response="201", description="Password changed"),
-     *     @SWG\Response(response="500", description="Internal server Error"),
-     *     @SWG\Response(response="400", description="Name is taken")
+     * @SWG\Response(response="201", description="Password changed"),
+     * @SWG\Response(response="500", description="Internal server Error"),
+     * @SWG\Response(response="400", description="Name is taken")
      * )
      */
     public function change(Request $request, EntityManagerInterface $entityManager, Security $security, UserPasswordEncoderInterface $passwordEncoder, LoggerInterface $logger) {
@@ -303,8 +303,8 @@ class SecurityController extends AbstractController {
      *              ),
      *          ),
      *      ),
-     *     @SWG\Response(response="201", description="Mail changed"),
-     *     @SWG\Response(response="400", description="Name is taken")
+     * @SWG\Response(response="201", description="Mail changed"),
+     * @SWG\Response(response="400", description="Name is taken")
      * )
      *
      */
@@ -397,8 +397,8 @@ class SecurityController extends AbstractController {
      *              ),
      *          ),
      *      ),
-     *     @SWG\Response(response="204", description="Add new Chemspider apikey."),
-     *     @SWG\Response(response="401", description="Return when user is not logged in.")
+     * @SWG\Response(response="204", description="Add new Chemspider apikey."),
+     * @SWG\Response(response="401", description="Return when user is not logged in.")
      * )
      */
     public function createChemSpiderKey(Request $request, EntityManagerInterface $entityManager, Security $security, LoggerInterface $logger) {
@@ -556,28 +556,33 @@ class SecurityController extends AbstractController {
         if ($trans instanceof JsonResponse) {
             return $trans;
         }
-        $user = $userRepository->findByMailToken($trans->mail, $trans->token);
-        $pass = null;
-        try {
-            $pass = bin2hex(random_bytes(8));
-        } catch (Exception $e) {
-            $pass = rand(1000000, 999999999999);
+        $usr = $userRepository->findByMailToken($trans->mail, $trans->token);
+        if (sizeof($usr) > 0) {
+            $user = $userRepository->findOneBy(['id' => $usr[0]['id']]);
+            $pass = null;
+            try {
+                $pass = bin2hex(random_bytes(8));
+            } catch (Exception $e) {
+                $pass = rand(1000000, 999999999999);
+            }
+            try {
+                $user->setPassword($passwordEncoder->encodePassword($user, $pass));
+                $entityManager->persist($user);
+                $entityManager->flush();
+            } catch (Exception $exception) {
+                return ResponseHelper::jsonResponse(new Message(ErrorConstants::ERROR_SOMETHING_GO_WRONG, Response::HTTP_INTERNAL_SERVER_ERROR));
+            }
+            try {
+                mail($user->getMail(), 'MassSpecBlocks - password reset', 'You request a new password for Mass Spec Blocks. New generated password: ' . $pass . '. After first login with new password we recommended you to change it. \n Thanks');
+            } catch (Exception $exception) {
+                return ResponseHelper::jsonResponse(new Message('Server doesn\'t support sending mails'));
+            }
+            /** On purpose to replace stored password in memory */
+            $pass = '12345678';
+            return ResponseHelper::jsonResponse(Message::createNoContent());
+        } else {
+            return ResponseHelper::jsonResponse(new Message('Bad verify'));
         }
-        try {
-            $user->setPassword($passwordEncoder->encodePassword($user, $pass));
-            $entityManager->persist($user);
-            $entityManager->flush();
-        } catch (Exception $exception) {
-            return ResponseHelper::jsonResponse(new Message(ErrorConstants::ERROR_SOMETHING_GO_WRONG, Response::HTTP_INTERNAL_SERVER_ERROR));
-        }
-        try {
-            mail($user->getMail(), 'MassSpecBlocks - password reset', 'You request a new password for Mass Spec Blocks. New genrated password: ' . $pass . '. After first login with new password we recommended you to change it. \n Thanks');
-        } catch (Exception $exception) {
-            return ResponseHelper::jsonResponse(new Message('Server doesn\'t support sending mails'));
-        }
-        /** On purpose to replace stored password in memory */
-        $pass = '12345678';
-        return ResponseHelper::jsonResponse(Message::createNoContent());
     }
 
 }

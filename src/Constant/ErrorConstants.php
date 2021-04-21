@@ -28,7 +28,7 @@ class ErrorConstants {
     public const ERROR_SIMILARITY_FORMAT = 'Similarity has not supported format! Supported format is name/tanimoto';
     public const ERROR_ORGANISM_NOT_FOUND = 'Organism not found';
     public const QUESTION_EMPTY = 'Bad session';
-    public const CAP_VERIFY_FAILURE = 'Cap verify failure';
+    public const CAP_VERIFY_FAILURE = 'Question verify failure';
     public const MASS_POSITIVE = 'Mass or range have to be positive numbers';
     public const USER_NOT_FOUND = 'User not found';
     public const ALREADY_IN_DATABASE = 'Already in database';

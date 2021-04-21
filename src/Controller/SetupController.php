@@ -143,7 +143,7 @@ class SetupController extends AbstractController {
      */
     public function getLastConditions(ConditionRepository $conditionRepository) {
         $data = $conditionRepository->findActiveCondition();
-        if (isset($data) && sizeof($data) > 0) {
+        if (!empty($data)) {
             return new JsonResponse($data[0]);
         }
         return new JsonResponse(['text' => '']);

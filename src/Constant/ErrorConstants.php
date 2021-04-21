@@ -32,5 +32,6 @@ class ErrorConstants {
     public const MASS_POSITIVE = 'Mass or range have to be positive numbers';
     public const USER_NOT_FOUND = 'User not found';
     public const ALREADY_IN_DATABASE = 'Already in database';
+    const ERROR_MAIL_WRONG_INPUT = 'Mail has wrong format';
 
 }

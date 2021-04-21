@@ -26,7 +26,9 @@ class NewRegistrationStructure extends AbstractStructure {
         if (strlen($this->password) < 8) {
             return new Message(ErrorConstants::ERROR_CONDITIONS_NOT_MET);
         }
-        // TODO if mail is setup then check it
+        if (!empty($this->mail) && !preg_match('/^..*@..*\...*$/', $this->mail)) {
+            return new Message(ErrorConstants::ERROR_MAIL_WRONG_INPUT);
+        }
         return Message::createOkMessage();
     }
 

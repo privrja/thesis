@@ -557,7 +557,7 @@ class SecurityController extends AbstractController {
             return $trans;
         }
         $usr = $userRepository->findByMailToken($trans->mail, $trans->token);
-        if (sizeof($usr) > 0) {
+        if (!empty($usr)) {
             $user = $userRepository->findOneBy(['id' => $usr[0]['id']]);
             $pass = null;
             try {

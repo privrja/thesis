@@ -57,6 +57,7 @@ use ZipStream\ZipStream;
  * @package App\Controller
  */
 class ContainerController extends AbstractController {
+    const CONTAINER_URI = 'container/';
 
     /**
      * Return containers for logged user
@@ -171,7 +172,7 @@ class ContainerController extends AbstractController {
         if (($trans->getVisibility() === ContainerVisibilityEnum::PUBLIC && $this->isGranted("ROLE_ADMIN")) || $trans->getVisibility() === ContainerVisibilityEnum::PRIVATE) {
             $model = new ContainerModel($entityManager, $this->getDoctrine(), $security->getUser(), $logger);
             $modelMessage = $model->createNew($trans);
-            return new JsonResponse($modelMessage, $modelMessage->status, isset($modelMessage->id) ? Constants::getLocation('container/', $modelMessage->id) : []);
+            return new JsonResponse($modelMessage, $modelMessage->status, isset($modelMessage->id) ? Constants::getLocation(self::CONTAINER_URI, $modelMessage->id) : []);
         } else {
             return ResponseHelper::jsonResponse(new Message('Only admin can create PUBLIC container'));
         }
@@ -298,7 +299,7 @@ class ContainerController extends AbstractController {
         }
         $model = new ContainerModel($entityManager, $this->getDoctrine(), $security->getUser(), $logger);
         $modelMessage = $model->createNewCollaborator($container, $trans);
-        return new JsonResponse($modelMessage, $modelMessage->status, isset($modelMessage->id) ? Constants::getLocation('container/' . $container->getId() . '/collaborator/', $modelMessage->id) : []);
+        return new JsonResponse($modelMessage, $modelMessage->status, isset($modelMessage->id) ? Constants::getLocation(self::CONTAINER_URI . $container->getId() . '/collaborator/', $modelMessage->id) : []);
     }
 
     /**
@@ -685,7 +686,7 @@ class ContainerController extends AbstractController {
         $model = new ContainerModel($entityManager, $this->getDoctrine(), $security->getUser(), $logger);
         if ($container->getVisibility() === ContainerVisibilityEnum::PUBLIC || $model->hasContainer($container->getId())) {
             $message = $model->cloneContainer($container);
-            return new JsonResponse($message, $message->status, isset($message->id) ? Constants::getLocation('container/', $message->id) : []);
+            return new JsonResponse($message, $message->status, isset($message->id) ? Constants::getLocation(self::CONTAINER_URI, $message->id) : []);
         } else {
             return ResponseHelper::jsonResponse(new Message(ErrorConstants::ERROR_CONTAINER_INSUFIENT_RIGHTS, Response::HTTP_FORBIDDEN));
         }

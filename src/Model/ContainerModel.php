@@ -205,7 +205,7 @@ class ContainerModel {
             $blockUsages = $this->blockRepository->blockUsage($block->getContainer()->getId(), $block->getId(), []);
             foreach ($blockUsages as $usage) {
                 $sequence = $this->sequenceRepository->generateSequence($usage['id']);
-                if (sizeof($sequence) > 0) {
+                if (!empty($sequence)) {
                     $seq = $this->sequenceRepository->find($sequence[0]['id']);
                     $seq->setSequence($sequence[0]['sequence']);
                     $this->entityManager->persist($seq);

@@ -522,7 +522,7 @@ class SecurityController extends AbstractController {
         $email = $user->getMail();
         if (!empty($email)) {
             try {
-                mail($user->getMail(), 'MassSpecBlocks - password reset', 'You request a new password for Mass Spec Blocks. We generated you a token for verification it\'s you:' . $user->getApiToken() . ' . After that we generated you new password and send it via email. After first login with new password we recommended you to change it. \n Thanks');
+                mail($user->getMail(), 'MassSpecBlocks - password reset', 'You requested a new password for MassSpecBlocks. We have generated a unique code to verify that it\'s you: ' . $user->getApiToken()  . '. Please, copy and paste this code into the password reset dialog. After that, we will generate a new password and send it via email. After the first login with the new password, we recommend you change it. Thanks');
             } catch (Exception $exception) {
                 return ResponseHelper::jsonResponse(new Message('Server doesn\'t support sending mails'));
             }
@@ -573,7 +573,7 @@ class SecurityController extends AbstractController {
                 return ResponseHelper::jsonResponse(new Message(ErrorConstants::ERROR_SOMETHING_GO_WRONG, Response::HTTP_INTERNAL_SERVER_ERROR));
             }
             try {
-                mail($user->getMail(), 'MassSpecBlocks - password reset', 'You request a new password for Mass Spec Blocks. New generated password: ' . $pass . '. After first login with new password we recommended you to change it. \n Thanks');
+                mail($user->getMail(), 'MassSpecBlocks - password reset', 'You request a new password for Mass Spec Blocks. New generated password: ' . $pass . '. After first login with new password we recommended you to change it. Thanks');
             } catch (Exception $exception) {
                 return ResponseHelper::jsonResponse(new Message('Server doesn\'t support sending mails'));
             }

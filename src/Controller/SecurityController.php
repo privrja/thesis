@@ -119,7 +119,7 @@ class SecurityController extends AbstractController {
         $user->setNick($trans->getName());
         $user->setConditions(true);
         $user->setRoles(["ROLE_USER"]);
-        if ($trans->getMail() !== null) {
+        if (!empty($trans->getMail())) {
             $user->setMail($trans->getMail());
         }
         try {

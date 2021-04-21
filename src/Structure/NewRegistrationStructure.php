@@ -14,7 +14,7 @@ class NewRegistrationStructure extends AbstractStructure {
     public $password;
 
     /** @var string $mail */
-    private $mail;
+    public $mail;
 
     /** @var string */
     public $answer;
@@ -34,9 +34,9 @@ class NewRegistrationStructure extends AbstractStructure {
         $ret = new NewRegistrationTransformed();
         $ret->setName($this->name);
         $ret->setPassword($this->password);
-        $this->password = '';
+        $this->password = '12345678';
         $ret->cap = $this->answer;
-        if ($this->mail !== null) {
+        if (!empty($this->mail)) {
             $ret->setMail($this->mail);
         }
         return $ret;

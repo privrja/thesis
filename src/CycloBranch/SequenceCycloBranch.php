@@ -52,7 +52,7 @@ class SequenceCycloBranch extends AbstractCycloBranch {
             }
             $sequence = new Sequence();
             $sequence->setContainer($container);
-            $sequence->setSequenceName($item->getSequenceName());
+            $sequence->setSequenceName(str_replace('.', ',', $item->getSequenceName()));
             $sequence->setSequenceType($item->getSequenceType());
             $sequence->setSequenceFormula($item->getFormula());
             $sequence->setSequenceMass($item->getMass());

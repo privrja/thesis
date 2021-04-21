@@ -42,7 +42,7 @@ class ModificationCycloBranch extends AbstractCycloBranch {
             }
             $modification = new Modification();
             $modification->setContainer($container);
-            $modification->setModificationName($item->getModificationName());
+            $modification->setModificationName(str_replace('.', ',', $item->getModificationName()));
             $modification->setModificationFormula($item->getFormula());
             $modification->setModificationMass($item->getMass());
             $modification->setNTerminal($item->isNTerminal());

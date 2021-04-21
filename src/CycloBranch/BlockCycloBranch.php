@@ -20,7 +20,7 @@ class BlockCycloBranch extends AbstractCycloBranch {
         if (!empty($arResult)) {
             foreach ($arResult as $block) {
                 $this->data .= str_replace(',', '.', $block->getBlockName()) . self::TABULATOR
-                    . $block->getAcronym() . self::TABULATOR
+                    . str_replace(',', '.', $block->getAcronym()) . self::TABULATOR
                     . $block->getResidue() . self::TABULATOR
                     . $block->getBlockMass() . self::TABULATOR
                     . $block->getLosses() . self::TABULATOR
@@ -45,8 +45,8 @@ class BlockCycloBranch extends AbstractCycloBranch {
             }
             $block = new Block();
             $block->setContainer($container);
-            $block->setBlockName($item->getBlockName());
-            $block->setAcronym($item->getAcronym());
+            $block->setBlockName(str_replace('.', ',' ,$item->getBlockName()));
+            $block->setAcronym(str_replace('.', ',', $item->getAcronym()));
             $block->setResidue($item->getFormula());
             $block->setBlockMass($item->getMass());
             $block->setLosses($item->getLosses());

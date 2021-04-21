@@ -339,7 +339,7 @@ class SequenceController extends AbstractController {
      *     security={
      *         {"ApiKeyAuth":{}}
      *     },
-     *     @SWG\Response(response="204", description="Sucessfully deleted sequence."),
+     *     @SWG\Response(response="200", description="Sucessfully cloned sequence."),
      *     @SWG\Response(response="401", description="Return when user is not logged in."),
      *     @SWG\Response(response="403", description="Return when permisions is insufient."),
      *     @SWG\Response(response="404", description="Return when container or sequence is not found.")

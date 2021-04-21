@@ -4,7 +4,7 @@ namespace App\Structure;
 
 use JsonSerializable;
 
-class SequenceCloneExport implements JsonSerializable {
+class CloneExport implements JsonSerializable {
 
     public $id;
 

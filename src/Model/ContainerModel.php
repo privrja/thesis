@@ -34,7 +34,7 @@ use App\Structure\ModificationTransformed;
 use App\Structure\NewContainerTransformed;
 use App\Structure\BlockTransformed;
 use App\Structure\OrganismTransformed;
-use App\Structure\SequenceCloneExport;
+use App\Structure\CloneExport;
 use App\Structure\SequencePatchTransformed;
 use App\Structure\SequenceTransformed;
 use App\Structure\Sort;
@@ -768,6 +768,33 @@ class ContainerModel {
         return $u2c;
     }
 
+    public function cloneBlock(Container $container, Block $block) {
+        if (!$this->hasContainerRW($container->getId())) {
+            return ResponseHelper::jsonResponse(new Message(ErrorConstants::ERROR_CONTAINER_INSUFIENT_RIGHTS, Response::HTTP_FORBIDDEN));
+        }
+        $postFix = GeneratorHelper::generate(self::CLONE_LENGTH);
+        while ($this->blockRepository->findOneBy(['container' => $container->getId(), 'acronym' => $block->getAcronym() . '-' . $postFix])) {
+            $postFix = GeneratorHelper::generate(self::CLONE_LENGTH);
+        }
+        $clone = new Block();
+        $clone->setContainer($container);
+        $clone->setBlockName($block->getBlockName());
+        $clone->setAcronym($block->getAcronym() . '-' . $postFix);
+        $clone->setResidue($block->getResidue());
+        $clone->setBlockMass($block->getBlockMass());
+        $clone->setLosses($block->getLosses());
+        $clone->setIsPolyketide($block->getIsPolyketide());
+        $clone->setBlockSmiles($block->getBlockSmiles());
+        $clone->setUsmiles($block->getUsmiles());
+        $clone->setSource($block->getSource());
+        $clone->setIdentifier($block->getIdentifier());
+        $this->entityManager->persist($clone);
+        $this->entityManager->flush();
+        $seq = new CloneExport();
+        $seq->id = $clone->getId();
+        return new JsonResponse($seq);
+    }
+
     public function cloneSequence(Container $container, Sequence $sequence): JsonResponse {
         if (!$this->hasContainerRW($container->getId())) {
             return ResponseHelper::jsonResponse(new Message(ErrorConstants::ERROR_CONTAINER_INSUFIENT_RIGHTS, Response::HTTP_FORBIDDEN));
@@ -816,7 +843,7 @@ class ContainerModel {
         }
         $this->entityManager->persist($clone);
         $this->entityManager->flush();
-        $seq = new SequenceCloneExport();
+        $seq = new CloneExport();
         $seq->id = $clone->getId();
         return new JsonResponse($seq);
     }

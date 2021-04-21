@@ -327,6 +327,36 @@ class BlockController extends AbstractController {
         return ResponseHelper::jsonResponse(new Message(ErrorConstants::ERROR_CONTAINER_INSUFIENT_RIGHTS, Response::HTTP_FORBIDDEN));
     }
 
+    /**
+     * @Route("/rest/container/{containerId}/block/{blockId}/clone", methods={"POST"}, requirements={"blockId"="\d+"})
+     * @Entity("container", expr="repository.find(containerId)")
+     * @Entity("block", expr="repository.find(blockId)")
+     * @IsGranted("ROLE_USER")
+     * @param Container $container
+     * @param Block $block
+     * @param EntityManagerInterface $entityManager
+     * @param Security $security
+     * @param LoggerInterface $logger
+     *
+     *
+     * @SWG\Post(
+     *     tags={"Block"},
+     *     security={
+     *         {"ApiKeyAuth":{}}
+     *     },
+     *     @SWG\Response(response="200", description="Sucessfully clone block."),
+     *     @SWG\Response(response="401", description="Return when user is not logged in."),
+     *     @SWG\Response(response="403", description="Return when permisions is insufient."),
+     *     @SWG\Response(response="404", description="Return when container or sequence is not found.")
+     * )
+     *
+     * @return JsonResponse
+     */
+    function cloneBlock(Container $container, Block $block, EntityManagerInterface $entityManager, Security $security, LoggerInterface $logger) {
+        $model = new ContainerModel($entityManager, $this->getDoctrine(), $security->getUser(), $logger);
+        return $model->cloneBlock($container, $block);
+    }
+
     function smilesNext(Container $container, Request $request, BlockRepository $blockRepository) {
         $smilesInput = SmilesHelper::checkInputJson($request);
         if ($smilesInput instanceof JsonResponse) {

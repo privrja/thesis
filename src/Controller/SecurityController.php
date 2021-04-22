@@ -585,4 +585,25 @@ class SecurityController extends AbstractController {
         }
     }
 
+    /**
+     * Get admin contact
+     * @Route("/rest/admin/mail", name="admin_mail", methods={"GET"})
+     * @param UserRepository $userRepository
+     * @return JsonResponse
+     *
+     * @SWG\Get(
+     *     tags={"Auth"},
+     *     @SWG\Response(response="200", description="Admin contact"),
+     *     @SWG\Response(response="404", description="Mail not configured")
+     * )
+     *
+     */
+    public function adminMail(UserRepository $userRepository) {
+        $adm = $userRepository->findAdmin();
+        if (empty($adm)) {
+            return ResponseHelper::jsonResponse(new Message(ErrorConstants::MAIL_NOT_CONFIGURED, Response::HTTP_NOT_FOUND));
+        }
+        return new JsonResponse($adm[0]);
+    }
+
 }

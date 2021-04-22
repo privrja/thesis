@@ -33,5 +33,6 @@ class ErrorConstants {
     public const USER_NOT_FOUND = 'User not found';
     public const ALREADY_IN_DATABASE = 'Already in database';
     const ERROR_MAIL_WRONG_INPUT = 'Mail has wrong format';
+    const MAIL_NOT_CONFIGURED = 'Mail is not configured';
 
 }

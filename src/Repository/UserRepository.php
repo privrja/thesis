@@ -149,4 +149,14 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         return $stmt->fetchAll();
     }
 
+    public function findAdmin() {
+        return $this->createQueryBuilder('usr')
+            ->select('usr.mail')
+            ->where('usr.nick = \'admin\'')
+            ->andWhere('usr.mail is not null')
+            ->andWhere('usr.mail <> \'\'')
+            ->getQuery()
+            ->getArrayResult();
+    }
+
 }

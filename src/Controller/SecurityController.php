@@ -236,8 +236,8 @@ class SecurityController extends AbstractController {
      * @param EntityManagerInterface $entityManager
      * @return JsonResponse
      *
-     * @SWG\Get(
-     *     tags={"Auth"},
+     * @SWG\Delete(
+     *     tags={"Setup"},
      *     security={
      *         {"ApiKeyAuth":{}}
      *     },
@@ -330,7 +330,7 @@ class SecurityController extends AbstractController {
      * @param EntityManagerInterface $entityManager
      * @return JsonResponse
      *
-     * @SWG\Get(
+     * @SWG\Delete(
      *  tags={"Setup"},
      *     security={
      *         {"ApiKeyAuth":{}}
@@ -592,7 +592,7 @@ class SecurityController extends AbstractController {
      * @return JsonResponse
      *
      * @SWG\Get(
-     *     tags={"Auth"},
+     *     tags={"Setup"},
      *     @SWG\Response(response="200", description="Admin contact"),
      *     @SWG\Response(response="404", description="Mail not configured")
      * )

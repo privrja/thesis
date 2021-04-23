@@ -488,7 +488,6 @@ class ContainerModel {
         }
         $sequence->setUniqueBlockCount($cntUniqueBlocks);
         $sequence->setBlockCount($cntBlocks);
-
         try {
             $this->entityManager->persist($sequence);
             $this->entityManager->flush();

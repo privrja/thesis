@@ -77,7 +77,7 @@ class SequenceStructure extends AbstractStructure implements JsonSerializable {
         }
         if (isset($this->blocks)) {
             foreach ($this->blocks as $block) {
-                if (!isset($block->databaseId) && !isset($block->sameAs) && (empty($block->blockName) || empty($block->acronym) || (empty($block->formula) && empty($block->smiles)))) {
+                if (!isset($block->databaseId) && !isset($block->sameAs) && (!isset($block->blockName) || !isset($block->acronym) || (empty($block->formula) && empty($block->smiles)))) {
                     return new Message(ErrorConstants::ERROR_EMPTY_PARAMS);
                 }
             }

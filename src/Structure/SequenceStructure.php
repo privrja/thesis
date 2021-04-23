@@ -108,6 +108,8 @@ class SequenceStructure extends AbstractStructure implements JsonSerializable {
                         $trans->setMass(FormulaHelper::computeMass($trans->getFormula()));
                     } catch (IllegalStateException $e) {
                         /* Empty on purpose - mass can be null */
+                    } catch (InvalidArgumentException $e) {
+                        /* Empty on purpose - mass can be null */
                     }
                 } else {
                     $trans->setMass($this->mass);
@@ -123,8 +125,9 @@ class SequenceStructure extends AbstractStructure implements JsonSerializable {
                 if (empty($this->mass)) {
                     try {
                         $trans->setMass(FormulaHelper::computeMass($this->formula));
-                    } catch
-                    (IllegalStateException $e) {
+                    } catch (IllegalStateException $e) {
+                        /* Empty on purpose - mass can be null */
+                    } catch (InvalidArgumentException $e) {
                         /* Empty on purpose - mass can be null */
                     }
                 } else {
@@ -136,8 +139,9 @@ class SequenceStructure extends AbstractStructure implements JsonSerializable {
             if (empty($this->mass)) {
                 try {
                     $trans->setMass(FormulaHelper::computeMass($this->formula));
-                } catch
-                (IllegalStateException $e) {
+                } catch (IllegalStateException $e) {
+                    /* Empty on purpose - mass can be null */
+                } catch (InvalidArgumentException $e) {
                     /* Empty on purpose - mass can be null */
                 }
             } else {

@@ -19,6 +19,7 @@ class FormulaHelper {
      * @param string $strFormula formula like 'C6H6'
      * @return float mass
      * @throws IllegalStateException
+     * @throws InvalidArgumentException
      */
     public static function computeMass($strFormula) {
         if (!isset($strFormula) || empty($strFormula)) {
@@ -57,6 +58,7 @@ class FormulaHelper {
      * @param int $losses
      * @return string formula with extracted losses
      * @throws IllegalStateException
+     * @throws InvalidArgumentException
      * @see LossesEnum
      */
     public static function formulaWithLosses(string $strFormula, int $losses = LossesEnum::NONE) {
@@ -75,6 +77,7 @@ class FormulaHelper {
      * @param string $strFormula
      * @return AtomCount
      * @throws IllegalStateException
+     * @throws InvalidArgumentException
      */
     private static function getAtomCount(string &$strFormula) {
         $atomParser = new AtomParser();

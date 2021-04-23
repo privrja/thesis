@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\User;
 use App\Structure\Sort;
+use DateTime;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\DBAL\DBALException;
 use Doctrine\ORM\OptimisticLockException;
@@ -138,14 +139,15 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
     }
 
     public function findByMailToken(string $mail, string $token) {
+        $now = (new DateTime())->format('Y-m-d H:i:s');
         $conn = $this->getEntityManager()->getConnection();
         $sql = '
         select *
         from msb_user usr
-        where usr.mail = :mail and usr.api_token = :token and time_to_sec(timediff(now(), usr.last_activity)) < 600        
+        where usr.mail = :mail and usr.api_token = :token and time_to_sec(timediff(:now, usr.last_activity)) < 600        
         ';
         $stmt = $conn->prepare($sql);
-        $stmt->execute(['mail' => $mail, 'token' => $token]);
+        $stmt->execute(['mail' => $mail, 'token' => $token, 'now' => $now]);
         return $stmt->fetchAll();
     }
 

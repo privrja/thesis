@@ -72,7 +72,7 @@ class BlockRepository extends ServiceEntityRepository {
         }
         if (isset($filters['identifier'])) {
             $qb->setParameter('identifier', $filters['identifier'])
-                ->andWhere('blc.identifier = :identifier');
+                ->andWhere('blc.identifier like concat(\'%\', :identifier, \'%\')');
         }
         $qb->groupBy('blc.id, blc.blockName, blc.acronym, blc.residue, blc.blockMass, blc.blockSmiles, blc.usmiles, blc.losses, blc.source, blc.identifier');
 

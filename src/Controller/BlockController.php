@@ -54,7 +54,6 @@ class BlockController extends AbstractController {
     public function index(Container $container, Request $request, EntityManagerInterface $entityManager, Security $security, LoggerInterface $logger, BlockRepository $blockRepository) {
         $possibleFilters = ['id', 'blockName', 'acronym', 'residue', 'blockMassFrom', 'blockMassTo', 'blockSmiles', 'losses', 'identifier', 'family'];
         $filters = RequestHelper::getFiltering($request, $possibleFilters);
-        $filters = RequestHelper::transformIdentifier($filters);
         $sort = RequestHelper::getSorting($request);
         if ($container->getVisibility() === ContainerVisibilityEnum::PUBLIC) {
             return new JsonResponse($blockRepository->findBlocks($container->getId(), $filters, $sort), Response::HTTP_OK);
@@ -264,7 +263,6 @@ class BlockController extends AbstractController {
     public function usageBlock(Container $container, Block $block, Request $request, BlockRepository $blockRepository, EntityManagerInterface $entityManager, Security $security, LoggerInterface $logger) {
         $possibleFilters = ['id', 'sequenceName', 'sequence', 'sequenceType', 'sequenceFormula', 'sequenceMassFrom', 'sequenceMassTo', 'nModification', 'cModification', 'bModification', 'identifier', 'family', 'organism', 'usagesFrom', 'usagesTo'];
         $filters = RequestHelper::getFiltering($request, $possibleFilters);
-        $filters = RequestHelper::transformIdentifier($filters);
         $sort = RequestHelper::getSorting($request);
         if ($container->getVisibility() === ContainerVisibilityEnum::PUBLIC) {
             return new JsonResponse($blockRepository->blockUsage($container->getId(), $block->getId(), $filters, $sort));

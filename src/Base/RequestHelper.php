@@ -3,11 +3,8 @@
 namespace App\Base;
 
 use App\Constant\ErrorConstants;
-use App\Exception\IllegalStateException;
-use App\Smiles\Parser\ReferenceParser;
 use App\Structure\AbstractStructure;
 use App\Structure\AbstractTransformed;
-use App\Structure\Reference;
 use App\Structure\Sort;
 use InvalidArgumentException;
 use JsonMapper;
@@ -67,31 +64,6 @@ class RequestHelper {
         foreach ($paramsToTransform as $param) {
             if (isset($filters[$param]) && isset($transformValues[$filters[$param]])) {
                 $filters[$param] = $transformValues[$filters[$param]];
-            }
-        }
-        return $filters;
-    }
-
-    public static function transformIdentifier(array $filters) {
-        if (isset($filters['identifier'])) {
-            $value = $filters['identifier'];
-            $refParser = new ReferenceParser();
-            try {
-                $refResult = $refParser->parse($value);
-                if ($refResult->isAccepted()) {
-                    /** @var Reference $result */
-                    $result = $refResult->getResult();
-                    if (isset($result->source) && isset($result->identifier)) {
-                        $filters['source'] = $result->source;
-                        $filters['identifier'] = $result->identifier;
-                    } else {
-                        unset($filters['identifier']);
-                    }
-                } else {
-                    unset($filters['identifier']);
-                }
-            } catch (IllegalStateException $e) {
-                unset($filters['identifier']);
             }
         }
         return $filters;

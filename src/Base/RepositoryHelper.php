@@ -48,7 +48,7 @@ class RepositoryHelper {
         }
         if (isset($filters['identifier'])) {
             $qb->setParameter('identifier', $filters['identifier'])
-                ->andWhere('seq.identifier = :identifier');
+                ->andWhere('seq.identifier like concat(\'%\', :identifier, \'%\')');
         }
         if (isset($filters['nModification'])) {
             $qb->andWhere('nmd.modificationName like concat(\'%\', :nModification, \'%\')')

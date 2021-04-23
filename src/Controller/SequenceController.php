@@ -114,7 +114,6 @@ class SequenceController extends AbstractController {
     public function index(Container $container, Request $request, EntityManagerInterface $entityManager, Security $security, LoggerInterface $logger, SequenceRepository $sequenceRepository) {
         $possibleFilters = ['id', 'sequenceName', 'sequence', 'sequenceType', 'sequenceFormula', 'sequenceMassFrom', 'sequenceMassTo', 'nModification', 'cModification', 'bModification','identifier', 'family', 'organism'];
         $filters = RequestHelper::getFiltering($request, $possibleFilters);
-        $filters = RequestHelper::transformIdentifier($filters);
         $sort = RequestHelper::getSorting($request);
         if ($container->getVisibility() === ContainerVisibilityEnum::PUBLIC) {
             return new JsonResponse($sequenceRepository->findSequences($container->getId(), $filters, $sort), Response::HTTP_OK);

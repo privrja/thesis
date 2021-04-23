@@ -296,8 +296,12 @@ class ContainerModel {
         $modification->setModificationMass($trans->getMass());
         $modification->setNTerminal($trans->isNTerminal());
         $modification->setCTerminal($trans->isCTerminal());
-        $this->entityManager->persist($modification);
-        $this->entityManager->flush();
+        try {
+            $this->entityManager->persist($modification);
+            $this->entityManager->flush();
+        } catch (UniqueConstraintViolationException $ex) {
+            return new Message('Modification with this name is already in container');
+        }
         $message->id = $modification->getId();
         return $message;
     }

@@ -278,4 +278,10 @@ final class UniqueSmilesTest extends TestCase {
         $this->assertEquals('NC(CC1=CNC=N1)C(O)=O', $smiles);
     }
 
+    public function testPyoverdinD() {
+        $graph = new Graph('CC(C1C(=O)NC(C(=O)NCCCCC(C(=O)NC(C(=O)N1)CCCN(C=O)O)NC(=O)C(CCCN(C=O)O)NC(=O)C(CO)NC(=O)C(CCCN=C(N)N)NC(=O)C(CO)NC(=O)C2CCNC3=C(C=C4C=C(C(=O)C=C4N23)O)NC(=O)CCC(=O)O)C(C)O)O');
+        $smiles = $graph->getUniqueSmiles();
+        $this->assertEquals('CC(O)C1NC(=O)C(NC(=O)C(CCCN(O)C=O)NC(=O)C(CCCCNC1=O)NC(=O)C(CCCN(O)C=O)NC(=O)C(CO)NC(=O)C(CCCN=C(N)N)NC(=O)C(CO)NC(=O)C2CCNC3=C(NC(=O)CCC(O)=O)C=C4C=C(O)C(=O)C=C4N23)C(C)O', $smiles);
+    }
+
 }

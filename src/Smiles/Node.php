@@ -157,6 +157,11 @@ class Node {
      * @param Digit $digit
      */
     public function addDigit(Digit $digit): void {
+        foreach ($this->arDigits as $dig) {
+            if ($dig->getDigit() === $digit->getDigit()) {
+                return;
+            }
+        }
         $this->arDigits[] = $digit;
     }
 

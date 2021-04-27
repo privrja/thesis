@@ -14,7 +14,7 @@ class BlockMergeFormulaCycloBranch extends BlockCycloBranch {
         if (!empty($arResult)) {
             foreach ($arResult as $block) {
                 $this->data .= str_replace(',', '.', $block['block_name']) . self::TABULATOR
-                    . $block['acronym'] . self::TABULATOR
+                    . str_replace(',', '.', $block['acronym']) . self::TABULATOR
                     . $block['residue'] . self::TABULATOR
                     . $block['block_mass'] . self::TABULATOR
                     . $block['losses'] . self::TABULATOR

@@ -28,6 +28,7 @@ use App\Structure\PassTransformed;
 use App\Structure\ResetStructure;
 use App\Structure\ResetTransformed;
 use DateTime;
+use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 use Psr\Log\LoggerInterface;
@@ -317,8 +318,12 @@ class SecurityController extends AbstractController {
         /** @var User $user */
         $user = $security->getUser();
         $user->setMail($trans->mail);
-        $entityManager->persist($user);
-        $entityManager->flush();
+        try {
+            $entityManager->persist($user);
+            $entityManager->flush();
+        } catch (UniqueConstraintViolationException $ex) {
+            return ResponseHelper::jsonResponse(new Message('Mail is taken'));
+        }
         return ResponseHelper::jsonResponse(Message::createNoContent());
     }
 
@@ -573,7 +578,7 @@ class SecurityController extends AbstractController {
                 return ResponseHelper::jsonResponse(new Message(ErrorConstants::ERROR_SOMETHING_GO_WRONG, Response::HTTP_INTERNAL_SERVER_ERROR));
             }
             try {
-                mail($user->getMail(), 'MassSpecBlocks - password reset', 'You request a new password for Mass Spec Blocks. New generated password: ' . $pass . '. After first login with new password we recommended you to change it. Thanks');
+                mail($user->getMail(), 'MassSpecBlocks - password reset', 'You requested a new password for MassSpecBlocks. The new password is: ' . $pass . '. After the first login with the new password, we recommend you change it. Thanks');
             } catch (Exception $exception) {
                 return ResponseHelper::jsonResponse(new Message('Server doesn\'t support sending mails'));
             }

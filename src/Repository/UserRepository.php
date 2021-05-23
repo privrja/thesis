@@ -49,15 +49,23 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
      * @return array
      */
     public function findContainersForLoggedUser(string $usrId, Sort $sort) {
-        return $this->createQueryBuilder('usr')
+        $qb = $this->createQueryBuilder('usr')
             ->select('cnt.id', 'cnt.containerName', 'cnt.visibility', 'u2c.mode')
             ->innerJoin('usr.u2container', 'u2c')
             ->innerJoin('u2c.container', 'cnt')
             ->andWhere('usr.id = :val')
-            ->setParameter('val', $usrId)
-            ->orderBy(($sort->sort === 'mode' ? 'u2c.' : 'cnt.') . $sort->sort, $sort->order)
-            ->getQuery()
-            ->getArrayResult();
+            ->setParameter('val', $usrId);
+
+        if ($sort->sort === 'mode') {
+            $qb->addOrderBy('u2c.mode', $sort->order);
+        } else if ($sort->sort === 'id') {
+            $qb->addOrderBy('cnt.id', $sort->order);
+        } else if ($sort->sort === 'containerName') {
+            $qb->addOrderBy('cnt.containerName', $sort->order);
+        } else if ($sort->sort === 'visibility') {
+            $qb->addOrderBy('cnt.visibility', $sort->order);
+        }
+        return $qb->getQuery()->getArrayResult();
     }
 
     public function findContainersForLoggedUserById(string $usrId, int $containerId) {

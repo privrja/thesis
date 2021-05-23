@@ -88,9 +88,19 @@ class RepositoryHelper {
                     ->addOrderBy('seq.identifier', $sort->order);
             } else if ($sort->sort === 'usages') {
                 $qb->addOrderBy('blockUsages', $sort->order);
-            } else {
-                $qb->addOrderBy('case when seq.' . $sort->sort . ' is null then 1 else 0 end', $sort->order)
-                    ->addOrderBy('seq.' . $sort->sort, $sort->order);
+            } else if ($sort->sort === 'sequenceName') {
+                $qb->addOrderBy('seq.sequenceName', $sort->order);
+            } else if ($sort->sort === 'sequence') {
+                $qb->addOrderBy('seq.sequence', $sort->order);
+            } else if ($sort->sort === 'sequenceType') {
+                $qb->addOrderBy('seq.sequenceType', $sort->order);
+            } else if ($sort->sort === 'sequenceFormula') {
+                $qb->addOrderBy('seq.sequenceFormula', $sort->order);
+            } else if ($sort->sort === 'sequenceMass') {
+                $qb->addOrderBy('case when seq.sequenceMass is null then 1 else 0 end', $sort->order)
+                ->addOrderBy('seq.sequenceMass', $sort->order);
+            } else if ($sort->sort === 'id') {
+                $qb->addOrderBy('seq.id', $sort->order);
             }
         }
         return $qb;

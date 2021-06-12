@@ -14,22 +14,7 @@ class ServerEnum {
     const DOI = 6;
     const SIDEROPHORE_BASE = 7;
     const LIPID_MAPS = 8;
-
-    /** @var array mapping int code to string */
-    public static $values = [
-        self::PUBCHEM => "PubChem",
-        self::CHEMSPIDER => "ChemSpider",
-        self::NORINE => "Norine",
-        self::PDB => "PDB",
-        self::CHEBI => "ChEBI",
-    ];
-
-    public static $backValues = [
-        'CID: ' => self::PUBCHEM,
-        'CSID: ' => self::CHEMSPIDER,
-        ':' => self::NORINE,
-        'PDB: ' => self::PDB,
-    ];
+    const COCONUT = 9;
 
     /** @var array mapping int code to CycloBranch format string */
     public static $cycloBranchValues = [
@@ -42,7 +27,7 @@ class ServerEnum {
     ];
 
     public static function isOneOf(int $source): bool {
-        return $source >= self::PUBCHEM && $source <= self::LIPID_MAPS;
+        return $source >= self::PUBCHEM && $source <= self::COCONUT;
     }
 
 }

@@ -159,7 +159,7 @@ class SmilesController extends AbstractController {
             }
             $setup = $setupRepository->findOneBy(['id' => 1]);
             if ($setup->getSimilarity() === 'name') {
-                return new JsonResponse($sequenceFamilyRepository->similarity(1, $trans->sequenceName));
+                return new JsonResponse($sequenceFamilyRepository->similarity($container->getId(), $trans->sequenceName));
             } else {
                 if ($trans->blockLengthUnique === 0) {
                     return ResponseHelper::jsonResponse(new Message(ErrorConstants::ERROR_EMPTY_PARAMS, Response::HTTP_BAD_REQUEST));

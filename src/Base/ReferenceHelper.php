@@ -13,7 +13,7 @@ class ReferenceHelper {
     const SMILES = "SMILES: ";
 
     public static function reference($database, $reference, $smiles) {
-        if ($reference == 0) {
+        if (!isset($reference) or $reference === '') {
             return self::defaultValue($smiles);
         }
         switch ($database) {
@@ -24,6 +24,7 @@ class ReferenceHelper {
             case ServerEnum::PDB:
                 return ServerEnum::$cycloBranchValues[ServerEnum::PDB] . $reference;
             case ServerEnum::NORINE:
+            case ServerEnum::COCONUT:
                 return $reference;
             case ServerEnum::SIDEROPHORE_BASE:
                 return ServerEnum::$cycloBranchValues[ServerEnum::SIDEROPHORE_BASE] . $reference;

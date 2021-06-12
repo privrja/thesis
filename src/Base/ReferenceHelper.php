@@ -13,7 +13,7 @@ class ReferenceHelper {
     const SMILES = "SMILES: ";
 
     public static function reference($database, $reference, $smiles) {
-        if (!isset($reference) or $reference === '') {
+        if (!isset($reference) || $reference === '') {
             return self::defaultValue($smiles);
         }
         switch ($database) {

@@ -11,6 +11,7 @@ use App\Enum\ServerEnum;
 class ReferenceHelper {
 
     const SMILES = "SMILES: ";
+    const CHEBI = 'CHEBI: ';
 
     public static function reference($database, $reference, $smiles) {
         if (!isset($reference) || $reference === '') {
@@ -29,13 +30,13 @@ class ReferenceHelper {
                 return $reference;
             case ServerEnum::CHEBI:
                 if (str_contains($reference, 'CHEBI:')) {
-                    if (str_contains($reference, 'CHEBI: ')) {
+                    if (str_contains($reference, self::CHEBI)) {
                         return strtoupper($reference);
                     } else {
-                        return 'CHEBI: ' . substr($reference, 6);
+                        return self::CHEBI . substr($reference, 6);
                     }
                 } else {
-                    return 'CHEBI: ' . $reference;
+                    return self::CHEBI . $reference;
                 }
             case ServerEnum::SIDEROPHORE_BASE:
                 return ServerEnum::$cycloBranchValues[ServerEnum::SIDEROPHORE_BASE] . $reference;

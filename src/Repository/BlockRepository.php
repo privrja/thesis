@@ -122,7 +122,7 @@ class BlockRepository extends ServiceEntityRepository {
                     else \'\' end
                     order by src.block_name separator \'/\') as ref
             from msb_block src
-            where src.container_id = 5
+            where src.container_id = :containerId
             group by src.residue, src.block_mass;
         ';
         $stmt = $conn->prepare($sql);

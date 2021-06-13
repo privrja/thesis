@@ -27,6 +27,16 @@ class ReferenceHelper {
             case ServerEnum::COCONUT:
             case ServerEnum::NP_ATLAS:
                 return $reference;
+            case ServerEnum::CHEBI:
+                if (str_contains($reference, 'CHEBI:')) {
+                    if (str_contains($reference, 'CHEBI: ')) {
+                        return strtoupper($reference);
+                    } else {
+                        return 'CHEBI: ' . substr($reference, 6);
+                    }
+                } else {
+                    return 'CHEBI: ' . $reference;
+                }
             case ServerEnum::SIDEROPHORE_BASE:
                 return ServerEnum::$cycloBranchValues[ServerEnum::SIDEROPHORE_BASE] . $reference;
             case ServerEnum::DOI:

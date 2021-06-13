@@ -25,6 +25,7 @@ class ReferenceHelper {
                 return ServerEnum::$cycloBranchValues[ServerEnum::PDB] . $reference;
             case ServerEnum::NORINE:
             case ServerEnum::COCONUT:
+            case ServerEnum::NP_ATLAS:
                 return $reference;
             case ServerEnum::SIDEROPHORE_BASE:
                 return ServerEnum::$cycloBranchValues[ServerEnum::SIDEROPHORE_BASE] . $reference;

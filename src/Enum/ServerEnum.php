@@ -15,6 +15,7 @@ class ServerEnum {
     const SIDEROPHORE_BASE = 7;
     const LIPID_MAPS = 8;
     const COCONUT = 9;
+    const NP_ATLAS = 10;
 
     /** @var array mapping int code to CycloBranch format string */
     public static $cycloBranchValues = [
@@ -27,7 +28,7 @@ class ServerEnum {
     ];
 
     public static function isOneOf(int $source): bool {
-        return $source >= self::PUBCHEM && $source <= self::COCONUT;
+        return $source >= self::PUBCHEM && $source <= self::NP_ATLAS;
     }
 
 }

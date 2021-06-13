@@ -33,5 +33,5 @@ To run test use ```composer test``` or ```php ./vendor/symfony/phpunit-bridge/bi
 
 ```symfony server:start```
 
-Documentation of API is [localhost:8000/api/doc](https://localhost:8000/api/doc)
+Documentation of API is [localhost:8000/rest/doc](https://localhost:8000/rest/doc)
 Rest API is on [localhost:8000/rest](https://localhost:8000/rest)

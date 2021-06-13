@@ -32,7 +32,8 @@
     "symfony/maker-bundle": "^1.14",
     "symfony/phpunit-bridge": "^5.3",
     "symfony/profiler-pack": "^1.0",
-    "symfony/test-pack": "^1.0"
+    "symfony/test-pack": "^1.0",
+    "phpunit/phpunit": "^8"
   },
   "config": {
     "preferred-install": {

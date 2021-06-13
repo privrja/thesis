@@ -99,25 +99,32 @@ class BlockRepository extends ServiceEntityRepository {
         $conn = $this->getEntityManager()->getConnection();
         $sql = '
             select
-	            group_concat(distinct src.block_name order by src.block_name separator \'/\') as block_name,
-	            group_concat(distinct src.acronym order by src.block_name separator \'/\') as acronym,
+	            group_concat(src.block_name order by src.block_name separator \'/\') as block_name, --
+	            group_concat(src.acronym order by src.block_name separator \'/\') as acronym, --
                 src.residue,
                 coalesce(src.block_mass, \'\') as block_mass,
-                group_concat(distinct coalesce(src.losses, \'\') order by src.block_name separator \'/\') as losses,
-	            group_concat(distinct
+                group_concat(distinct coalesce(src.losses, \'\') order by src.block_name separator \'/\') as losses, --
+	            group_concat( --
 		            case when src.source is not null then
 			            concat(case
 				            when src.source = 0 then \'CID: \'
 				            when src.source = 1 then \'CSID: \'
 				            when src.source = 2 then \'\'
 				            when src.source = 3 then \'PDB: \'
+                            when src.source = 4 then \'\'
+			                when src.source = 6 then \'DOI: \'
+			                when src.source = 7 then \'SB: \'
+                            when src.source = 8 then \'\'
+                            when src.source = 9 then \'\'
+                            when src.source = 10 then \'\'
 				            else \'SMILES: \'
-			            end, case when src.source > 3 then src.usmiles else src.identifier end)
+			            end, case when src.source > 10 or src.source = 5 then src.usmiles else src.identifier end)
                     else \'\' end
                     order by src.block_name separator \'/\') as ref
             from msb_block src
             where src.container_id = :containerId
-            group by src.residue, src.block_mass';
+            group by src.residue, src.block_mass;
+        ';
         $stmt = $conn->prepare($sql);
         $stmt->execute(['containerId' => $containerId]);
         return $stmt->fetchAll();

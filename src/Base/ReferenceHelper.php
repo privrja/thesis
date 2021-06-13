@@ -11,9 +11,10 @@ use App\Enum\ServerEnum;
 class ReferenceHelper {
 
     const SMILES = "SMILES: ";
+    const CHEBI = 'CHEBI: ';
 
     public static function reference($database, $reference, $smiles) {
-        if ($reference == 0) {
+        if (!isset($reference) || $reference === '') {
             return self::defaultValue($smiles);
         }
         switch ($database) {
@@ -24,7 +25,19 @@ class ReferenceHelper {
             case ServerEnum::PDB:
                 return ServerEnum::$cycloBranchValues[ServerEnum::PDB] . $reference;
             case ServerEnum::NORINE:
+            case ServerEnum::COCONUT:
+            case ServerEnum::NP_ATLAS:
                 return $reference;
+            case ServerEnum::CHEBI:
+                if (str_contains($reference, 'CHEBI:')) {
+                    if (str_contains($reference, self::CHEBI)) {
+                        return strtoupper($reference);
+                    } else {
+                        return self::CHEBI . substr($reference, 6);
+                    }
+                } else {
+                    return self::CHEBI . $reference;
+                }
             case ServerEnum::SIDEROPHORE_BASE:
                 return ServerEnum::$cycloBranchValues[ServerEnum::SIDEROPHORE_BASE] . $reference;
             case ServerEnum::DOI:

@@ -199,8 +199,12 @@ class ContainerModel {
         $acronym = $block->getAcronym();
         $this->entityManager->beginTransaction();
         $block = $this->setupBlock($container, $block, $trans);
-        $this->entityManager->persist($block);
-        $this->entityManager->flush();
+        try {
+            $this->entityManager->persist($block);
+            $this->entityManager->flush();
+        } catch (UniqueConstraintViolationException $exception) {
+            return new Message('Block with this acronym is already in container');
+        }
         if ($acronym !== $trans->getAcronym()) {
             $blockUsages = $this->blockRepository->blockUsage($block->getContainer()->getId(), $block->getId(), []);
             foreach ($blockUsages as $usage) {

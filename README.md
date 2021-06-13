@@ -22,7 +22,7 @@ To drop DB and create new use:
 
 ```php bin/console doctrine:mig:mig```
 
-```php bin/console doctrine:fixtures:load```
+```php bin/console doctrine:fixtures:load --group=prod``` or dev group
 
 ### Run tests
 Before every test you need to delete, create, migrate and purge DB like in previuos step, now test can't be run more times in a row.

@@ -77,6 +77,8 @@ class SequenceHelper {
             if (!isset($block)) {
                 return [];
             }
+            $b2s->setBlockOriginalId($len);
+            $b2s->setSort($len);
             $b2s->setBlock($block);
             $b2s->setIsBranch($this->branch);
             $branchNextAcronym = $this->branchNext(true);

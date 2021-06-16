@@ -22,7 +22,7 @@ To drop DB and create new use:
 
 ```php bin/console doctrine:mig:mig```
 
-```php bin/console doctrine:fixtures:load```
+```php bin/console doctrine:fixtures:load --group=prod``` or dev group
 
 ### Run tests
 Before every test you need to delete, create, migrate and purge DB like in previuos step, now test can't be run more times in a row.
@@ -33,5 +33,5 @@ To run test use ```composer test``` or ```php ./vendor/symfony/phpunit-bridge/bi
 
 ```symfony server:start```
 
-Documentation of API is [localhost:8000/api/doc](https://localhost:8000/api/doc)
+Documentation of API is [localhost:8000/rest/doc](https://localhost:8000/rest/doc)
 Rest API is on [localhost:8000/rest](https://localhost:8000/rest)

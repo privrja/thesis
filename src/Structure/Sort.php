@@ -17,9 +17,10 @@ class Sort {
      */
     public function __construct(string $sort, string $order) {
         $this->sort = $sort;
-        $this->order = $order;
-        if ($order !== "asc" && $order !== "desc") {
-            $this->order = 'asc';
+        if ($order === "asc") {
+            $this->order = "asc";
+        } else {
+            $this->order = "desc";
         }
     }
 

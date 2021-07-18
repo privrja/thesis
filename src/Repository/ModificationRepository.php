@@ -58,7 +58,21 @@ class ModificationRepository extends ServiceEntityRepository {
             $qb->andWhere('mdf.cTerminal = :cTerminal')
                 ->setParameter('cTerminal', $filters['cTerminal']);
         }
-        $qb->orderBy('mdf.' . $sort->sort, $sort->order);
+
+        if ($sort->sort === 'id') {
+            $qb->addOrderBy('mdf.id', $sort->order);
+        } else if ($sort->sort === 'modificationName') {
+            $qb->addOrderBy('mdf.modificationName', $sort->order);
+        } else if ($sort->sort === 'modificationFormula') {
+            $qb->addOrderBy('mdf.modificationFormula', $sort->order);
+        } else if ($sort->sort === 'modificationMass') {
+            $qb->addOrderBy('case when mdf.modificationMass is null then 1 else 0 end', $sort->order)
+            ->addOrderBy('mdf.modificationMass', $sort->order);
+        } else if ($sort->sort === 'nTerminal') {
+            $qb->addOrderBy('mdf.nTerminal', $sort->order);
+        } else if ($sort->sort === 'cTerminal') {
+            $qb->addOrderBy('mdf.cTerminal', $sort->order);
+        }
         return $qb->getQuery()->getArrayResult();
     }
 

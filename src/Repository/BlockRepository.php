@@ -87,9 +87,19 @@ class BlockRepository extends ServiceEntityRepository {
         } else if ($sort->sort === 'identifier') {
             $qb->addOrderBy('blc.source', $sort->order)
                 ->addOrderBy('blc.identifier', $sort->order);
-        } else {
-            $qb->addOrderBy('case when blc.' . $sort->sort . ' is null then 1 else 0 end', $sort->order)
-                ->addOrderBy('blc.' . $sort->sort, $sort->order);
+        } else if ($sort->sort === 'id') {
+            $qb->addOrderBy('blc.id', $sort->order);
+        } else if ($sort->sort === 'blockName') {
+            $qb->addOrderBy('blc.blockName', $sort->order);
+        } else if ($sort->sort === 'acronym') {
+            $qb->addOrderBy('blc.acronym', $sort->order);
+        } else if ($sort->sort === 'residue') {
+            $qb->addOrderBy('blc.residue', $sort->order);
+        } else if ($sort->sort === 'blockMass') {
+            $qb->addOrderBy('case when blc.blockMass is null then 1 else 0 end', $sort->order)
+            ->addOrderBy('blc.blockMass', $sort->order);
+        } else if ($sort->sort === 'losses') {
+            $qb->addOrderBy('blc.losses', $sort->order);
         }
         return $qb->getQuery()
             ->getArrayResult();
